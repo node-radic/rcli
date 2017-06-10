@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { cli, CliConfig } from "../src";
-import * as rcli from '../rcli'
+import 'reflect-metadata'
+import { cli, CliConfig } from "@radic/console";
+import * as rcli from '../src'
 rcli.config({
     
 })
@@ -18,6 +19,6 @@ cli
     .helper('verbose', {
         option: { key: 'v', name: 'verbose' }
     })
-    .start(__dirname + '/../rcli/commands/r')
+    .start(__dirname + '/../src/commands/r')
 
 

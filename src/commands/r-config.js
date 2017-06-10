@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
+var console_1 = require("@radic/console");
 var ConfigCmd = (function () {
     function ConfigCmd() {
     }
@@ -26,23 +26,23 @@ var ConfigCmd = (function () {
     return ConfigCmd;
 }());
 __decorate([
-    src_1.inject('r.config'),
+    console_1.inject('r.config'),
     __metadata("design:type", Function)
 ], ConfigCmd.prototype, "config", void 0);
 __decorate([
-    src_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", src_1.Output)
+    console_1.lazyInject('cli.helpers.output'),
+    __metadata("design:type", console_1.Output)
 ], ConfigCmd.prototype, "out", void 0);
 __decorate([
-    src_1.option('l', 'list configuration, or part of it'),
+    console_1.option('l', 'list configuration, or part of it'),
     __metadata("design:type", Boolean)
 ], ConfigCmd.prototype, "list", void 0);
 __decorate([
-    src_1.option('d', 'delete configuration on [path] '),
+    console_1.option('d', 'delete configuration on [path] '),
     __metadata("design:type", Boolean)
 ], ConfigCmd.prototype, "delete", void 0);
 ConfigCmd = __decorate([
-    src_1.command('config [path] [value]')
+    console_1.command('config [path] [value]')
 ], ConfigCmd);
 exports.ConfigCmd = ConfigCmd;
 //# sourceMappingURL=r-config.js.map

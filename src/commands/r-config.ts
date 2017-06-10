@@ -1,4 +1,4 @@
-import { Output ,command, option ,Config,inject, lazyInject } from "../../src";
+import { Output ,command, option ,Config,inject, lazyInject } from "@radic/console";
 
 @command('config [path] [value]')
 export class ConfigCmd {

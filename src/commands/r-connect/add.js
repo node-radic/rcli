@@ -44,8 +44,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../src");
-var Container_1 = require("../../../src/core/Container");
+var console_1 = require("@radic/console");
 var RcliConnectAddCmd = (function () {
     function RcliConnectAddCmd() {
     }
@@ -80,23 +79,23 @@ var RcliConnectAddCmd = (function () {
     return RcliConnectAddCmd;
 }());
 __decorate([
-    Container_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", src_1.Output)
+    console_1.lazyInject('cli.helpers.output'),
+    __metadata("design:type", console_1.Output)
 ], RcliConnectAddCmd.prototype, "out", void 0);
 __decorate([
-    Container_1.lazyInject('cli.helpers.input'),
-    __metadata("design:type", src_1.Input)
+    console_1.lazyInject('cli.helpers.input'),
+    __metadata("design:type", console_1.Input)
 ], RcliConnectAddCmd.prototype, "ask", void 0);
 __decorate([
-    Container_1.lazyInject('cli.log'),
+    console_1.lazyInject('cli.log'),
     __metadata("design:type", Object)
 ], RcliConnectAddCmd.prototype, "lazyInject", void 0);
 __decorate([
-    Container_1.lazyInject('rcli.config'),
+    console_1.lazyInject('rcli.config'),
     __metadata("design:type", Function)
 ], RcliConnectAddCmd.prototype, "config", void 0);
 RcliConnectAddCmd = __decorate([
-    src_1.command("add \n{name:string@the connection name} \n{user:string@the user to login} \n{host:string@the host to connect} \n{method:string@the connect method", 'add a connection')
+    console_1.command("add \n{name:string@the connection name} \n{user:string@the user to login} \n{host:string@the host to connect} \n{method:string@the connect method", 'add a connection')
 ], RcliConnectAddCmd);
 exports.default = RcliConnectAddCmd;
 //# sourceMappingURL=add.js.map

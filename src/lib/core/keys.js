@@ -13,7 +13,7 @@ var cryptico = require("cryptico");
 var fs = require("fs-extra");
 var paths_1 = require("./paths");
 var path_1 = require("path");
-var src_1 = require("../../../src");
+var console_1 = require("@radic/console");
 var Keys = (function () {
     function Keys() {
         this._secret = cryptico.generateRSAKey('pass', 1024);
@@ -41,7 +41,7 @@ var Keys = (function () {
     return Keys;
 }());
 Keys = __decorate([
-    src_1.singleton('r.keys'),
+    console_1.singleton('r.keys'),
     __metadata("design:paramtypes", [])
 ], Keys);
 exports.Keys = Keys;

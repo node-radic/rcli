@@ -9,26 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
+var console_1 = require("@radic/console");
 var RcliConnectCmd = (function () {
     function RcliConnectCmd() {
     }
     return RcliConnectCmd;
 }());
 __decorate([
-    src_1.inject('cli.helpers.output'),
-    __metadata("design:type", src_1.Output)
+    console_1.inject('cli.helpers.output'),
+    __metadata("design:type", console_1.Output)
 ], RcliConnectCmd.prototype, "out", void 0);
 __decorate([
-    src_1.inject('cli.log'),
+    console_1.inject('cli.log'),
     __metadata("design:type", Object)
 ], RcliConnectCmd.prototype, "log", void 0);
 __decorate([
-    src_1.inject('config'),
+    console_1.inject('r.config'),
     __metadata("design:type", Function)
 ], RcliConnectCmd.prototype, "config", void 0);
 RcliConnectCmd = __decorate([
-    src_1.command('connect', 'SSH connection helper', {
+    console_1.command('connect', 'SSH connection helper', {
         subCommands: ['add', 'edit', 'list', 'show'],
         usage: 'connect <command>',
         example: "$ connect list\n$ connect show <name> [options]\n$ connect add <name> [options]\n$ connect edit <name> [options]\n$ connect remove <name>"

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../src");
+var console_1 = require("@radic/console");
 var RcliConnectSetCmd = (function () {
     function RcliConnectSetCmd() {
     }
@@ -22,19 +22,19 @@ var RcliConnectSetCmd = (function () {
     return RcliConnectSetCmd;
 }());
 __decorate([
-    src_1.inject('cli.helpers.output'),
-    __metadata("design:type", src_1.Output)
+    console_1.inject('cli.helpers.output'),
+    __metadata("design:type", console_1.Output)
 ], RcliConnectSetCmd.prototype, "out", void 0);
 __decorate([
-    src_1.inject('cli.log'),
+    console_1.inject('cli.log'),
     __metadata("design:type", Object)
 ], RcliConnectSetCmd.prototype, "log", void 0);
 __decorate([
-    src_1.inject('config'),
+    console_1.inject('r.config'),
     __metadata("design:type", Function)
 ], RcliConnectSetCmd.prototype, "config", void 0);
 RcliConnectSetCmd = __decorate([
-    src_1.command('show', 'set a connections')
+    console_1.command('show', 'set a connections')
 ], RcliConnectSetCmd);
 exports.default = RcliConnectSetCmd;
 //# sourceMappingURL=show.js.map

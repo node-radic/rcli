@@ -1,17 +1,13 @@
-import { IConfig, Config, PersistentConfig, IConfigProperty } from "@radic/util";
+import { Config, IConfig, IConfigProperty } from "@radic/util";
 import * as Cryptr from "cryptr";
-import { join, resolve } from "path";
-import { writeFileSync, writeJsonSync, readFileSync, existsSync, readJSONSync } from "fs-extra";
+import { existsSync, readFileSync, writeFileSync } from "fs-extra";
 import * as dotenv from "dotenv";
-import { Keys } from './keys'
-import { paths, setPaths } from "./paths";
+import { Keys } from "./keys";
+import { paths } from "./paths";
 import { unlinkSync } from "fs";
-import { container } from "../../../src/core/Container";
-import { homedir } from "os";
+import { container } from "@radic/console";
 
 export interface RConfig extends IConfigProperty {}
-
-
 
 
 let defaultConfig: any = {
@@ -91,9 +87,9 @@ export class PersistentFileConfig extends Config {
         if ( ! existsSync(paths.userDataConfig) ) return this;
         this.saveEnabled = false;
         this.data        = this.defaultConfig;
-        const str       = readFileSync(paths.userDataConfig, 'utf8');
-        const decrypted = this.cryptr.decrypt(str);
-        const parsed    = JSON.parse(decrypted);
+        const str        = readFileSync(paths.userDataConfig, 'utf8');
+        const decrypted  = this.cryptr.decrypt(str);
+        const parsed     = JSON.parse(decrypted);
         this.merge(parsed);
         this.loadEnv();
         this.saveEnabled = true;

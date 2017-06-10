@@ -1,6 +1,6 @@
 import Axios, { AxiosInstance } from 'axios';
 import * as _ from 'lodash';
-import { helper } from "../../src";
+import { helper } from "@radic/console";
 
 
 
@@ -9,7 +9,7 @@ import { helper } from "../../src";
 
     }
 })
-export class Rest {
+export class RestHelper {
     options:any
     protected axios: AxiosInstance;
 

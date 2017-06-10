@@ -2,7 +2,7 @@ import * as cryptico from "cryptico";
 import * as fs from "fs-extra";
 import { paths } from "./paths";
 import { dirname } from "path";
-import { singleton } from "../../../src";
+import { singleton } from "@radic/console";
 
 @singleton('r.keys')
 export class Keys

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../src");
+var console_1 = require("@radic/console");
 var RcliConnectEditCmd = (function () {
     function RcliConnectEditCmd() {
     }
@@ -25,43 +25,43 @@ var RcliConnectEditCmd = (function () {
     return RcliConnectEditCmd;
 }());
 __decorate([
-    src_1.inject('cli.helpers.output'),
-    __metadata("design:type", src_1.Output)
+    console_1.inject('cli.helpers.output'),
+    __metadata("design:type", console_1.Output)
 ], RcliConnectEditCmd.prototype, "out", void 0);
 __decorate([
-    src_1.inject('cli.log'),
+    console_1.inject('cli.log'),
     __metadata("design:type", Object)
 ], RcliConnectEditCmd.prototype, "log", void 0);
 __decorate([
-    src_1.inject('config'),
+    console_1.inject('config'),
     __metadata("design:type", Function)
 ], RcliConnectEditCmd.prototype, "config", void 0);
 __decorate([
-    src_1.option('H', 'server ip or hostname'),
+    console_1.option('H', 'server ip or hostname'),
     __metadata("design:type", String)
 ], RcliConnectEditCmd.prototype, "host", void 0);
 __decorate([
-    src_1.option('p', 'server ssh port'),
+    console_1.option('p', 'server ssh port'),
     __metadata("design:type", String)
 ], RcliConnectEditCmd.prototype, "port", void 0);
 __decorate([
-    src_1.option('u', 'username for login'),
+    console_1.option('u', 'username for login'),
     __metadata("design:type", String)
 ], RcliConnectEditCmd.prototype, "user", void 0);
 __decorate([
-    src_1.option('m', 'method of connecting (key|password)'),
+    console_1.option('m', 'method of connecting (key|password)'),
     __metadata("design:type", String)
 ], RcliConnectEditCmd.prototype, "method", void 0);
 __decorate([
-    src_1.option('L', 'path to local mount point (sshfs)'),
+    console_1.option('L', 'path to local mount point (sshfs)'),
     __metadata("design:type", String)
 ], RcliConnectEditCmd.prototype, "mountLocal", void 0);
 __decorate([
-    src_1.option('R', 'path on the remote server to mount (sshfs)'),
+    console_1.option('R', 'path on the remote server to mount (sshfs)'),
     __metadata("design:type", String)
 ], RcliConnectEditCmd.prototype, "mountRemote", void 0);
 RcliConnectEditCmd = __decorate([
-    src_1.command('edit {name:the connection name}', 'edit a connections', {
+    console_1.command('edit {name:the connection name}', 'edit a connections', {
         usage: 'edit <name> [options]'
     })
 ], RcliConnectEditCmd);

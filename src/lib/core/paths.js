@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = require("path");
-var Container_1 = require("../../../src/core/Container");
 var _ = require("lodash");
 var fs_extra_1 = require("fs-extra");
 var fs_1 = require("fs");
+var console_1 = require("@radic/console");
 var root = path_1.join(__dirname, '..', '..'), home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE, cwd = process.cwd();
 function setPaths(overrides, _root, _home, r) {
     if (overrides === void 0) { overrides = {}; }
@@ -35,10 +35,10 @@ function setPaths(overrides, _root, _home, r) {
         dbBackups: path_1.join(home, r, 'backups', 'db')
     };
     _.merge(exports.paths, overrides);
-    if (Container_1.container.isBound('paths')) {
-        Container_1.container.unbind('paths');
+    if (console_1.container.isBound('paths')) {
+        console_1.container.unbind('paths');
     }
-    Container_1.container.bind('r.paths').toConstantValue(exports.paths);
+    console_1.container.bind('r.paths').toConstantValue(exports.paths);
     return exports.paths;
 }
 exports.setPaths = setPaths;

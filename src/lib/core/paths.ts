@@ -1,8 +1,8 @@
 import { join as j, resolve as r } from "path";
-import { container } from "../../../src/core/Container";
 import * as _ from "lodash";
 import { readJSONSync } from "fs-extra";
 import { existsSync } from "fs";
+import { container } from "@radic/console";
 let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()

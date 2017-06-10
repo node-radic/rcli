@@ -1,3 +1,3 @@
-import 'reflect-metadata'
+export * from './interfaces'
 export * from './lib'
 export * from './helpers'

@@ -1,8 +1,6 @@
-import { command, Input, Log, Output } from "../../../src";
-import { RConfig } from "../../lib";
-import { Dictionary } from "lodash";
-import { SSHConnection } from "../../interfaces";
-import { lazyInject } from "../../../src/core/Container";
+import { command, Input, lazyInject, Log, Output } from "@radic/console";
+import { RConfig, SSHConnection } from "../../";
+
 
 @command(`add 
 {name:string@the connection name} 

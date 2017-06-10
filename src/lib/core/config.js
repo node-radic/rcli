@@ -17,7 +17,7 @@ var dotenv = require("dotenv");
 var keys_1 = require("./keys");
 var paths_1 = require("./paths");
 var fs_1 = require("fs");
-var Container_1 = require("../../../src/core/Container");
+var console_1 = require("@radic/console");
 var defaultConfig = {
     debug: false,
     env: {},
@@ -122,5 +122,5 @@ var PersistentFileConfig = (function (_super) {
 exports.PersistentFileConfig = PersistentFileConfig;
 var _config = new PersistentFileConfig(defaultConfig);
 exports.config = util_1.Config.makeProperty(_config);
-Container_1.container.constant('r.config', exports.config);
+console_1.container.constant('r.config', exports.config);
 //# sourceMappingURL=config.js.map

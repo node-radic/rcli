@@ -1,5 +1,5 @@
-import { command, inject, Log, option, Output } from "../../../src";
-import { RConfig } from "../../lib";
+import { command, Input, inject, option, lazyInject, Log, Output } from "@radic/console";
+import { RConfig } from "../../";
 
 @command('edit {name:the connection name}', 'edit a connections',{
     usage: 'edit <name> [options]'

@@ -1,12 +1,10 @@
-import { Cli, command, lazyInject, Log, Output } from "../../src";
+import { Cli, command, lazyInject, Log, Output } from "@radic/console";
 import { RConfig } from "../";
-@command({
+@command('r <command>', {
     subCommands: [ 'connect', 'git', 'config' ],
     alwaysRun  : true
 })
-export default class RcliCmd {
-
-
+export class RcliCmd {
     @lazyInject('cli.helpers.output')
     protected out: Output;
 
@@ -16,7 +14,7 @@ export default class RcliCmd {
     @lazyInject('cli')
     protected cli: Cli;
 
-    @lazyInject('rcli.config')
+    @lazyInject('r.config')
     protected config: RConfig;
 
     always(){

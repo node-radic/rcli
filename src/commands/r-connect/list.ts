@@ -1,4 +1,4 @@
-import { command, inject, Log, option, Output } from "../../../src";
+import { command, Input, inject, option, lazyInject, Log, Output } from "@radic/console";
 import { RConfig } from "../../lib";
 
 @command('list', 'list all connections')
@@ -10,7 +10,7 @@ export default class RcliConnectListCmd {
     @inject('cli.log')
     log: Log;
 
-    @inject('config')
+    @inject('r.config')
     config: RConfig;
 
 

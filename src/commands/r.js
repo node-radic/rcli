@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
+var console_1 = require("@radic/console");
 var RcliCmd = (function () {
     function RcliCmd() {
     }
@@ -29,26 +29,26 @@ var RcliCmd = (function () {
     return RcliCmd;
 }());
 __decorate([
-    src_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", src_1.Output)
+    console_1.lazyInject('cli.helpers.output'),
+    __metadata("design:type", console_1.Output)
 ], RcliCmd.prototype, "out", void 0);
 __decorate([
-    src_1.lazyInject('cli.log'),
+    console_1.lazyInject('cli.log'),
     __metadata("design:type", Object)
 ], RcliCmd.prototype, "log", void 0);
 __decorate([
-    src_1.lazyInject('cli'),
-    __metadata("design:type", src_1.Cli)
+    console_1.lazyInject('cli'),
+    __metadata("design:type", console_1.Cli)
 ], RcliCmd.prototype, "cli", void 0);
 __decorate([
-    src_1.lazyInject('rcli.config'),
+    console_1.lazyInject('r.config'),
     __metadata("design:type", Function)
 ], RcliCmd.prototype, "config", void 0);
 RcliCmd = __decorate([
-    src_1.command({
+    console_1.command('r <command>', {
         subCommands: ['connect', 'git', 'config'],
         alwaysRun: true
     })
 ], RcliCmd);
-exports.default = RcliCmd;
+exports.RcliCmd = RcliCmd;
 //# sourceMappingURL=r.js.map

@@ -1,5 +1,5 @@
-import { command, inject, Log, Output } from "../../src";
-import { RConfig } from "../lib";
+import { command, inject, Log, Output } from "@radic/console";
+import { RConfig } from "../";
 
 @command('connect', 'SSH connection helper', {
     subCommands: [ 'add', 'edit', 'list', 'show' ],
@@ -18,7 +18,7 @@ export default class RcliConnectCmd {
     @inject('cli.log')
     log: Log;
 
-    @inject('config')
+    @inject('r.config')
     config: RConfig;
     //
     // handle(...args: any[]) {

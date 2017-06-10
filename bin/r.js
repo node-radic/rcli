@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../src");
-var rcli = require("../rcli");
+require("reflect-metadata");
+var console_1 = require("@radic/console");
+var rcli = require("../src");
 rcli.config({});
-src_1.cli.config({});
-src_1.cli
+console_1.cli.config({});
+console_1.cli
     .helpers('input', 'output')
     .helper('help', {
     option: { key: 'h', name: 'help' }
@@ -13,5 +14,5 @@ src_1.cli
     .helper('verbose', {
     option: { key: 'v', name: 'verbose' }
 })
-    .start(__dirname + '/../rcli/commands/r');
+    .start(__dirname + '/../src/commands/r');
 //# sourceMappingURL=r.js.map

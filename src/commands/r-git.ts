@@ -1,6 +1,6 @@
-import { Output ,command, option ,Config,inject, lazyInject } from "../../src";
+import { Output ,command, option ,Config,inject, lazyInject } from "@radic/console";
 
-@command('git [commanb]')
+@command('git <command>')
 export class GitCmd {
     @inject('r.config')
     config: Config
