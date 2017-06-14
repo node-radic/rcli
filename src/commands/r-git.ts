@@ -1,4 +1,4 @@
-import { Output ,command, option ,Config,inject, lazyInject } from "@radic/console";
+import { OutputHelper ,command, option ,Config,inject, lazyInject } from "@radic/console";
 
 @command('git <command>')
 export class GitCmd {
@@ -6,7 +6,7 @@ export class GitCmd {
     config: Config
 
     @lazyInject('cli.helpers.output')
-    protected out: Output;
+    protected out: OutputHelper;
 
 
     @option('l', 'list configuration, or part of it')
@@ -25,3 +25,4 @@ export class GitCmd {
 
     }
 }
+export default GitCmd

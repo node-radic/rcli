@@ -1,21 +1,26 @@
 #!/usr/bin/env node
-import 'reflect-metadata'
+import "../src/index";
 import { cli, CliConfig } from "@radic/console";
-import * as rcli from '../src'
-rcli.config({
-    
-})
 
 cli.config(<CliConfig> {
-
+    commands: {
+        onMissingArgument: 'help'
+    }
 })
 
-
 cli
-    .helpers('input', 'output')
+    .helper('input')
+    .helper('output')
+    .helper('ssh.bash')
     .helper('help', {
-        option: { key: 'h', name: 'help' }
+        addShowHelpFunction: true,
+        showOnError: true,
+        app    : {
+            title: 'Radic CLI'
+        },
+        option : { enabled: true, } //key: 'h', name: 'help' }
     })
+    .helper('ssh.bash')
     .helper('verbose', {
         option: { key: 'v', name: 'verbose' }
     })

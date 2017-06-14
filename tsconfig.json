@@ -6,12 +6,15 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "sourceMap": true,
-        "module": "commonjs",
+        "module": "umd",
         "skipLibCheck": true,
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
+        "types":[
+            "jasmine"
+        ],
         "typeRoots": [
             "./node_modules/@types",
             "./types"
@@ -19,9 +22,8 @@
     },
     "include": [
         "./src",
-        "./spec",
+        "./spec/**/*.ts",
         "./bin",
-        "./types",
-        "./rcli"
+        "./types/**/*.ts"
     ]
 }

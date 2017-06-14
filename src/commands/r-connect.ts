@@ -1,67 +1,30 @@
-import { command, inject, Log, Output } from "@radic/console";
-import { RConfig } from "../";
+import { command, CommandArguments, CommandConfig, inject, Log, OptionConfig, OutputHelper } from "@radic/console";
 
-@command('connect', 'SSH connection helper', {
-    subCommands: [ 'add', 'edit', 'list', 'show' ],
-    usage      : 'connect <command>',
-    example    : `$ connect list
-$ connect show <name> [options]
-$ connect add <name> [options]
-$ connect edit <name> [options]
-$ connect remove <name>`
+@command('connect {command}', 'SSH connection helper', [ 'add', 'bulk', 'list', 'edit', 'ssh', 'remove' ], {
+    onMissingArgument: 'help',
+    helpers          : {
+        help: {
+            app: { title: 'SSH Connection Helper' }
+        }
+    }
 })
-export default class RcliConnectCmd {
+export class RcliConnectCmd {
+
+    _config: CommandConfig
+    _options: OptionConfig[]
+    showHelp: () => void
 
     @inject('cli.helpers.output')
-    out: Output;
+    out: OutputHelper;
 
     @inject('cli.log')
-    log: Log;
+    log: Log
 
-    @inject('r.config')
-    config: RConfig;
-    //
-    // handle(...args: any[]) {
-    //
-    //     if ( this.list ) {
-    //         this.handleList();
-    //     } else if ( this.set ) {
-    //         let add = this.config.has('connect.' + this.set);
-    //         if ( add ) {
-    //             this.handleAdd();
-    //         } else {
-    //             this.handleSet()
-    //         }
-    //     }
-    //
-    //
-    // }
-    //
-    // protected handleList() {
-    //
-    //     let cons = this.config.get('connect', {});
-    //     Object.keys(cons).forEach(con => {
-    //         this.out.line(' - ' + con)
-    //     })
-    // }
-    //
-    // protected handleSet() {
-    //     let con = this.config.get<any>('connect.' + this.set, {});
-    //     [ 'host', 'port', 'method', 'mountLocal', 'mountRemote' ].forEach(prop => {
-    //         if ( this[ prop ] ) {
-    //             con[ prop ] = this[ prop ];
-    //         }
-    //     })
-    //     this.config.set('connect.' + this.set, con);
-    // }
-    //
-    // protected handleAdd() {
-    //     let con = {
-    //         host  : this.host,
-    //         port  : this.port || 22,
-    //         method: this.method || 'key',
-    //
-    //     }
-    //     this.config.set('connect.' + this.set, con);
-    // }
+
+    handle(args: CommandArguments, argv: any[]) {
+        this.log.info('args', args);
+        this.log.info('argv', argv);
+        this.log.info('config', this._config)
+    }
 }
+export default RcliConnectCmd

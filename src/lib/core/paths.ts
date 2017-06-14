@@ -1,8 +1,10 @@
-import { join as j, resolve as r } from "path";
+import { join, join as j, resolve as r } from "path";
 import * as _ from "lodash";
 import { readJSONSync } from "fs-extra";
-import { existsSync } from "fs";
+import { chownSync, existsSync, mkdirSync, statSync } from "fs";
 import { container } from "@radic/console";
+import globule = require("globule");
+import { chmod, mkdir } from "shelljs";
 let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()
@@ -29,8 +31,19 @@ export interface Paths {
     dbBackups: string
 }
 
+
+export function setPermissions(paths) {
+
+    [ paths.userData, paths.dbBackups ].filter(dir => ! existsSync(dir)).forEach(dir => {
+        mkdir('-p', dir)
+        chmod(755, dir)
+    })
+    let homeStats = statSync(paths.home);
+}
+
+
 export let paths: Paths;
-export function setPaths(overrides: any = {}, _root: string = null, _home: string = null, r: string = '.rcli') : Paths{
+export function setPaths(overrides: any = {}, _root: string = null, _home: string = null, r: string = '.rcli'): Paths {
     if ( _root ) root = _root
     if ( _home ) home = _home
 
@@ -58,11 +71,11 @@ export function setPaths(overrides: any = {}, _root: string = null, _home: strin
         container.unbind('paths')
     }
     container.bind('r.paths').toConstantValue(paths);
+    setPermissions(paths)
     return paths
 }
 
 setPaths();
-
 
 
 if ( existsSync(paths.rcFile) ) {

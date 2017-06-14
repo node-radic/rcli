@@ -1,8 +1,10 @@
 import * as gulp from "gulp";
 import * as fs from "fs-extra";
 import * as tsc from "gulp-typescript";
-import { resolve } from "path";
-import * as _ from 'lodash'
+import { join, resolve } from "path";
+import * as _ from "lodash";
+import { execSync } from "child_process";
+import { rm } from "shelljs";
 
 const c = {
     src          : [ 'src/**/*.ts' ],
@@ -41,7 +43,7 @@ const
     ghPages      = require("gulp-gh-pages")
 ;
 
-gulp.task('clean', [ 'clean:src', 'clean:build' ]);
+// gulp.task('clean', [ 'clean:src', 'clean:build' ]);
 
 gulp.task('clean:build', () => gulp.src([ 'dist', 'dts', 'es', 'lib', 'umd', 'coverage', '.publish', 'docs' ]).pipe(clean()));
 
@@ -117,17 +119,23 @@ gulp.task("build", (cb) => {
 
 
 gulp.task("test", () => {
-    // runSequence("jasmine", cb);
 
-    let jasmineJson = require('./jasmine.json');
-    return gulp.src(jasmineJson.spec_files)
+    // runSequence("jasmine", cb);
+    execSync('npm uninstall @radic/console#latest')
+    rm('-r', 'node_modules/@radic/console')
+    execSync('npm install @radic/console#latest')
+    process.stdout.write(require.resolve('@radic/console'))
+
+    let jasmineJson = join(__dirname, 'jasmine.json');
+    let done        = gulp.src(jasmineJson.spec_files)
         .pipe(jasmine({
             reporter: new SpecReporter({
-                displayStacktrace: true,
+                displayStacktrace  : true,
                 displaySpecDuration: true
             }),
             config  : jasmineJson
         }))
+    execSync('npm link @radic/console')
 });
 
 gulp.task("default", (cb) => {
@@ -148,4 +156,10 @@ gulp.task('create-bin', (cb) => {
         cb();
     })
 })
-
+// Run test once and exit
+gulp.task('karma', function (done) {
+    new Server({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun : true
+    }, done).start();
+});

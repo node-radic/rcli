@@ -1,11 +1,14 @@
-import { command, Input, inject, option, lazyInject, Log, Output } from "@radic/console";
-import { RConfig } from "../../lib";
+import { command,CommandArguments, inject, Log, OutputHelper } from "@radic/console";
+import { RConfig, SSHConnection} from "../../";
+
+import * as _ from "lodash";
+
 
 @command('list', 'list all connections')
-export default class RcliConnectListCmd {
+export class RcliConnectListCmd {
 
     @inject('cli.helpers.output')
-    out: Output;
+    out: OutputHelper;
 
     @inject('cli.log')
     log: Log;
@@ -14,12 +17,33 @@ export default class RcliConnectListCmd {
     config: RConfig;
 
 
-    handle(...args: any[]) {
+    handle(args:CommandArguments, ...argv: any[]) {
 
-        let cons = this.config.get('connect', {});
-        Object.keys(cons).forEach(con => {
-            this.out.line(' - ' + con)
+        let connect = this.config.get<SSHConnection[]>('connect', {});
+//         Object.keys(connect).fo/*rEach(key => {return;
+//             let v   = connect[ key ];
+//             let row = [
+//                 v.name,
+//                 v.user,
+//                 v.host,
+//                 v.port,
+//                 v.method,
+//                 v.localPath,
+//                 v.hostPath
+//             ]
+//             rows.push(row);
+//         })
+// */
+        let rows = Object.keys(connect).map(key => {
+            return _.omit(connect[ key ], 'password');
+        });
+        this.out.columns( rows, {
+            columnSplitter  : '   ',
+            showHeaders     : true,
+            preserveNewLines: true
         })
+
 
     }
 }
+export default RcliConnectListCmd

@@ -1,13 +1,15 @@
+import * as moment from "moment";
 import { Config, IConfig, IConfigProperty } from "@radic/util";
 import * as Cryptr from "cryptr";
 import { existsSync, readFileSync, writeFileSync } from "fs-extra";
 import * as dotenv from "dotenv";
 import { Keys } from "./keys";
 import { paths } from "./paths";
-import { unlinkSync } from "fs";
+import { join, readdirSync, unlinkSync } from "fs";
 import { container } from "@radic/console";
+import { isAbsolute } from "path";
 
-export interface RConfig extends IConfigProperty {}
+interface RConfig extends IConfigProperty {}
 
 
 let defaultConfig: any = {
@@ -43,7 +45,7 @@ function parseEnvVal(val: any) {
 }
 
 
-export class PersistentFileConfig extends Config {
+class PersistentFileConfig extends Config {
     cryptr: any;
     defaultConfig: Object;
     protected saveEnabled: boolean = true;
@@ -102,6 +104,26 @@ export class PersistentFileConfig extends Config {
         return this;
     }
 
+
+    backup(filePath?: string): string {
+        let filePath = filePath || join(paths.dbBackups, moment().format('YYYY-MM-hh:mm:ss'))
+        writeFileSync(filePath, this.cryptr(this.data))
+        return filePath
+    }
+
+    restore(filePath): this {
+        this.data = readFileSync(isAbsolute(filePath) ? filePath : join(process.cwd, filePath));
+        this.save();
+        this.load()
+        return this;
+    }
+
+    getLocalBackupFiles() {
+        let dir = readdirSync(paths.dbBackups);
+        if ( dir.length === 0 ) return [];
+        return dir.map(d => d.small());
+    }
+
     protected loadEnv(): this {
         if ( existsSync(paths.env) ) {
             var denv = dotenv.parse(<any> readFileSync(paths.env));
@@ -128,6 +150,9 @@ export class PersistentFileConfig extends Config {
 let _config = new PersistentFileConfig(defaultConfig);
 
 // export the wrapped config
-export const config: RConfig = Config.makeProperty(_config);
+const config: RConfig = Config.makeProperty(_config);
 
-container.constant('r.config', config);
+container.bind<RConfig>('r.config.core').toConstantValue(_config);
+container.bind<RConfig>('r.config').toConstantValue(config);
+
+export { RConfig, config, PersistentFileConfig }
