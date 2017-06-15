@@ -5,9 +5,10 @@ import { existsSync, readFileSync, writeFileSync } from "fs-extra";
 import * as dotenv from "dotenv";
 import { Keys } from "./keys";
 import { paths } from "./paths";
-import { join, readdirSync, unlinkSync } from "fs";
+import { readdirSync, unlinkSync } from "fs";
 import { container } from "@radic/console";
-import { isAbsolute } from "path";
+import { isAbsolute, join } from "path";
+import * as globule from "globule";
 
 interface RConfig extends IConfigProperty {}
 
@@ -104,15 +105,33 @@ class PersistentFileConfig extends Config {
         return this;
     }
 
+    protected backup(data, encrypt: boolean = true): string {
+        let totalFiles  = globule.find(join(paths.dbBackups, '*')).length;
+        let prefix      = encrypt ? '.nocrypt.' : '.crypt.'
+        let filePath    = join(paths.dbBackups, totalFiles + prefix + moment().format('YYYY-MM-hh:mm:ss'));
+        const str       = JSON.stringify(this.data);
+        const encrypted = this.cryptr.encrypt(str);
+        if(encrypt){
+            writeFileSync(filePath + '.json', encrypted, { encoding: 'utf8' });
+        }
+        writeFileSync(filePath + '.json', JSON.stringify(this.data, undefined, 4), { encoding: 'utf8' });
 
-    backup(filePath?: string): string {
-        let filePath = filePath || join(paths.dbBackups, moment().format('YYYY-MM-hh:mm:ss'))
-        writeFileSync(filePath, this.cryptr(this.data))
-        return filePath
+        return filePath;
     }
 
-    restore(filePath): this {
-        this.data = readFileSync(isAbsolute(filePath) ? filePath : join(process.cwd, filePath));
+    backupWithEncryption(filePath?: string): string {
+        return this.backup(this.cryptr.encrypt(this.data), true)
+    }
+
+    backupWithoutEncryption(filePath?: string): string {
+        return this.backup(JSON.stringify(super.raw(''), '', 4), false)
+    }
+
+    restore(filePath: string): this {
+        filePath.includes('.crypt');
+        let content = readFileSync(isAbsolute(filePath) ? filePath : join(process.cwd(), filePath));
+        this.data   = JSON.parse(content);
+        ;
         this.save();
         this.load()
         return this;
@@ -121,7 +140,7 @@ class PersistentFileConfig extends Config {
     getLocalBackupFiles() {
         let dir = readdirSync(paths.dbBackups);
         if ( dir.length === 0 ) return [];
-        return dir.map(d => d.small());
+        return dir.map(d => d);
     }
 
     protected loadEnv(): this {
@@ -152,7 +171,7 @@ let _config = new PersistentFileConfig(defaultConfig);
 // export the wrapped config
 const config: RConfig = Config.makeProperty(_config);
 
-container.bind<RConfig>('r.config.core').toConstantValue(_config);
+container.bind<PersistentFileConfig>('r.config.core').toConstantValue(_config);
 container.bind<RConfig>('r.config').toConstantValue(config);
 
 export { RConfig, config, PersistentFileConfig }

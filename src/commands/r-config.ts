@@ -1,8 +1,18 @@
-import { command, CommandArguments, Config, Log, inject, lazyInject, option, OutputHelper, InputHelper } from "@radic/console";
-import { dotize, inspect } from "@radic/util";
+import { command, CommandArguments, CommandConfig, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { dotize } from "@radic/util";
 import { PersistentFileConfig, RConfig } from "../lib/core/config";
+import { readdirSync } from "fs";
 
-@command('config [path:string@dot notated string] [value:any@A JSON parseable value]')
+@command(`config 
+[path:string@dot notated string] 
+[value:any@A JSON parseable value]`, <CommandConfig> {
+    onMissingArgument: 'help',
+    example:`
+$ config -l                     # list
+$ config dgram.server.port      # view
+$ config dgram.server.port 80   # edit
+`
+})
 export class ConfigCmd {
     showHelp: () => void
 
@@ -11,6 +21,9 @@ export class ConfigCmd {
 
     @inject('r.config')
     config: RConfig
+
+    @lazyInject('cli.helpers.help')
+    help: OutputHelper;
 
     @lazyInject('cli.helpers.output')
     out: OutputHelper;
@@ -24,71 +37,73 @@ export class ConfigCmd {
     @option('l', 'list configuration settings')
     list: boolean
 
-    @option('r', 'show root config')
-    root: boolean;
-
-    @option('U', 'unset te given option')
-    unset: boolean
+    @option('d', 'unset te given option')
+    delete: boolean
 
     @option('f', 'force the operation')
     force: boolean
 
-    @option('b', 'create a backup before any alteration')
-    backup:boolean
+    @option('B', 'create a backup before any alteration')
+    backup: boolean
 
-    @option('r', 'restore a backup')
-    restore:string
+    @option('p', 'If backing up, backup as plain json readable file')
+    plain:boolean
+
+    @option('e', 'restore a backup')
+    restore: boolean
 
     @option('L', 'List all local backups')
-    listBackups:boolean
+    listBackups: boolean
 
-    handle(args: CommandArguments) {
+    handle(args: CommandArguments): any {
         args.path = args.path || ''
 
-        // show selected by dot notated value
-        if(this.list && args.path.length > 0){
-            return this.listPath(args.path)
-        }
-        // show all
-        if ( this.list ) {
-            return this.listPath();
-        }
-        // delete value or entire subsets
-        if ( this.unset && args.path.length > 0) {
-            if(this.backup) {
+        let list;
+        switch ( true ) {
+            case this.listBackups:
+                this.listLocalBackups();
+                break
+            case this.restore:
+                this.restoreBackup(args.path);
+                break
+            case this.backup:
                 this.createBackup();
-            }
-            this.unset(args.path);
-            this.log.verbose(`config value at [${arg.path}] has been removed`)
-            return
+                this.log.verbose(`config has created a backup`)
+                break
+            case this.delete:
+                this.createBackup();
+                this.unset(args.path);
+                this.log.verbose(`config value at [${args.path}] has been removed`)
+                break;
+            case this.root:
+                list = this.listPath(args.path, true);
+                break;
+            case this.list:
+                list = this.listPath(args.path);
+                break;
         }
+
+
 
         if ( args.path.length > 0 && args.value ) {
-            if(this.config.has(args.path)){
-                this.log.warn(`A value exists already undner ${args.path}. use -f to force it`)
-            }
-            if(false === this.config.has(args.path) || this.force === true) {
-                return this.config.set(args.path, args.value)
+            if(!this.set(args.path, args.value)){
+                this.log.warn(`A value alredy exist for path [${args.path}] You could use -f|--force to override`)
+            } else {
+                this.log.info(`Value ${args.value} for path [${args.path}] set`)
             }
         }
-
-        if(this.listBackups){
-            this.listLocalBackups();
-            return;
-        }
-
-        this.showHelp()
 
     }
 
-    protected createBackup(){
-        this.configCore.backup();
+    protected createBackup(path?: string) {
+        this.configCore.backupWithoutEncryption()
         return this;
     }
 
-    protected restoreBackup(filePath) {
+    protected restoreBackup(filePath?:string) {
         this.configCore.restore(filePath)
     }
+
 
     protected listLocalBackups() {
         this.configCore.getLocalBackupFiles().forEach(filePath => {
@@ -96,8 +111,8 @@ export class ConfigCmd {
         })
     }
 
-    protected listPath(path) {
-        let dotted = dotize(this.config.get(path))
+    protected listPath(path, rootConfig = false) {
+        let dotted = dotize(this[rootConfig ? 'configCore' : 'config'].get(path || ''),'')
         Object.keys(dotted).forEach(key => {
             this.out.line(`'{darkorange}${key}{/darkorange} : {green}${dotted[ key ]}{/green}`)
         })
@@ -105,17 +120,20 @@ export class ConfigCmd {
     }
 
     protected set(path, value): this {
-        if ( fale === this.config.has(path) || this.force ) {
-            this.config.set(path, value)
+        if ( false === this.config.has(path) || this.force ) {
+            this.config.set(path, JSON.parse(value))
         }
         return this
     }
 
-    protected unset(path): this {
-        if ( this.config.has(path) ) {
-            this.config.unset(path)
-        }
-        return this
+    protected unset(path:string): boolean {
+        path.split(/\s/g).forEach(path => {
+            if ( this.config.has(path) ) {
+                this.config.unset(path)
+                return true
+            }
+        })
+        return false
     }
 }
 export default ConfigCmd

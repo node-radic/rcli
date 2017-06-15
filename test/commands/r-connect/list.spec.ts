@@ -1,28 +1,55 @@
-import { Output } from "gulp-typescript/release/output";
-let consol = require('@radic/console')
-let lib    = require('../../src')
-import { RcliConnectListCmd ,startTestingBootstrap  } from "../../support"
-import { container } from "@radic/console";
-import { SshBashHelper } from "../../../src";
-let out:Output = container.get('cli.output')
-let in:Output = container.get('cli.input')
 
-describe('r connect', () => {
+import { expect } from "chai";
+// application container is shared by all unit tests
+import { Cli, container }from "@radic/console";
 
-    beforeEach(done => {
-        let ssh = container.get<SshBashHelper>('cli.output.ssh')
-        ssh.runCleaner()
-        ssh.runSeeder()
-        startTestingBootstrap({
-            helpers: ['output', 'input']
-        })
-    })
+describe("Ninja", () => {
 
-    describe('list', () => {
-        let list = container.resolve(RcliConnectListCmd);
-        it('should be an istance', () => {
-            expect(list).toBeDefined();
-        })
-    })
+    beforeEach(() => {
 
-})
+        // create a snapshot so each unit test can modify
+        // it without breaking other unit tests
+        container.snapshot();
+        container.get<Cli>('cli')
+            .helper('input')
+            .helper('output')
+
+    });
+
+    afterEach(() => {
+
+        // Restore to last snapshot so each unit test
+        // takes a clean copy of the application container
+        container.restore();
+
+    });
+
+    // each test is executed with a snapshot of the container
+
+    it("Ninja can fight", () => {
+
+        let katanaMock = {
+            hit: () => { return "hit with mock"; }
+        };
+
+        container.unbind("Katana");
+        container.bind<Something>("Katana").toConstantValue(katanaMock);
+        let ninja = container.get<Ninja>("Ninja");
+        expect(ninja.fight()).eql("hit with mock");
+
+    });
+
+    it("Ninja can sneak", () => {
+
+        let shurikenMock = {
+            throw: () => { return "hit with mock"; }
+        };
+
+        container.unbind("Shuriken");
+        container.bind<Something>("Shuriken").toConstantValue(shurikenMock);
+        let ninja = container.get<Ninja>("Shuriken");
+        expect(ninja.sneak()).eql("hit with mock");
+
+    });
+
+});

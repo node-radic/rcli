@@ -66,6 +66,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             return __awaiter(this, void 0, void 0, function () {
                 var name, connect, ok;
                 return __generator(this, function (_a) {
+                    if (this.interactive) {
+                        return [2, this.startInteractive()];
+                    }
                     name = 'connect.' + args.name;
                     if (!this.config.has(name)) {
                         this.log.error('No such connection named ' + args.name);
@@ -107,6 +110,50 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 });
             });
         };
+        RcliConnectEditCmd.prototype.startInteractive = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var name, user, host, port, method, password, localPath, hostPath, availableNames, chosenNames, availableFields, chosenFields, totals, l, n, name_1, data, f, field, name_2, requests;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            availableNames = Object.keys(this.config('connect'));
+                            return [4, this.ask.list('name', availableNames)];
+                        case 1:
+                            chosenNames = _a.sent();
+                            console.log('need to edit ', chosenNames);
+                            availableFields = ['user', 'host', 'port', 'method', 'localPath', 'hostPath'];
+                            return [4, this.ask.checkbox('Choose fields to edit', availableFields)];
+                        case 2:
+                            chosenFields = _a.sent();
+                            console.log('For those useres, edit the fields', chosenFields);
+                            totals = {};
+                            l = console.log;
+                            for (n in chosenNames) {
+                                l({ n: n });
+                                name_1 = chosenNames[n];
+                                totals[name_1] = {};
+                                l({ name: name_1 });
+                                data = this.config.get('connect.' + name_1);
+                                totals[name_1]['default'] = data;
+                                l({ data: data });
+                                for (f in chosenFields) {
+                                    l({ f: f });
+                                    field = chosenFields[f];
+                                    l({ field: field });
+                                    totals[name_1]['requests'] = [];
+                                    totals[name_1]['requests'].concat(field);
+                                }
+                            }
+                            for (name_2 in totals) {
+                                for (requests in totals[name_2]['requests']) {
+                                    console.log(requests);
+                                }
+                            }
+                            return [2, true];
+                    }
+                });
+            });
+        };
         return RcliConnectEditCmd;
     }());
     __decorate([
@@ -114,7 +161,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         __metadata("design:type", console_1.OutputHelper)
     ], RcliConnectEditCmd.prototype, "out", void 0);
     __decorate([
-        console_1.inject('cli.helpers.ssh.connect'),
+        console_1.inject('cli.helpers.input'),
+        __metadata("design:type", console_1.InputHelper)
+    ], RcliConnectEditCmd.prototype, "ask", void 0);
+    __decorate([
+        console_1.inject('cli.helpers.ssh.bash'),
         __metadata("design:type", _1.SshBashHelper)
     ], RcliConnectEditCmd.prototype, "ssh", void 0);
     __decorate([
@@ -153,8 +204,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         console_1.option('R', 'path on the remote server to mount (sshfs)'),
         __metadata("design:type", String)
     ], RcliConnectEditCmd.prototype, "hostPath", void 0);
+    __decorate([
+        console_1.option('i', 'Interactive mode'),
+        __metadata("design:type", Boolean)
+    ], RcliConnectEditCmd.prototype, "interactive", void 0);
     RcliConnectEditCmd = __decorate([
-        console_1.command("edit \n{name:string@the connection name}", 'edit a connections')
+        console_1.command("edit \n[name:string@the connection name]", 'edit a connections')
     ], RcliConnectEditCmd);
     exports.RcliConnectEditCmd = RcliConnectEditCmd;
     exports.default = RcliConnectEditCmd;

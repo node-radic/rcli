@@ -1,7 +1,6 @@
-import { command,CommandArguments, inject, Log, OutputHelper } from "@radic/console";
-import { RConfig, SSHConnection} from "../../";
-
-import * as _ from "lodash";
+import { command, CommandArguments, inject, Log, OutputHelper } from "@radic/console";
+import { RConfig, SSHConnection } from "../../";
+import * as Chalk from "chalk";
 
 
 @command('list', 'list all connections')
@@ -17,30 +16,26 @@ export class RcliConnectListCmd {
     config: RConfig;
 
 
-    handle(args:CommandArguments, ...argv: any[]) {
-
+    handle(args: CommandArguments, ...argv: any[]) {
         let connect = this.config.get<SSHConnection[]>('connect', {});
-//         Object.keys(connect).fo/*rEach(key => {return;
-//             let v   = connect[ key ];
-//             let row = [
-//                 v.name,
-//                 v.user,
-//                 v.host,
-//                 v.port,
-//                 v.method,
-//                 v.localPath,
-//                 v.hostPath
-//             ]
-//             rows.push(row);
-//         })
-// */
-        let rows = Object.keys(connect).map(key => {
-            return _.omit(connect[ key ], 'password');
-        });
-        this.out.columns( rows, {
-            columnSplitter  : '   ',
+        let keys = Object.keys(connect);
+        let table = keys.map(name => {
+            let con = connect[ name ]
+            if ( con.password ) delete con.password
+            con.name = name;
+            return con;
+        })
+
+        this.out.columns(table, {
+            columns         : [ 'name', 'user', 'host', 'port', 'method', 'localPath', 'hostPath' ],
+            columnSplitter  : ' | ',
             showHeaders     : true,
-            preserveNewLines: true
+            preserveNewLines: true,
+            paddingChr: ' ',
+            config    : {
+                port  : { dataTransform: (data) => parseInt(data) === 22 ? Chalk.yellow(data) : data },
+                method: { dataTransform: (data) => data.trim() === 'password' ? Chalk.yellow(data) : data },
+            }
         })
 
 

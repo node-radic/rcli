@@ -23,9 +23,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         function RcliConnectCmd() {
         }
         RcliConnectCmd.prototype.handle = function (args, argv) {
-            this.log.info('args', args);
-            this.log.info('argv', argv);
-            this.log.info('config', this._config);
+            if (this.editor) {
+            }
         };
         return RcliConnectCmd;
     }());
@@ -37,8 +36,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         console_1.inject('cli.log'),
         __metadata("design:type", Object)
     ], RcliConnectCmd.prototype, "log", void 0);
+    __decorate([
+        console_1.inject('r.paths'),
+        __metadata("design:type", Object)
+    ], RcliConnectCmd.prototype, "paths", void 0);
+    __decorate([
+        console_1.option('e', 'open the givein connectionin editor'),
+        __metadata("design:type", String)
+    ], RcliConnectCmd.prototype, "editor", void 0);
     RcliConnectCmd = __decorate([
-        console_1.command('connect {command}', 'SSH connection helper', ['add', 'bulk', 'list', 'edit', 'ssh', 'remove'], {
+        console_1.command('connect [command]', 'SSH connection helper', ['add', 'bulk', 'list', 'edit', 'ssh', 'remove'], {
             onMissingArgument: 'help',
             helpers: {
                 help: {

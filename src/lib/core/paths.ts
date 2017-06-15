@@ -3,7 +3,6 @@ import * as _ from "lodash";
 import { readJSONSync } from "fs-extra";
 import { chownSync, existsSync, mkdirSync, statSync } from "fs";
 import { container } from "@radic/console";
-import globule = require("globule");
 import { chmod, mkdir } from "shelljs";
 let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,

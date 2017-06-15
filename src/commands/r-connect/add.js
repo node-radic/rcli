@@ -48,12 +48,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "@radic/console"], factory);
+        define(["require", "exports", "@radic/console", "open-in-editor", "../../lib/core/paths"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var console_1 = require("@radic/console");
+    var editor = require("open-in-editor");
+    var paths_1 = require("../../lib/core/paths");
     var RcliConnectAddCmd = (function () {
         function RcliConnectAddCmd() {
             this.pass = false;
@@ -75,6 +77,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
+                            if (this.editor) {
+                                this.askInEditor();
+                                return [2];
+                            }
                             this.events.on('add:help', function () { return _this.help = true; });
                             if (this.interactive)
                                 return [2, this.interact()];
@@ -202,6 +208,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         RcliConnectAddCmd.prototype.handleInvalid = function () {
             return this.interactive || this.help;
         };
+        RcliConnectAddCmd.prototype.askInEditor = function () {
+            var editors = ['atom', 'code', 'sublime', 'webstorm', 'phpstorm', 'idea14ce', 'vim', 'visualstudio', 'emacs'];
+            editor.configure({
+                cmd: process.env.EDITOR
+            }, function (err) {
+                console.error('Something went wrong: ' + err);
+            });
+            editor.open(paths_1.paths.userDataConfig);
+        };
         return RcliConnectAddCmd;
     }());
     __decorate([
@@ -252,8 +267,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         console_1.option('i', 'interactive mode'),
         __metadata("design:type", Boolean)
     ], RcliConnectAddCmd.prototype, "interactive", void 0);
+    __decorate([
+        console_1.option('e', 'define in editor'),
+        __metadata("design:type", Boolean)
+    ], RcliConnectAddCmd.prototype, "editor", void 0);
     RcliConnectAddCmd = __decorate([
-        console_1.command("add \n{name:string@the connection name} \n{user:string@the user to login} \n{host:string@the host to connect}", 'Add a connection', {
+        console_1.command("add \n[name:string@the connection name] \n[user:string@the user to login] \n[host:string@the host to connect]", 'Add a connection', {
             onMissingArgument: 'help',
             example: "\nInteractive method works fastest. Answer some questions and done!\n$ r connect add -i \n\nMinimal:\n$ r connect add <name> <login> <host>\n$ r connect add srv1 admin 123.124.214.55\n$ r connect add srv1 admin 123.124.214.55:6666\n$ r connect add srv1 admin 123.124.214.55 -p 6666\n\nTo login by password, use -P. You will be prompted for it\n$ r connect add srv1 admin 123.124.214.55 -p 6666 -P\n\nFull\n$ r connect add srv1 admin 123.123.123.123 --port 5050 \\\n    --local-path /path/to/local/mountpoint --host-path /home/admin \\\n    --force --password\n"
         })

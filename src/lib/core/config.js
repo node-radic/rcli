@@ -14,7 +14,7 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "moment", "@radic/util", "cryptr", "fs-extra", "dotenv", "./keys", "./paths", "fs", "@radic/console", "path"], factory);
+        define(["require", "exports", "moment", "@radic/util", "cryptr", "fs-extra", "dotenv", "./keys", "./paths", "fs", "@radic/console", "path", "globule"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -29,6 +29,7 @@ var __extends = (this && this.__extends) || (function () {
     var fs_1 = require("fs");
     var console_1 = require("@radic/console");
     var path_1 = require("path");
+    var globule = require("globule");
     var defaultConfig = {
         debug: false,
         env: {},
@@ -115,13 +116,30 @@ var __extends = (this && this.__extends) || (function () {
             fs_1.unlinkSync(paths_1.paths.userDataConfig);
             return this;
         };
-        PersistentFileConfig.prototype.backup = function (filePath) {
-            var filePath = filePath || fs_1.join(paths_1.paths.dbBackups, moment().format('YYYY-MM-hh:mm:ss'));
-            fs_extra_1.writeFileSync(filePath, this.cryptr(this.data));
+        PersistentFileConfig.prototype.backup = function (data, encrypt) {
+            if (encrypt === void 0) { encrypt = true; }
+            var totalFiles = globule.find(path_1.join(paths_1.paths.dbBackups, '*')).length;
+            var prefix = encrypt ? '.nocrypt.' : '.crypt.';
+            var filePath = path_1.join(paths_1.paths.dbBackups, totalFiles + prefix + moment().format('YYYY-MM-hh:mm:ss'));
+            var str = JSON.stringify(this.data);
+            var encrypted = this.cryptr.encrypt(str);
+            if (encrypt) {
+                fs_extra_1.writeFileSync(filePath + '.json', encrypted, { encoding: 'utf8' });
+            }
+            fs_extra_1.writeFileSync(filePath + '.json', JSON.stringify(this.data, undefined, 4), { encoding: 'utf8' });
             return filePath;
         };
+        PersistentFileConfig.prototype.backupWithEncryption = function (filePath) {
+            return this.backup(this.cryptr.encrypt(this.data), true);
+        };
+        PersistentFileConfig.prototype.backupWithoutEncryption = function (filePath) {
+            return this.backup(JSON.stringify(_super.prototype.raw.call(this, ''), '', 4), false);
+        };
         PersistentFileConfig.prototype.restore = function (filePath) {
-            this.data = fs_extra_1.readFileSync(path_1.isAbsolute(filePath) ? filePath : fs_1.join(process.cwd, filePath));
+            filePath.includes('.crypt');
+            var content = fs_extra_1.readFileSync(path_1.isAbsolute(filePath) ? filePath : path_1.join(process.cwd(), filePath));
+            this.data = JSON.parse(content);
+            ;
             this.save();
             this.load();
             return this;
@@ -130,7 +148,7 @@ var __extends = (this && this.__extends) || (function () {
             var dir = fs_1.readdirSync(paths_1.paths.dbBackups);
             if (dir.length === 0)
                 return [];
-            return dir.map(function (d) { return d.small(); });
+            return dir.map(function (d) { return d; });
         };
         PersistentFileConfig.prototype.loadEnv = function () {
             var _this = this;

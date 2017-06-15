@@ -22,7 +22,7 @@ export class RcliConnectBulkCmd {
     @lazyInject('r.config')
     config: RConfig
 
-    @lazyInject('cli.helpers.ssh.connect')
+    @lazyInject('cli.helpers.ssh.bash')
     ssh: SshBashHelper
 
     @option('b', 'Create a simple in-db backup on another table')

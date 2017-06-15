@@ -1,5 +1,7 @@
 import { command, CommandArguments, CommandConfig, lazyInject, Log, Dispatcher, option, OutputHelper,InputHelper } from "@radic/console";
 import { RConfig } from "../../lib/core/config";
+import * as editor from 'open-in-editor';
+import { paths } from "../../lib/core/paths";
 
 export interface ConnectAddArguments extends CommandArguments {
     name: string,
@@ -8,9 +10,9 @@ export interface ConnectAddArguments extends CommandArguments {
     method: string
 }
 @command(`add 
-{name:string@the connection name} 
-{user:string@the user to login} 
-{host:string@the host to connect}`
+[name:string@the connection name] 
+[user:string@the user to login] 
+[host:string@the host to connect]`
     , 'Add a connection', <CommandConfig> {
         onMissingArgument: 'help',
         example: `
@@ -71,8 +73,16 @@ export class RcliConnectAddCmd {
     @option('i', 'interactive mode')
     interactive: boolean = false
 
+    @option('e', 'define in editor')
+    editor: boolean
+
     help:boolean = false;
     async handle(args: ConnectAddArguments, ...argv: any[]) {
+
+        if(this.editor){
+            this.askInEditor()
+            return
+        }
 
         this.events.on('add:help', () => this.help = true)
         if(this.interactive) return this.interact();
@@ -160,6 +170,18 @@ export class RcliConnectAddCmd {
 
     handleInvalid(){
         return this.interactive || this.help
+    }
+
+    askInEditor(){
+        let editors = ['atom', 'code', 'sublime', 'webstorm', 'phpstorm', 'idea14ce', 'vim', 'visualstudio', 'emacs'];
+        editor.configure({
+            cmd: process.env.EDITOR
+        }, function(err) {
+            console.error('Something went wrong: ' + err);
+
+        });
+        editor.open(paths.userDataConfig)
+
     }
 }
 export default RcliConnectAddCmd

@@ -26,36 +26,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         }
         ConfigCmd.prototype.handle = function (args) {
             args.path = args.path || '';
-            if (this.list && args.path.length > 0) {
-                return this.listPath(args.path);
-            }
-            if (this.list) {
-                return this.listPath();
-            }
-            if (this.unset && args.path.length > 0) {
-                if (this.backup) {
+            var list;
+            switch (true) {
+                case this.listBackups:
+                    this.listLocalBackups();
+                    break;
+                case this.restore:
+                    this.restoreBackup(args.path);
+                    break;
+                case this.backup:
                     this.createBackup();
-                }
-                this.unset(args.path);
-                this.log.verbose("config value at [" + arg.path + "] has been removed");
-                return;
+                    this.log.verbose("config has created a backup");
+                    break;
+                case this.delete:
+                    this.createBackup();
+                    this.unset(args.path);
+                    this.log.verbose("config value at [" + args.path + "] has been removed");
+                    break;
+                case this.root:
+                    list = this.listPath(args.path, true);
+                    break;
+                case this.list:
+                    list = this.listPath(args.path);
+                    break;
             }
             if (args.path.length > 0 && args.value) {
-                if (this.config.has(args.path)) {
-                    this.log.warn("A value exists already undner " + args.path + ". use -f to force it");
+                if (!this.set(args.path, args.value)) {
+                    this.log.warn("A value alredy exist for path [" + args.path + "] You could use -f|--force to override");
                 }
-                if (false === this.config.has(args.path) || this.force === true) {
-                    return this.config.set(args.path, args.value);
+                else {
+                    this.log.info("Value " + args.value + " for path [" + args.path + "] set");
                 }
             }
-            if (this.listBackups) {
-                this.listLocalBackups();
-                return;
-            }
-            this.showHelp();
         };
-        ConfigCmd.prototype.createBackup = function () {
-            this.configCore.backup();
+        ConfigCmd.prototype.createBackup = function (path) {
+            this.configCore.backupWithoutEncryption();
             return this;
         };
         ConfigCmd.prototype.restoreBackup = function (filePath) {
@@ -67,25 +72,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
                 _this.out.line(' - ' + filePath);
             });
         };
-        ConfigCmd.prototype.listPath = function (path) {
+        ConfigCmd.prototype.listPath = function (path, rootConfig) {
             var _this = this;
-            var dotted = util_1.dotize(this.config.get(path));
+            if (rootConfig === void 0) { rootConfig = false; }
+            var dotted = util_1.dotize(this[rootConfig ? 'configCore' : 'config'].get(path || ''), '');
             Object.keys(dotted).forEach(function (key) {
                 _this.out.line("'{darkorange}" + key + "{/darkorange} : {green}" + dotted[key] + "{/green}");
             });
             return this;
         };
         ConfigCmd.prototype.set = function (path, value) {
-            if (fale === this.config.has(path) || this.force) {
-                this.config.set(path, value);
+            if (false === this.config.has(path) || this.force) {
+                this.config.set(path, JSON.parse(value));
             }
             return this;
         };
         ConfigCmd.prototype.unset = function (path) {
-            if (this.config.has(path)) {
-                this.config.unset(path);
-            }
-            return this;
+            var _this = this;
+            path.split(/\s/g).forEach(function (path) {
+                if (_this.config.has(path)) {
+                    _this.config.unset(path);
+                    return true;
+                }
+            });
+            return false;
         };
         return ConfigCmd;
     }());
@@ -97,6 +107,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         console_1.inject('r.config'),
         __metadata("design:type", Function)
     ], ConfigCmd.prototype, "config", void 0);
+    __decorate([
+        console_1.lazyInject('cli.helpers.help'),
+        __metadata("design:type", console_1.OutputHelper)
+    ], ConfigCmd.prototype, "help", void 0);
     __decorate([
         console_1.lazyInject('cli.helpers.output'),
         __metadata("design:type", console_1.OutputHelper)
@@ -114,31 +128,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "list", void 0);
     __decorate([
-        console_1.option('r', 'show root config'),
+        console_1.option('d', 'unset te given option'),
         __metadata("design:type", Boolean)
-    ], ConfigCmd.prototype, "root", void 0);
-    __decorate([
-        console_1.option('U', 'unset te given option'),
-        __metadata("design:type", Boolean)
-    ], ConfigCmd.prototype, "unset", void 0);
+    ], ConfigCmd.prototype, "delete", void 0);
     __decorate([
         console_1.option('f', 'force the operation'),
         __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "force", void 0);
     __decorate([
-        console_1.option('b', 'create a backup before any alteration'),
+        console_1.option('B', 'create a backup before any alteration'),
         __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "backup", void 0);
     __decorate([
-        console_1.option('r', 'restore a backup'),
-        __metadata("design:type", String)
+        console_1.option('p', 'If backing up, backup as plain json readable file'),
+        __metadata("design:type", Boolean)
+    ], ConfigCmd.prototype, "plain", void 0);
+    __decorate([
+        console_1.option('e', 'restore a backup'),
+        __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "restore", void 0);
     __decorate([
         console_1.option('L', 'List all local backups'),
         __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "listBackups", void 0);
     ConfigCmd = __decorate([
-        console_1.command('config [path:string@dot notated string] [value:any@A JSON parseable value]')
+        console_1.command("config \n[path:string@dot notated string] \n[value:any@A JSON parseable value]", {
+            onMissingArgument: 'help',
+            example: "\n$ config -l                     # list\n$ config dgram.server.port      # view\n$ config dgram.server.port 80   # edit\n"
+        })
     ], ConfigCmd);
     exports.ConfigCmd = ConfigCmd;
     exports.default = ConfigCmd;

@@ -1,16 +1,20 @@
-import { command, CommandArguments, inject, lazyInject, Log, option, OutputHelper } from "@radic/console";
-import { RConfig, SSHConnection , SshBashHelper } from "../../";
+import { command, CommandArguments, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { RConfig, SshBashHelper, SSHConnection } from "../../";
+import { Answers } from "inquirer";
 export interface ConnectEditArguments extends CommandArguments {
     name?: string
 }
 @command(`edit 
-{name:string@the connection name}`, 'edit a connections')
+[name:string@the connection name]`, 'edit a connections')
 export class RcliConnectEditCmd {
 
     @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @inject('cli.helpers.ssh.connect')
+    @inject('cli.helpers.input')
+    ask: InputHelper;
+
+    @inject('cli.helpers.ssh.bash')
     ssh: SshBashHelper
 
     @lazyInject('cli.log')
@@ -40,8 +44,17 @@ export class RcliConnectEditCmd {
     @option('R', 'path on the remote server to mount (sshfs)')
     hostPath: string;
 
+    @option('i', 'Interactive mode')
+    interactive: boolean;
+
 
     async handle(args: ConnectEditArguments, ...argv: any[]) {
+
+        if ( this.interactive ) {
+            return this.startInteractive();
+        }
+
+
         let name = 'connect.' + args.name;
         if ( ! this.config.has(name) ) {
             this.log.error('No such connection named ' + args.name)
@@ -81,5 +94,55 @@ export class RcliConnectEditCmd {
         }
 
     }
+
+
+    async startInteractive() {
+        let name: string, user: string, host: string, port: number, method: string, password: string, localPath: string, hostPath: string
+
+
+        let availableNames = Object.keys(this.config('connect'));
+        let chosenNames    = await this.ask.list('name', availableNames);
+        console.log('need to edit ', chosenNames);
+
+        let availableFields       = [ 'user', 'host', 'port', 'method', 'localPath', 'hostPath' ]
+        let chosenFields: Answers = await this.ask.checkbox('Choose fields to edit', availableFields)
+        console.log('For those useres, edit the fields', chosenFields, chosenFields['toppings'])
+
+
+        async.forEachOf(chosenNames, (name) => {
+            async.forEachOf(chosenFields, (field) => {
+            field = this.ask.ask(`Name ${name} wants to change ${field}`);
+            console.log(field);
+        })
+
+        let totals = {}
+        let l = console.log
+        for ( let n in chosenNames ) {
+            l({ n })
+            let name = chosenNames[ n ];
+            totals[name] = {}
+            l({ name })
+            let data = this.config.get('connect.' + name)
+            totals[name]['default'] = data;
+            l({ data })
+            for ( let f in chosenFields ) {
+                l({ f })
+                let field = chosenFields[ f ]
+                l({ field })
+                totals[name]['requests'] = [];
+                totals[name]['requests'].concat(field)
+            }
+        }
+
+        l({totals});
+        for(let name in totals){
+            for (let requests in totals[name]['requests']){
+                l(requests)
+            }
+        }
+
+        return true;
+    }
+
 }
 export default RcliConnectEditCmd
