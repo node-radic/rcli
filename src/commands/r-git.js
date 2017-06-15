@@ -51,7 +51,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         __metadata("design:type", Boolean)
     ], GitCmd.prototype, "delete", void 0);
     GitCmd = __decorate([
-        console_1.command('git <command>')
+        console_1.command('git')
     ], GitCmd);
     exports.GitCmd = GitCmd;
     exports.default = GitCmd;

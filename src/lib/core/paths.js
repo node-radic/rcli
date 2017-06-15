@@ -15,7 +15,7 @@
     var fs_1 = require("fs");
     var console_1 = require("@radic/console");
     var shelljs_1 = require("shelljs");
-    var root = path_1.join(__dirname, '..', '..'), home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE, cwd = process.cwd();
+    var root = path_1.join(__dirname, '..', '..', '..'), home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE, cwd = process.cwd();
     function setPermissions(paths) {
         [paths.userData, paths.dbBackups].filter(function (dir) { return !fs_1.existsSync(dir); }).forEach(function (dir) {
             shelljs_1.mkdir('-p', dir);

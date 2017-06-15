@@ -50,7 +50,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     ], RcliCmd.prototype, "config", void 0);
     RcliCmd = __decorate([
         console_1.command('r {command:string@any of the listed commands}', {
-            subCommands: ['connect', 'git', 'config'],
+            subCommands: ['connect', 'git', 'config', 'info'],
             alwaysRun: true,
             onMissingArgument: 'help'
         })

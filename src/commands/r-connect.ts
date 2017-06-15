@@ -2,7 +2,7 @@ import { command, CommandArguments, CommandConfig, inject, Log, option, OptionCo
 import { RConfig } from "../lib/core/config";
 import { Paths } from "../lib/core/paths";
 
-@command('connect [command]', 'SSH connection helper', [ 'add', 'bulk', 'list', 'edit', 'ssh', 'remove' ], {
+@command('connect {command}', 'SSH connection helper', [ 'add', 'bulk', 'list', 'edit', 'ssh', 'remove' ], {
     onMissingArgument: 'help',
     helpers          : {
         help: {

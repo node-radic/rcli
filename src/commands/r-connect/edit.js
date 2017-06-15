@@ -64,95 +64,86 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 argv[_i - 1] = arguments[_i];
             }
             return __awaiter(this, void 0, void 0, function () {
-                var name, connect, ok;
+                var _this = this;
+                var name, ok;
                 return __generator(this, function (_a) {
-                    if (this.interactive) {
-                        return [2, this.startInteractive()];
+                    switch (_a.label) {
+                        case 0:
+                            if (this.interactive) {
+                                return [2, this.startInteractive()];
+                            }
+                            name = 'connect.' + args.name;
+                            if (!!this.config.has(name)) return [3, 2];
+                            this.log.error('First argument : No such connection named ' + args.name);
+                            return [4, this.ask.confirm('Go interactive?')];
+                        case 1:
+                            if (_a.sent()) {
+                                this.interactive = true;
+                                return [2, this.startInteractive()];
+                            }
+                            return [2];
+                        case 2:
+                            this.connect = this.config.get(name);
+                            ['host', 'port', 'user', 'localPath', 'mountPath'].forEach(function (name) {
+                                if (_this[name]) {
+                                    _this.set(name, _this[name]);
+                                }
+                            });
+                            this.out.dump(this.connect);
+                            ok = this.ask.confirm('Verify the settings before save');
+                            if (ok) {
+                                this.config.set(name, this.connect);
+                                this.log.info('Settings saved');
+                            }
+                            else {
+                                this.log.warn('Canceled. Settings where not saved');
+                            }
+                            return [2];
                     }
-                    name = 'connect.' + args.name;
-                    if (!this.config.has(name)) {
-                        this.log.error('No such connection named ' + args.name);
-                        return [2];
-                    }
-                    connect = this.config.get(name);
-                    if (this.host) {
-                        connect.host = this.host;
-                    }
-                    if (this.port) {
-                        connect.port = parseInt(this.port);
-                    }
-                    if (this.user) {
-                        connect.user = this.user;
-                    }
-                    if (this.method) {
-                        connect.method = 'key';
-                    }
-                    if (this.pass) {
-                        connect.method = 'password';
-                        connect.password = this.pass;
-                    }
-                    if (this.localPath) {
-                        connect.localPath = this.localPath;
-                    }
-                    if (this.hostPath) {
-                        connect.hostPath = this.hostPath;
-                    }
-                    this.out.dump(connect);
-                    ok = this.ssh.config('Verify the settings before save');
-                    if (ok) {
-                        this.config.set(name, connect);
-                        this.log.info('Settings saved');
-                    }
-                    else {
-                        this.log.warn('Canceled. Settings where not saved');
-                    }
-                    return [2];
                 });
             });
         };
         RcliConnectEditCmd.prototype.startInteractive = function () {
             return __awaiter(this, void 0, void 0, function () {
-                var name, user, host, port, method, password, localPath, hostPath, availableNames, chosenNames, availableFields, chosenFields, totals, l, n, name_1, data, f, field, name_2, requests;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var names, name, availableFields, chosenFields, current, answers, _i, chosenFields_1, field, _a, _b;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0:
-                            availableNames = Object.keys(this.config('connect'));
-                            return [4, this.ask.list('name', availableNames)];
+                            names = Object.keys(this.config('connect'));
+                            return [4, this.ask.list('name', names)];
                         case 1:
-                            chosenNames = _a.sent();
-                            console.log('need to edit ', chosenNames);
+                            name = _c.sent();
+                            console.log('need to edit ', name);
                             availableFields = ['user', 'host', 'port', 'method', 'localPath', 'hostPath'];
                             return [4, this.ask.checkbox('Choose fields to edit', availableFields)];
                         case 2:
-                            chosenFields = _a.sent();
-                            console.log('For those useres, edit the fields', chosenFields);
-                            totals = {};
-                            l = console.log;
-                            for (n in chosenNames) {
-                                l({ n: n });
-                                name_1 = chosenNames[n];
-                                totals[name_1] = {};
-                                l({ name: name_1 });
-                                data = this.config.get('connect.' + name_1);
-                                totals[name_1]['default'] = data;
-                                l({ data: data });
-                                for (f in chosenFields) {
-                                    l({ f: f });
-                                    field = chosenFields[f];
-                                    l({ field: field });
-                                    totals[name_1]['requests'] = [];
-                                    totals[name_1]['requests'].concat(field);
-                                }
-                            }
-                            for (name_2 in totals) {
-                                for (requests in totals[name_2]['requests']) {
-                                    console.log(requests);
-                                }
-                            }
-                            return [2, true];
+                            chosenFields = _c.sent();
+                            current = this.config('connect.' + name);
+                            answers = {};
+                            _i = 0, chosenFields_1 = chosenFields;
+                            _c.label = 3;
+                        case 3:
+                            if (!(_i < chosenFields_1.length)) return [3, 6];
+                            field = chosenFields_1[_i];
+                            _a = answers;
+                            _b = field;
+                            return [4, this.ask.ask(field)];
+                        case 4:
+                            _a[_b] = _c.sent();
+                            _c.label = 5;
+                        case 5:
+                            _i++;
+                            return [3, 3];
+                        case 6: return [2];
                     }
                 });
             });
+        };
+        RcliConnectEditCmd.prototype.set = function (prop, val) {
+            if (prop === 'port')
+                val = parseInt(val);
+            this.connect[prop] = val;
+            return this;
         };
         return RcliConnectEditCmd;
     }());

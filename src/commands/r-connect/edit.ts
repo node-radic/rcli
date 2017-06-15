@@ -1,6 +1,7 @@
 import { command, CommandArguments, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
 import { RConfig, SshBashHelper, SSHConnection } from "../../";
 import { Answers } from "inquirer";
+
 export interface ConnectEditArguments extends CommandArguments {
     name?: string
 }
@@ -47,6 +48,7 @@ export class RcliConnectEditCmd {
     @option('i', 'Interactive mode')
     interactive: boolean;
 
+    connect:SSHConnection
 
     async handle(args: ConnectEditArguments, ...argv: any[]) {
 
@@ -54,40 +56,28 @@ export class RcliConnectEditCmd {
             return this.startInteractive();
         }
 
-
         let name = 'connect.' + args.name;
         if ( ! this.config.has(name) ) {
-            this.log.error('No such connection named ' + args.name)
+            this.log.error('First argument : No such connection named ' + args.name)
+            if(await this.ask.confirm('Go interactive?')){
+                this.interactive = true;
+                return this.startInteractive()
+            }
             return;
         }
-        let connect = this.config.get<SSHConnection>(name);
-        if ( this.host ) {
-            connect.host = this.host;
-        }
-        if ( this.port ) {
-            connect.port = parseInt(this.port);
-        }
-        if ( this.user ) {
-            connect.user = this.user;
-        }
-        if ( this.method ) {
-            connect.method = 'key'
-        }
-        if ( this.pass ) {
-            connect.method   = 'password';
-            connect.password = this.pass;
-        }
-        if ( this.localPath ) {
-            connect.localPath = this.localPath
-        }
-        if ( this.hostPath ) {
-            connect.hostPath = this.hostPath
-        }
 
-        this.out.dump(connect);
-        let ok = this.ssh.config('Verify the settings before save')
+        this.connect = this.config.get<SSHConnection>(name);
+
+        ['host', 'port', 'user', 'localPath', 'mountPath'].forEach(name => {
+            if(this[name]){
+                this.set(name, this[name])
+            }
+        })
+
+        this.out.dump(this.connect);
+        let ok = this.ask.confirm('Verify the settings before save')
         if ( ok ) {
-            this.config.set(name, connect);
+            this.config.set(name, this.connect);
             this.log.info('Settings saved')
         } else {
             this.log.warn('Canceled. Settings where not saved')
@@ -96,53 +86,32 @@ export class RcliConnectEditCmd {
     }
 
 
+    /**
+     * @link https://stackoverflow.com/questions/44564544/async-wait-loop-with-readline-inquirer-questions
+     * @returns {Promise<void>}
+     */
     async startInteractive() {
-        let name: string, user: string, host: string, port: number, method: string, password: string, localPath: string, hostPath: string
 
 
-        let availableNames = Object.keys(this.config('connect'));
-        let chosenNames    = await this.ask.list('name', availableNames);
-        console.log('need to edit ', chosenNames);
-
+        let names = Object.keys(this.config('connect'));
+        let name  = await this.ask.list('name', names);
+        console.log('need to edit ', name);
         let availableFields       = [ 'user', 'host', 'port', 'method', 'localPath', 'hostPath' ]
         let chosenFields: Answers = await this.ask.checkbox('Choose fields to edit', availableFields)
-        console.log('For those useres, edit the fields', chosenFields, chosenFields['toppings'])
+        let current               = this.config('connect.' + name);
 
-
-        async.forEachOf(chosenNames, (name) => {
-            async.forEachOf(chosenFields, (field) => {
-            field = this.ask.ask(`Name ${name} wants to change ${field}`);
-            console.log(field);
-        })
-
-        let totals = {}
-        let l = console.log
-        for ( let n in chosenNames ) {
-            l({ n })
-            let name = chosenNames[ n ];
-            totals[name] = {}
-            l({ name })
-            let data = this.config.get('connect.' + name)
-            totals[name]['default'] = data;
-            l({ data })
-            for ( let f in chosenFields ) {
-                l({ f })
-                let field = chosenFields[ f ]
-                l({ field })
-                totals[name]['requests'] = [];
-                totals[name]['requests'].concat(field)
-            }
+        let answers = {}
+        for (let field of chosenFields) {
+            answers[ field ] = await this.ask.ask(field)
         }
-
-        l({totals});
-        for(let name in totals){
-            for (let requests in totals[name]['requests']){
-                l(requests)
-            }
-        }
-
-        return true;
     }
 
+
+    protected set(prop, val){
+        if(prop === 'port') val = parseInt(val);
+
+        this.connect[prop] = val;
+        return this;
+    }
 }
 export default RcliConnectEditCmd

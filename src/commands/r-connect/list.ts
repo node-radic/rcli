@@ -1,4 +1,4 @@
-import { command, CommandArguments, inject, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, inject, Log, option, OutputHelper } from "@radic/console";
 import { RConfig, SSHConnection } from "../../";
 import * as Chalk from "chalk";
 
@@ -15,8 +15,13 @@ export class RcliConnectListCmd {
     @inject('r.config')
     config: RConfig;
 
+    @option('e', 'exclude columns')
+    exclude:string[] = []
 
     handle(args: CommandArguments, ...argv: any[]) {
+
+
+
         let connect = this.config.get<SSHConnection[]>('connect', {});
         let keys = Object.keys(connect);
         let table = keys.map(name => {

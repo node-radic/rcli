@@ -4,7 +4,7 @@ import { readJSONSync } from "fs-extra";
 import { chownSync, existsSync, mkdirSync, statSync } from "fs";
 import { container } from "@radic/console";
 import { chmod, mkdir } from "shelljs";
-let root = j(__dirname, '..', '..'),
+let root = j(__dirname, '..', '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()
 

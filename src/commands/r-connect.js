@@ -45,7 +45,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         __metadata("design:type", String)
     ], RcliConnectCmd.prototype, "editor", void 0);
     RcliConnectCmd = __decorate([
-        console_1.command('connect [command]', 'SSH connection helper', ['add', 'bulk', 'list', 'edit', 'ssh', 'remove'], {
+        console_1.command('connect {command}', 'SSH connection helper', ['add', 'bulk', 'list', 'edit', 'ssh', 'remove'], {
             onMissingArgument: 'help',
             helpers: {
                 help: {

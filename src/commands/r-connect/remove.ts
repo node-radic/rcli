@@ -1,13 +1,16 @@
-import { command, CommandArguments, InputHelper, lazyInject, OutputHelper } from "@radic/console";
+import { command, CommandArguments, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
 import { RConfig } from "../../lib/core/config";
 import { SSHConnection } from "../../interfaces";
 import * as inquirer from "inquirer";
 import { Answers, ChoiceType } from "inquirer";
-import ChoiceOption = inquirer.objects.ChoiceOption;
+import { SshBashHelper } from "../../helpers/helper.ssh.bash";
 
 
-@command('remove', 'Remove one, multiple or all connections')
+@command('remove [name:string@the connection to remote]', 'Remove one, multiple or all connections')
 export class RcliConnectRemoveCmd {
+
+    @lazyInject('cli.log')
+    log:Log
 
     @lazyInject('cli.helpers.output')
     out: OutputHelper;
@@ -16,27 +19,22 @@ export class RcliConnectRemoveCmd {
     ask: InputHelper;
 
     @lazyInject('r.config')
-    public config: RConfig;
+    config: RConfig;
 
-
-    async askChecklist(message: string, choices: ChoiceType[]): Promise<Answers> {
-        return <Promise<Answers>> new Promise((resolve, reject) => {
-            inquirer.prompt({ name: 'ask', choices, type: 'checkbox', message })
-                .then(answers => resolve(answers))
-        });
-    }
+    @lazyInject('cli.helpers.ssh.bash')
+    ssh:SshBashHelper;
 
 
     public async handle(args: CommandArguments, ...argv: any[]) {
-        console.dir('lets trly it');
 
-        let res:any      = await this.askChecklist('Select items to remove', this.getChoices());
-        let removals = res.ask.map(name => '\n - ' + name)
-        let confirm  = await this.ask.confirm('Absolutely sure to remove connctions:' + removals);
+        let choices:string[]      = await this.ask.checkbox('Select items to remove', this.getChoices());
+        let confirm  = await this.ask.confirm('Absolutely sure to remove connctions:');
         if ( confirm ) {
-
+            choices.forEach(name => this.ssh.trash(name));
+            this.log.data(choices.length + ' SSH Connections removed', choices)
         }
-        console.dir('good asnwer' + res);
+
+
     }
 
     getChoices(): ChoiceType[] {
@@ -45,7 +43,7 @@ export class RcliConnectRemoveCmd {
         let choices = [ new inquirer.Separator('--------') ]
         keys.forEach((key) => {
             const conn: SSHConnection = this.config.get<SSHConnection>('connect.' + key)
-            let label: string         = [ conn.name, ' :: ', conn.user, '@', conn.host, ':', conn.port, ':', conn.hostPath, ' -> ', conn.localPath, ' using ', conn.method ].join('');
+            let label: string         = [ conn.name ||  key, ' :: ', conn.user, '@', conn.host, ':', conn.port, ':', conn.hostPath, ' -> ', conn.localPath, ' using ', conn.method ].join('');
             choices.push(<any> {
                 name : label,
                 value: key

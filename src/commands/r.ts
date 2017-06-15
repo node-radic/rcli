@@ -2,7 +2,7 @@ import { Cli, command, CommandConfig, inject, lazyInject, Log, OutputHelper } fr
 import { RConfig } from "../";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
-    subCommands: [ 'connect', 'git', 'config' ],
+    subCommands: [ 'connect', 'git', 'config', 'info' ],
     alwaysRun  : true,
     onMissingArgument: 'help'
 })
