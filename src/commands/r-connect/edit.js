@@ -113,7 +113,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             return [4, this.ask.list('name', names)];
                         case 1:
                             name = _c.sent();
-                            console.log('need to edit ', name);
+                            console.log('need to edit ' + name);
                             availableFields = ['user', 'host', 'port', 'method', 'localPath', 'hostPath'];
                             return [4, this.ask.checkbox('Choose fields to edit', availableFields)];
                         case 2:

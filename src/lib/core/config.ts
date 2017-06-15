@@ -96,6 +96,7 @@ class PersistentFileConfig extends Config {
         this.merge(parsed);
         this.loadEnv();
         this.saveEnabled = true;
+        this.save()
         return this;
     }
 
@@ -111,7 +112,7 @@ class PersistentFileConfig extends Config {
         let filePath    = join(paths.dbBackups, totalFiles + prefix + moment().format('YYYY-MM-hh:mm:ss'));
         const str       = JSON.stringify(this.data);
         const encrypted = this.cryptr.encrypt(str);
-        if(encrypt){
+        if ( encrypt ) {
             writeFileSync(filePath + '.json', encrypted, { encoding: 'utf8' });
         }
         writeFileSync(filePath + '.json', JSON.stringify(this.data, undefined, 4), { encoding: 'utf8' });
@@ -131,7 +132,7 @@ class PersistentFileConfig extends Config {
         filePath.includes('.crypt');
         let content = readFileSync(isAbsolute(filePath) ? filePath : join(process.cwd(), filePath));
         this.data   = JSON.parse(content);
-        ;
+
         this.save();
         this.load()
         return this;
@@ -151,23 +152,18 @@ class PersistentFileConfig extends Config {
                 key       = key.replace('_', '.');
                 // _config.set('env.'+ key, value)
                 // only set if its actually a config key
-                if ( this.has(key) )
-                    this.set(key, value)
+                // if ( this.has(key) )
+                this.set(key, value)
             })
         }
         return this;
     }
-
 }
 
-// The actual config
-// let _config : CommandoPersistentConfig = <any> kernel.build(CommandoPersistentConfig, (context: any) => {
-//     const keys = context.kernel.get(COMMANDO.KEYS);
-//     return new ;
-// });
+
 
 let _config = new PersistentFileConfig(defaultConfig);
-
+_config.load();
 // export the wrapped config
 const config: RConfig = Config.makeProperty(_config);
 

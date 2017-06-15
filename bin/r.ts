@@ -1,6 +1,18 @@
 #!/usr/bin/env node
 import "../src/index";
-import { cli, CliConfig } from "@radic/console";
+import { cli, CliConfig, container, LogFactory } from "@radic/console";
+import { RConfig } from "../src";
+import * as winston from "winston";
+import * as Raven from 'raven'
+
+const rconfig = container.get<RConfig>('r.config')
+if ( rconfig.has('raven.dsn') ) {
+    Raven.config(rconfig('raven.dsn')).install()
+    winston.transports['Sentry'] = require('winston-sentry');
+    winston.add(winston.transports['Sentry'], {
+        dsn: rconfig('raven.dsn')
+    })
+}
 
 cli.config(<CliConfig> {
     commands: {
@@ -14,16 +26,19 @@ cli
     .helper('ssh.bash')
     .helper('help', {
         addShowHelpFunction: true,
-        showOnError: true,
-        app    : {
+        showOnError        : true,
+        app                : {
             title: 'Radic CLI'
         },
-        option : { enabled: true, } //key: 'h', name: 'help' }
+        option             : { enabled: true, } //key: 'h', name: 'help' }
     })
     .helper('ssh.bash')
     .helper('verbose', {
         option: { key: 'v', name: 'verbose' }
     })
-    .start(__dirname + '/../src/commands/r')
+
+// cli.log.add()
+
+cli.start(__dirname + '/../src/commands/r')
 
 

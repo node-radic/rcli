@@ -144,6 +144,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "plain", void 0);
     __decorate([
+        console_1.option('r', 'If backing up, backup as plain json readable file'),
+        __metadata("design:type", Boolean)
+    ], ConfigCmd.prototype, "root", void 0);
+    __decorate([
         console_1.option('e', 'restore a backup'),
         __metadata("design:type", Boolean)
     ], ConfigCmd.prototype, "restore", void 0);

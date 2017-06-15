@@ -108,6 +108,7 @@ var __extends = (this && this.__extends) || (function () {
             this.merge(parsed);
             this.loadEnv();
             this.saveEnabled = true;
+            this.save();
             return this;
         };
         PersistentFileConfig.prototype.reset = function () {
@@ -139,7 +140,6 @@ var __extends = (this && this.__extends) || (function () {
             filePath.includes('.crypt');
             var content = fs_extra_1.readFileSync(path_1.isAbsolute(filePath) ? filePath : path_1.join(process.cwd(), filePath));
             this.data = JSON.parse(content);
-            ;
             this.save();
             this.load();
             return this;
@@ -157,8 +157,7 @@ var __extends = (this && this.__extends) || (function () {
                 Object.keys(denv).forEach(function (key) {
                     var value = parseEnvVal(denv[key]);
                     key = key.replace('_', '.');
-                    if (_this.has(key))
-                        _this.set(key, value);
+                    _this.set(key, value);
                 });
             }
             return this;
@@ -167,6 +166,7 @@ var __extends = (this && this.__extends) || (function () {
     }(util_1.Config));
     exports.PersistentFileConfig = PersistentFileConfig;
     var _config = new PersistentFileConfig(defaultConfig);
+    _config.load();
     var config = util_1.Config.makeProperty(_config);
     exports.config = config;
     console_1.container.bind('r.config.core').toConstantValue(_config);

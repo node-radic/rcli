@@ -95,9 +95,9 @@ export class RcliConnectEditCmd {
 
         let names = Object.keys(this.config('connect'));
         let name  = await this.ask.list('name', names);
-        console.log('need to edit ', name);
+        console.log('need to edit ' + name);
         let availableFields       = [ 'user', 'host', 'port', 'method', 'localPath', 'hostPath' ]
-        let chosenFields: Answers = await this.ask.checkbox('Choose fields to edit', availableFields)
+        let chosenFields: any[] = await this.ask.checkbox('Choose fields to edit', availableFields)
         let current               = this.config('connect.' + name);
 
         let answers = {}

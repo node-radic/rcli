@@ -44,7 +44,10 @@
     "faker": "^4.1.0",
     "moment": "^2.18.1",
     "open-in-editor": "^2.2.0",
-    "pump": "^1.0.2"
+    "pump": "^1.0.2",
+    "raven": "^2.0.2",
+    "raven-winston": "0.0.3",
+    "winston-sentry": "^0.2.1"
   },
   "devDependencies": {
     "@types/archy": "^0.0.30",

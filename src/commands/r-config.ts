@@ -49,6 +49,9 @@ export class ConfigCmd {
     @option('p', 'If backing up, backup as plain json readable file')
     plain:boolean
 
+    @option('r', 'If backing up, backup as plain json readable file')
+    root:boolean
+
     @option('e', 'restore a backup')
     restore: boolean
 
