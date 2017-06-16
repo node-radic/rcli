@@ -1,6 +1,5 @@
 import { command, CommandArguments, CommandConfig, inject, Log, option, OptionConfig, OutputHelper } from "@radic/console";
-import { RConfig } from "../lib/core/config";
-import { Paths } from "../lib/core/paths";
+import { Paths, RConfig } from "..";
 
 @command('connect {command}', 'SSH connection helper', [ 'add', 'bulk', 'list', 'edit', 'ssh', 'remove' ], {
     onMissingArgument: 'help',

@@ -33,10 +33,23 @@ interface YargsParserDetailed {
 }
 
 interface YargsParser {
-    (args?: string|string[], opts?: YargsParserOptions): YargsParserArgv
-    detailed(args?: string|string[], opts?: YargsParserOptions): YargsParserDetailed
+    (args?: string | string[], opts?: YargsParserOptions): YargsParserArgv
+    detailed(args?: string | string[], opts?: YargsParserOptions): YargsParserDetailed
 }
+declare module "Validator" {
+    declare class ValidatorResults {
+        fails(): boolean
 
+        passes(): boolean
+
+        getErrors(): string[]
+    }
+    declare class Validator {
+        static make(data: Dictionary<any>, rules: Dictionary<any>, messages?: Dictionary<string>): ValidatorResults
+    }
+
+    export = Validator
+}
 declare module "yargs-parser" {
     var yp: YargsParser;
     export = yp;

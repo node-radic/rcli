@@ -13,14 +13,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "@radic/console", "@radic/util", "../lib/core/config"], factory);
+        define(["require", "exports", "@radic/console", "@radic/util", "../"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var console_1 = require("@radic/console");
     var util_1 = require("@radic/util");
-    var config_1 = require("../lib/core/config");
+    var _1 = require("../");
     var ConfigCmd = (function () {
         function ConfigCmd() {
         }
@@ -101,7 +101,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     }());
     __decorate([
         console_1.inject('r.config.core'),
-        __metadata("design:type", config_1.PersistentFileConfig)
+        __metadata("design:type", _1.PersistentFileConfig)
     ], ConfigCmd.prototype, "configCore", void 0);
     __decorate([
         console_1.inject('r.config'),

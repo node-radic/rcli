@@ -1,5 +1,5 @@
 import { OutputHelper, command, option, Config, inject, lazyInject, CommandArguments, InputHelper } from "@radic/console";
-import { PKG } from "../lib/core/static";
+import { PKG } from "../";
 
 @command('info', 'General information')
 export class InfoCmd {

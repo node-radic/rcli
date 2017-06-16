@@ -14,75 +14,20 @@ var __extends = (this && this.__extends) || (function () {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "axios", "lodash", "@radic/util"], factory);
+        define(["require", "exports", "axios", "lodash", "../auth/methods"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var axios_1 = require("axios");
     var _ = require("lodash");
-    var util_1 = require("@radic/util");
-    var AuthMethod = (function (_super) {
-        __extends(AuthMethod, _super);
-        function AuthMethod() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        AuthMethod.getKeyName = function (method) {
-            return AuthMethod.getName(method, true);
-        };
-        AuthMethod.getSecretName = function (method) {
-            return AuthMethod.getName(method, false);
-        };
-        AuthMethod.prototype.equals = function (method) {
-            if (typeof method === 'string') {
-                return this.value === method;
-            }
-            if (method instanceof AuthMethod) {
-                return this.value === method.value;
-            }
-            return false;
-        };
-        AuthMethod.getName = function (method, key) {
-            if (key === void 0) { key = true; }
-            switch (true) {
-                case method == AuthMethod.basic:
-                    return key ? 'username' : 'password';
-                case method == AuthMethod.oauth:
-                    return key ? 'key' : 'secret';
-                case method == AuthMethod.oauth2:
-                    return key ? 'id' : 'secret';
-                case method == AuthMethod.token:
-                    return key ? 'username' : 'token';
-                case method == AuthMethod.key:
-                    return key ? 'username' : 'keyfile';
-            }
-        };
-        Object.defineProperty(AuthMethod.prototype, "name", {
-            get: function () {
-                return this.value;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(AuthMethod.prototype, "keyName", {
-            get: function () {
-                return AuthMethod.getKeyName(AuthMethod[this.value]);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return AuthMethod;
-    }(util_1.StringType));
-    AuthMethod.basic = new AuthMethod('basic');
-    AuthMethod.oauth = new AuthMethod('oauth');
-    AuthMethod.oauth2 = new AuthMethod('oauth2');
-    AuthMethod.token = new AuthMethod('token');
-    AuthMethod.key = new AuthMethod('key');
-    exports.AuthMethod = AuthMethod;
+    var methods_1 = require("../auth/methods");
     var AbstractGitRestClient = (function () {
         function AbstractGitRestClient() {
             this.client = this.createClient();
         }
+        AbstractGitRestClient.prototype.init = function () {
+        };
         AbstractGitRestClient.prototype.createClient = function (config) {
             if (config === void 0) { config = {}; }
             config = _.merge({
@@ -98,10 +43,10 @@ var __extends = (this && this.__extends) || (function () {
         };
         AbstractGitRestClient.prototype.setAuth = function (method, loginId, loginAuth) {
             switch (method) {
-                case AuthMethod.basic:
+                case methods_1.AuthMethod.basic:
                     this.configure({ auth: { username: loginId, password: loginAuth } });
                     break;
-                case AuthMethod.oauth2:
+                case methods_1.AuthMethod.oauth2:
             }
         };
         return AbstractGitRestClient;
@@ -113,7 +58,7 @@ var __extends = (this && this.__extends) || (function () {
             return _super !== null && _super.apply(this, arguments) || this;
         }
         GithubRestClient.prototype.getAuthMethods = function () {
-            return [AuthMethod.basic, AuthMethod.token];
+            return [methods_1.AuthMethod.basic, methods_1.AuthMethod.token];
         };
         return GithubRestClient;
     }(AbstractGitRestClient));

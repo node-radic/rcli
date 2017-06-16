@@ -1,4 +1,5 @@
 export * from './config'
 export * from './keys'
 export * from './paths'
+export * from './db'
 export * from './static'
