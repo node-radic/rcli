@@ -14,26 +14,28 @@ interface RConfig extends IConfigProperty {}
 
 
 let defaultConfig: any = {
-    debug  : false,
-    env    : {},
-    cli    : {
+    debug   : false,
+    env     : {},
+    cli     : {
         showCopyright: true
     },
-    auth   : {
+    auth    : {
         connections: []
     },
-    dgram  : {
+    dgram   : {
         server: {
+            host: '127.0.0.1',
             port: 41333
         },
         client: {
-            port: 41334
+            host: '127.0.0.1',
+            port: Math.round(Math.random() * 10000) + 1000
         }
     },
-    pmove  : {
+    pmove   : {
         extensions: [ 'mp4', 'wma', 'flv', 'mkv', 'avi', 'wmv', 'mpg' ]
     },
-    connect: {}
+    connect : {}
 };
 
 // load .env stuff
@@ -49,13 +51,19 @@ function parseEnvVal(val: any) {
 class PersistentFileConfig extends Config {
     cryptr: any;
     defaultConfig: Object;
-    protected saveEnabled: boolean = true;
+    protected autoload:boolean = true;
+    protected filePath:string
+    protected saveEnabled: boolean = false;
 
     constructor(obj: Object) {
         super({});
         this.cryptr        = new Cryptr((new Keys())._public)
         this.defaultConfig = obj;
-        this.load();
+        this.filePath = paths.userDataConfig;
+        if(this.autoload) {
+            this.load();
+            this.loadEnv();
+        }
     }
 
     set(prop: string, value: any): IConfig {
@@ -75,34 +83,45 @@ class PersistentFileConfig extends Config {
     }
 
     save(): this {
-        if ( ! this.saveEnabled ) return this;
+        if ( this.saveEnabled === false ) return this;
         const str       = JSON.stringify(this.data);
         // process.stdout.write(require('util').inspect(this.data, true, 5, true));
         const encrypted = this.cryptr.encrypt(str);
-        writeFileSync(paths.userDataConfig, encrypted, { encoding: 'utf8' });
+        writeFileSync(this.filePath, encrypted, { encoding: 'utf8' });
         if ( true === true ) {
-            writeFileSync(paths.userDataConfig + '.debug.json', JSON.stringify(this.data, undefined, 2), { encoding: 'utf8' });
+            writeFileSync(this.filePath + '.debug.json', JSON.stringify(this.data, undefined, 2), { encoding: 'utf8' });
         }
         return this;
     }
 
     load(): this {
-        if ( ! existsSync(paths.userDataConfig) ) return this;
+        if ( ! existsSync(this.filePath) ) return this;
         this.saveEnabled = false;
         this.data        = this.defaultConfig;
-        const str        = readFileSync(paths.userDataConfig, 'utf8');
+        const str        = readFileSync(this.filePath, 'utf8');
         const decrypted  = this.cryptr.decrypt(str);
         const parsed     = JSON.parse(decrypted);
         this.merge(parsed);
-        this.loadEnv();
         this.saveEnabled = true;
         this.save()
         return this;
     }
 
+    lock(): this {
+        this.saveEnabled = false;
+        return this;
+    }
+
+    unlock(): this {
+        this.saveEnabled = true;
+        return this;
+    }
+
+    isLocked(): boolean { return this.saveEnabled }
+
     reset(): this {
-        if ( ! existsSync(paths.userDataConfig) ) return this;
-        unlinkSync(paths.userDataConfig);
+        if ( ! existsSync(this.filePath) ) return this;
+        unlinkSync(this.filePath);
         return this;
     }
 
@@ -125,13 +144,13 @@ class PersistentFileConfig extends Config {
     }
 
     backupWithoutEncryption(filePath?: string): string {
-        return this.backup(JSON.stringify(super.raw(''), '', 4), false)
+        return this.backup(JSON.stringify(super.raw(''), null, 4), false)
     }
 
     restore(filePath: string): this {
         filePath.includes('.crypt');
         let content = readFileSync(isAbsolute(filePath) ? filePath : join(process.cwd(), filePath));
-        this.data   = JSON.parse(content);
+        this.data   = JSON.parse(content.toString());
 
         this.save();
         this.load()
@@ -156,10 +175,16 @@ class PersistentFileConfig extends Config {
                 this.set(key, value)
             })
         }
+
+        Object.keys(process.env).forEach(key => {
+            key = key.replace('_', '.');
+            if ( this.has(key) )
+                this.set(key, parseEnvVal(process.env[ key ]));
+        })
+
         return this;
     }
 }
-
 
 
 let _config = new PersistentFileConfig(defaultConfig);

@@ -18,7 +18,7 @@ export class RcliConnectEditCmd {
     @inject('cli.helpers.ssh.bash')
     ssh: SshBashHelper
 
-    @lazyInject('cli.log')
+    @lazyInject('r.log')
     log: Log;
 
     @inject('r.config')
@@ -56,7 +56,7 @@ export class RcliConnectEditCmd {
             return this.startInteractive();
         }
 
-        let name = 'connect.' + args.name;
+        let name:string = 'connect.' + args.name;
         if ( ! this.config.has(name) ) {
             this.log.error('First argument : No such connection named ' + args.name)
             if(await this.ask.confirm('Go interactive?')){
@@ -66,7 +66,7 @@ export class RcliConnectEditCmd {
             return;
         }
 
-        this.connect = this.config.get<SSHConnection>(name);
+        this.connect = <SSHConnection> this.config.get(name);
 
         ['host', 'port', 'user', 'localPath', 'mountPath'].forEach(name => {
             if(this[name]){
@@ -97,7 +97,7 @@ export class RcliConnectEditCmd {
         let name  = await this.ask.list('name', names);
         console.log('need to edit ' + name);
         let availableFields       = [ 'user', 'host', 'port', 'method', 'localPath', 'hostPath' ]
-        let chosenFields: any[] = await this.ask.checkbox('Choose fields to edit', availableFields)
+        let chosenFields: any = await this.ask.checkbox('Choose fields to edit', availableFields)
         let current               = this.config('connect.' + name);
 
         let answers = {}

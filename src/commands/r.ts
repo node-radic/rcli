@@ -2,7 +2,7 @@ import { Cli, command, CommandConfig, inject, lazyInject, Log, OutputHelper } fr
 import { RConfig } from "../";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
-    subCommands: [ 'connect', 'git', 'config', 'info', 'scaf' ],
+    subCommands: [ 'ssh', 'auth', 'git', 'config', 'info', 'socket' ],
     alwaysRun  : true,
     onMissingArgument: 'help'
 })
@@ -10,7 +10,7 @@ export class RcliCmd {
     @lazyInject('cli.helpers.output')
     protected out: OutputHelper;
 
-    @lazyInject('cli.log')
+    @lazyInject('r.log')
     protected log: Log;
 
     @inject('r.config')
@@ -26,6 +26,7 @@ export class RcliCmd {
 
     handle(...args: any[]) {
         this.out.success('Try -h for options')
+        return true;
     }
 }
 export default RcliCmd

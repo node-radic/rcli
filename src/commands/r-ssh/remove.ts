@@ -9,7 +9,7 @@ import { SshBashHelper } from "../../helpers/helper.ssh.bash";
 @command('remove [name:string@the connection to remote]', 'Remove one, multiple or all connections')
 export class RcliConnectRemoveCmd {
 
-    @lazyInject('cli.log')
+    @lazyInject('r.log')
     log:Log
 
     @lazyInject('cli.helpers.output')
@@ -27,7 +27,12 @@ export class RcliConnectRemoveCmd {
 
     public async handle(args: CommandArguments, ...argv: any[]) {
 
-        let choices:string[]      = await this.ask.checkbox('Select items to remove', this.getChoices());
+        if(args.name){
+            this.ssh.trash(args.name)
+            return this.log.info('Removed ' + args.name)
+        }
+
+        let choices:string[]      = <any> await this.ask.checkbox('Select items to remove', this.getChoices());
         let confirm  = await this.ask.confirm('Absolutely sure to remove connctions:');
         if ( confirm ) {
             choices.forEach(name => this.ssh.trash(name));

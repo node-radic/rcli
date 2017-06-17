@@ -1,7 +1,7 @@
-import { join, join as j, resolve as r } from "path";
+import { join as j, resolve as r } from "path";
 import * as _ from "lodash";
 import { readJSONSync } from "fs-extra";
-import { chownSync, existsSync, mkdirSync, statSync } from "fs";
+import { existsSync, statSync } from "fs";
 import { container } from "@radic/console";
 import { chmod, mkdir } from "shelljs";
 let root = j(__dirname, '..', '..', '..'),
@@ -19,6 +19,7 @@ export interface Paths {
     tsconfig: string
     tsd: string
     user: string
+    logFile:string
     rcFile: string
     userData: string
     userCache: string
@@ -55,6 +56,7 @@ export function setPaths(overrides: any = {}, _root: string = null, _home: strin
         tsconfig         : j(root, 'tsconfig.json'),
         tsd              : j(root, 'tsd.json'),
         user             : home,
+        logFile          : j(home, r, 'events.log'),
         rcFile           : j(home, '.rclirc'),
         userData         : j(home, r),
         userCache        : j(home, r, 'r.cache'),

@@ -42,7 +42,7 @@ export class RcliConnectAddCmd {
     @lazyInject('cli.helpers.input')
     ask: InputHelper;
 
-    @lazyInject('cli.log')
+    @lazyInject('r.log')
     log: Log;
 
     @lazyInject('r.config')
@@ -77,6 +77,7 @@ export class RcliConnectAddCmd {
     editor: boolean
 
     help:boolean = false;
+
     async handle(args: ConnectAddArguments, ...argv: any[]) {
 
         if(this.editor){
@@ -85,7 +86,7 @@ export class RcliConnectAddCmd {
         }
 
         this.events.on('add:help', () => this.help = true)
-        if(this.interactive) return this.interact();
+        if(this.interactive || !args.name) return this.interact();
 
         let data: any = {
             name     : args.name,

@@ -1,69 +1,97 @@
-import { lazyInject, Log, singleton } from "@radic/console";
+import { lazyInject, singleton } from "@radic/console";
 import { AuthMethod } from "./methods";
-import { DB } from "..";
-
-export enum AuthServices {
-    bitbucket = 'bitbucket',
-    github    = 'github',
-    jira      = 'jira'
-}
-
-export type AuthService = AuthServices.github | AuthServices.bitbucket | AuthServices.jira
+import { DB } from "../core/db";
+import { AuthService, BaseAuthMethod, Credential, LoginCredential, User } from "../../interfaces";
 
 
-
-interface Credentials {
-    username?: string
-    password?: string
-    key?: string
-    id?: string
-
-    token?: string
-    secret?: string
-
-
-}
 @singleton('r.auth')
 export class Auth {
+    protected _user: User
+    public get user(): User {return this._user};
+
+    public users: LokiCollection<User>;
+    public creds: LokiCollection<Credential>;
 
     @lazyInject('r.db')
     db: DB
 
-    @lazyInject('cli.log')
-    log: Log;
+    ready: boolean = false;
 
 
-    public getTable() {
-        return this.db.getCollection('auth') || this.db.addCollection('auth')
+    constructor() {
+        this.users = this.db.getCollection<User>('users')
+        this.creds = this.db.getCollection<Credential>('credentials')
+        // this.db.loadCollection(this.users)
+        // this.db.loadCollection(this.creds)
+
+        let user = this.users.findOne({ logged_in: true });
+        if ( user ) this._user = user;
     }
 
-    public create(name: string, service: AuthService, method: AuthMethod, credentials: Credentials) {
-
-        if ( this.exists(name, service) ) {
-            return false
+    async register(name: string, password: string, password2: string) {
+        if ( password !== password ) {
+            return false;
         }
+        this.users.insert(<any>{ name, password });
 
-        let data = {
-            name,
-            service,
-            [AuthMethod.getKeyName(method)]   : credentials[ AuthMethod.getKeyName(method) ],
-            [AuthMethod.getSecretName(method)]: credentials[ AuthMethod.getSecretName(method) ]
+        return true;
+
+    }
+
+    unregister(name: string, password: string) {
+        this.users.remove(<any>{  name, password });
+        return true;
+    }
+
+    isLoggedIn() { return ! ! this._user }
+
+    logout() {
+        if ( this.isLoggedIn() ) {
+            return false;
         }
-        this.getTable().insert(data)
+        this._user.logged_in = false
+        this.users.update(this._user);
+
+        this._user.name     = null
+        this._user.password = null
+        this._user.$loki    = null
     }
 
-    public get(name: string, service: AuthService) {
-        if ( this.exists(name, service) === false ) {
-            this.log.error('Does not exist');
-            return;
+    login(name, password) {
+        if ( this.isLoggedIn() ) {
+            return false;
         }
-        return this.getTable().find({ name, service })
+        let login = this.users.findOne({ name, password });
+        if ( login ) {
+            this._user      = login;
+            login.logged_in = true;
+            this.users.update(login)
+            return true;
+        }
+        return false;
     }
 
-
-    protected exists(name: string, service: AuthService): boolean {
-        return ! ! this.getTable().find({ name, service })
+    addCredential(credential: Credential) {
+        if ( ! credential.user ) {
+            credential.user = this._user.name;
+        }
+        if ( credential.method instanceof AuthMethod ) {
+            credential.method = credential.method.toString()
+        }
+        return this.creds.insert(credential);
     }
 
+    getCredential<T extends BaseAuthMethod>(name:string ): LoginCredential<T> {
+        let cred = this.db.getCollection<Credential>('credentials').find({ user: this._user.name, name })
+        if ( ! cred ) {
+            return
+        }
+        cred[ 'login' ]                                          = {}
+        cred[ 'login' ][ AuthMethod.getKeyName(<any>cred.method) ]    = cred.key
+        cred[ 'login' ][ AuthMethod.getSecretName(<any>cred.method) ] = cred.secret
+        cred[ 'login' ].method                                   = AuthMethod[ cred.method.toString() ]
+        return < LoginCredential<T>> cred;
+    }
 
 }
+

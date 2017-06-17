@@ -16,7 +16,7 @@ export class RcliConnectBulkCmd {
     @lazyInject('cli.helpers.input')
     ask: InputHelper;
 
-    @lazyInject('cli.log')
+    @lazyInject('r.log')
     log: Log;
 
     @lazyInject('r.config')

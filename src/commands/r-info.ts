@@ -11,7 +11,7 @@ export class InfoCmd {
     in:InputHelper
 
     @option('d', 'lists all dependencies and development dependencies')
-    deps:bool
+    deps:boolean
 
     handle(args:CommandArguments){
         const deps = Object.keys(PKG.dependencies)

@@ -1,10 +1,11 @@
-import { command, CommandArguments, inject, InputHelper, OutputHelper } from "@radic/console";
+import { command, CommandArguments, container } from "@radic/console";
 
-@command('scaf', 'Project scaffolding', [ 'add', 'list', 'remove' ])
-export default class ScaffCmd {
+@command('auth {command}', 'User authentication', [ 'register', 'login', 'logout', 'whoami', 'unregister', 'add' ], {
+    onMissingArgument: 'help'
+})
+export default class AuthCmd {
 
     handle(args: CommandArguments) {
-
 
     }
 }

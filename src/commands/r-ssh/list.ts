@@ -9,7 +9,7 @@ export class RcliConnectListCmd {
     @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @inject('cli.log')
+    @inject('r.log')
     log: Log;
 
     @inject('r.config')

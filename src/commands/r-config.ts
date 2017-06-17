@@ -1,11 +1,11 @@
-import { command, CommandArguments, CommandConfig, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, container, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
 import { dotize } from "@radic/util";
 import { PersistentFileConfig, RConfig } from "../";
 import { readdirSync } from "fs";
 
 @command(`config 
 [path:string@dot notated string] 
-[value:any@A JSON parseable value]`, <CommandConfig> {
+[value:any@A JSON parseable value]`,  'View/edit rcli configuration', <CommandConfig> {
     onMissingArgument: 'help',
     example:`
 $ config -l                     # list
@@ -19,9 +19,6 @@ export class ConfigCmd {
     @inject('r.config.core')
     configCore: PersistentFileConfig
 
-    @inject('r.config')
-    config: RConfig
-
     @lazyInject('cli.helpers.help')
     help: OutputHelper;
 
@@ -31,7 +28,10 @@ export class ConfigCmd {
     @lazyInject('cli.helpers.output')
     ask: InputHelper;
 
-    @lazyInject('cli.log')
+    @inject('r.config')
+    config: RConfig
+
+    @lazyInject('r.log')
     log: Log
 
     @option('l', 'list configuration settings')
@@ -96,6 +96,8 @@ export class ConfigCmd {
             }
         }
 
+        return true;
+
     }
 
     protected createBackup(path?: string) {
@@ -123,8 +125,10 @@ export class ConfigCmd {
     }
 
     protected set(path, value): this {
-        if ( false === this.config.has(path) || this.force ) {
-            this.config.set(path, JSON.parse(value))
+        if ( false !== this.config.has(path) || this.force ) {
+            this.configCore.unlock()
+            this.configCore.set(path, JSON.parse(value))
+            this.configCore.lock()
         }
         return this
     }

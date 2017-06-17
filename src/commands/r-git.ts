@@ -1,6 +1,8 @@
 import { OutputHelper ,command, option ,Config,inject, lazyInject } from "@radic/console";
 
-@command('git', 'Remote git communication')
+@command('git', 'Remote git communication', ['repo'], {
+    onMissingArgument: 'help'
+})
 export class GitCmd {
     @inject('r.config')
     config: Config

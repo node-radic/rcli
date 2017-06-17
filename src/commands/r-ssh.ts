@@ -1,7 +1,7 @@
 import { command, CommandArguments, CommandConfig, inject, Log, option, OptionConfig, OutputHelper } from "@radic/console";
 import { Paths, RConfig } from "..";
 
-@command('connect {command}', 'SSH connection helper', [ 'add', 'bulk', 'list', 'edit', 'ssh', 'remove' ], {
+@command('ssh {operation}', 'SSH connection helper', [ 'add',  'list', 'edit', 'ssh', 'remove' ], { //'bulk',
     onMissingArgument: 'help',
     helpers          : {
         help: {
@@ -18,7 +18,7 @@ export class RcliConnectCmd {
     @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @inject('cli.log')
+    @inject('r.log')
     log: Log
 
 

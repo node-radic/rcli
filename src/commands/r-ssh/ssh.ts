@@ -13,7 +13,7 @@ export class RcliConnectSshCmd {
     @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @inject('cli.log')
+    @inject('r.log')
     log: Log;
 
     @inject('r.config')
@@ -70,7 +70,7 @@ export class RcliConnectSshCmd {
         let cmd: string = `sudo ${this.bins.umount} ${target.localPath} -f`;
         execSync(cmd);
         rmdirSync(target.localPath);
-        this.out.line(`Unmounted ${target.localPath} success`);
+        this.log.info(`Unmounted ${target.localPath} success`);
     }
 
     ssh(target: SSHConnection) {
