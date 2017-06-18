@@ -4,6 +4,7 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./core/index"));
+__export(require("./database/index"));
 __export(require("./auth/index"));
 __export(require("./git/index"));
 __export(require("./services/index"));

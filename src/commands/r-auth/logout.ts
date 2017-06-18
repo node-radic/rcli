@@ -27,8 +27,8 @@ export class AuthLogoutCmd {
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
-        if ( this.auth.isLoggedIn()){
-            this.auth.logout();
+        if ( await this.auth.isLoggedIn()){
+            await this.auth.logout();
         }
 
         this.log.info(`You have been logged out`)

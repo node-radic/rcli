@@ -1,0 +1,19 @@
+- auth (services)
+    - add
+    - edit
+    - list
+    - remove
+- ssh
+    - add
+    - edit
+    - list
+    - remove
+    - ssh
+- api
+- git
+- jira
+- jenkins
+
+- config
+- info
+- 

@@ -6,6 +6,7 @@ import * as winston from "winston";
 import * as Raven from "raven";
 import { PKG } from "./lib/core/static";
 import { Client } from "raven";
+import { Database } from "./lib/database/Database";
 
 export function bootstrapRaven(){
 
@@ -29,7 +30,7 @@ export function bootstrapRaven(){
     }
 }
 
-export function bootstrapRcli(): Cli {
+export function bootstrapRcli(): Promise<Cli> {
     const rconfig    = container.get<RConfig>('r.config')
     const cli        = container.get<Cli>('cli');
     const transports = [
@@ -94,6 +95,12 @@ export function bootstrapRcli(): Cli {
             option: { key: 'v', name: 'verbose' }
         })
 
-    return cli;
+    return new Promise((resolve, reject) => {
+        const db = new Database();
+        container.bind('r.db').toConstantValue(db);
+        db.migrate().then(() => {
+            resolve(cli)
+        })
+    })
 
 }

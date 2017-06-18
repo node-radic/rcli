@@ -1,8 +1,6 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
-import { Auth, RConfig } from "../../";
-import { services } from "../../lib/core/static";
-import { Credential } from "../../interfaces";
-import { AuthMethod } from "../../lib/auth/methods";
+import { Auth, AuthMethod, Credential, RConfig, services } from "../../";
+
 
 @command(`add 
 [name:string@The connection name, can be anything] 
@@ -33,7 +31,7 @@ export class AuthLoginCmd {
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
-        if ( ! this.auth.isLoggedIn() ) {
+        if ( ! await this.auth.isLoggedIn() ) {
             this.log.error(`You have to be logged in`)
             return;
         }
@@ -46,15 +44,12 @@ export class AuthLoginCmd {
         let key    = await this.ask.ask(AuthMethod.getKeyName(m))
         let secret = await this.ask.ask(AuthMethod.getSecretName(m))
 
-        let cred: Credential = {
-            service,
-            method,
-            user: this.auth.user.name,
-            name, key, secret
-        }
-        let result = this.auth.addCredential(cred)
+        let cred: Partial<Credential> = { service, method, name, key, secret }
+        let result                    = await this.auth.addCredential(cred)
 
+        this.log.debug('add service', result)
 
+        this.log.info('Added service connection credentials')
 
     }
 

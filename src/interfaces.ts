@@ -36,15 +36,13 @@ export interface AuthMethodKey extends BaseAuthMethod {
     username?: string
     keyfile?: string
 }
-export interface User {
-    $loki?: number
+export interface IUser {
     name: string
     password: string
-    logged_in: boolean
+    credentials?:ICredential[]
 }
 export type AuthService = 'github' | 'bitbucket' | 'jira'
-export interface Credential {
-    $loki?: number
+export interface ICredential {
     name: string
     service: AuthService | string
     user?: string
@@ -52,6 +50,6 @@ export interface Credential {
     key?: string,
     secret?: string
 }
-export interface LoginCredential<T extends BaseAuthMethod> extends Credential {
+export interface LoginCredential<T extends BaseAuthMethod> extends ICredential {
     login: T
 }

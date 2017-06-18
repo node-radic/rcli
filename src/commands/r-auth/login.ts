@@ -29,19 +29,21 @@ export class AuthLoginCmd {
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
-        if ( this.auth.isLoggedIn()){
-            this.log.info(`Welcome back ${this.auth.user.name}, You have already been logged in`)
+        if ( await this.auth.isLoggedIn() ) {
+            this.log.info(`You have already been logged in`)
             return;
         }
 
-        let name = args.name || await this.ask.ask('Name?')
+        let name     = args.name || await this.ask.ask('Name?')
         let password = args.password || await this.ask.password('Password?')
 
-        if(this.auth.login(name, password)){
-            this.log.info(`Welcome ${name}. You have been logged in`)
-            return;
+        let success = await this.auth.login(name, password)
+
+        if ( success ) {
+            return this.log.info(`Welcome ${name}. You have been logged in`)
         }
-        this.log.error('Could not login due to a bad user/password combination')
+
+        return this.log.error('Could not login due to a bad user/password combination')
     }
 
 }

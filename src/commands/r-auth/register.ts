@@ -1,5 +1,6 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
-import { Auth, RConfig } from "../../";
+import { User, Auth, RConfig } from "../../";
+import { QueryBuilder } from "objection";
 
 @command(`register 
 [name:string@The login name] 
@@ -31,16 +32,31 @@ export class AuthRegisterCmd {
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
+        if(await this.auth.isLoggedIn()){
+            return this.log.warn('You already have an account and are logged in')
+        }
+
         let name = args.name || await this.ask.ask('Name?')
         let password = args.password || await this.ask.password('Password?')
         let password2 = args.password2 || await this.ask.password('Password again?')
 
-        let result = this.auth.register(name, password, password2)
-        if(result){
-            this.log.info('You have registered successfully')
-            return;
+        if ( password !== password ) {
+            return this.log.error('Passwords do not match.')
         }
-        this.log.error('Name is already in use or passwords did not match.', result)
+
+        let exists = await this.auth.exists(name);
+        if(exists){
+            return this.log.error('You cannot use that name. Pick another.')
+        }
+
+        let user = await this.auth.register(name, password)
+
+        if(user){
+            this.log.info('You have registered successfully', user.name)
+            return true;
+        }
+        this.log.error('Name is already in use or passwords did not match.')
+
     }
 
 }

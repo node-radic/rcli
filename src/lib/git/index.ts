@@ -1,7 +1,6 @@
 import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import * as _ from "lodash";
 import { AuthMethod } from "../auth/methods";
-import { Credential } from "../../interfaces";
 import { services } from "../core/static";
 import { provide } from "@radic/console";
 
