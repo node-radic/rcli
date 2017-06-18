@@ -27,11 +27,11 @@ var GitCmd = (function () {
 }());
 __decorate([
     console_1.inject('r.config'),
-    __metadata("design:type", Function)
+    __metadata("design:type", typeof (_a = typeof console_1.Config !== "undefined" && console_1.Config) === "function" && _a || Object)
 ], GitCmd.prototype, "config", void 0);
 __decorate([
     console_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", console_1.OutputHelper)
+    __metadata("design:type", typeof (_b = typeof console_1.OutputHelper !== "undefined" && console_1.OutputHelper) === "function" && _b || Object)
 ], GitCmd.prototype, "out", void 0);
 __decorate([
     console_1.option('l', 'list configuration, or part of it'),
@@ -43,9 +43,11 @@ __decorate([
 ], GitCmd.prototype, "delete", void 0);
 GitCmd = __decorate([
     console_1.command('git', 'Remote git communication', ['repo'], {
-        onMissingArgument: 'help'
+        onMissingArgument: 'help',
+        group: 'API'
     })
 ], GitCmd);
 exports.GitCmd = GitCmd;
 exports.default = GitCmd;
+var _a, _b;
 //# sourceMappingURL=r-git.js.map

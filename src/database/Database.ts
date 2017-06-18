@@ -1,10 +1,10 @@
-import { paths } from "../core/paths";
 import * as Knex from "knex";
 import { Config } from "knex";
 import { Model } from "objection";
 import { join } from "path";
 import * as Promise from "bluebird";
 import * as _ from "lodash";
+import { paths } from "../index";
 
 
 export class Database {

@@ -1,5 +1,5 @@
 import { command, CommandArguments, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
-import { RConfig } from "../../lib/core/config";
+import { RConfig } from "../../core/config";
 import { SSHConnection } from "../../interfaces";
 import * as inquirer from "inquirer";
 import { Answers, ChoiceType } from "inquirer";

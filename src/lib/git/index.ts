@@ -1,7 +1,7 @@
 import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import * as _ from "lodash";
-import { AuthMethod } from "../auth/methods";
-import { services } from "../core/static";
+import { AuthMethod } from "../../services/methods";
+import { services } from "../../services/static";
 import { provide } from "@radic/console";
 
 export abstract class AbstractGitRestClient {
@@ -53,41 +53,4 @@ export class GithubRestClient extends AbstractGitRestClient {
 
 export class Rest {
 
-}
-
-export abstract class GitServer {
-    creds: Credential
-    client: AxiosInstance
-
-    setCredentials(creds: Credential) {
-        this.creds = creds;
-        this.createClient();
-    }
-
-    protected abstract createClient(): AxiosInstance
-}
-@provide('services.github')
-export class GitHubServer extends GitServer {
-    protected createClient(): AxiosInstance {
-        let method = this.creds.method
-        let config:AxiosRequestConfig = _.merge({
-            baseUrl: 'https://api.github.com',
-            timeout: 1000,
-            withCredentials: true,
-            headers: {
-                common: {
-                    'Accept': 'application/vnd.github.v3+json'
-
-                }
-            }
-        })
-        if(method === AuthMethod.basic.toString()){
-            config.auth.username = this.creds.key
-            config.auth.password = this.creds.secret;
-        } else if(method === AuthMethod.token.toString()){
-            config.headers.common['Authorization'] = 'token ' + this.creds.secret
-        }
-
-        return Axios.create(config);
-    }
 }

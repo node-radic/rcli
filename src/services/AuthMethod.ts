@@ -47,4 +47,5 @@ export class AuthMethod extends StringType {
     get keyName(): string {
         return AuthMethod.getKeyName(AuthMethod[ this.value ])
     }
+
 }

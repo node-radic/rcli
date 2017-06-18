@@ -1,7 +1,7 @@
 import { command, CommandArguments, CommandConfig, lazyInject, Log, Dispatcher, option, OutputHelper,InputHelper } from "@radic/console";
-import { RConfig } from "../../lib/core/config";
+import { RConfig } from "../../core/config";
 import * as editor from 'open-in-editor';
-import { paths } from "../../lib/core/paths";
+import { paths } from "../../core/paths";
 
 export interface ConnectAddArguments extends CommandArguments {
     name: string,

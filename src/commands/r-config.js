@@ -99,15 +99,15 @@ __decorate([
 ], ConfigCmd.prototype, "configCore", void 0);
 __decorate([
     console_1.lazyInject('cli.helpers.help'),
-    __metadata("design:type", console_1.OutputHelper)
+    __metadata("design:type", typeof (_a = typeof console_1.OutputHelper !== "undefined" && console_1.OutputHelper) === "function" && _a || Object)
 ], ConfigCmd.prototype, "help", void 0);
 __decorate([
     console_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", console_1.OutputHelper)
+    __metadata("design:type", typeof (_b = typeof console_1.OutputHelper !== "undefined" && console_1.OutputHelper) === "function" && _b || Object)
 ], ConfigCmd.prototype, "out", void 0);
 __decorate([
     console_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", console_1.InputHelper)
+    __metadata("design:type", typeof (_c = typeof console_1.InputHelper !== "undefined" && console_1.InputHelper) === "function" && _c || Object)
 ], ConfigCmd.prototype, "ask", void 0);
 __decorate([
     console_1.inject('r.config'),
@@ -115,7 +115,7 @@ __decorate([
 ], ConfigCmd.prototype, "config", void 0);
 __decorate([
     console_1.lazyInject('r.log'),
-    __metadata("design:type", Object)
+    __metadata("design:type", typeof (_d = typeof console_1.Log !== "undefined" && console_1.Log) === "function" && _d || Object)
 ], ConfigCmd.prototype, "log", void 0);
 __decorate([
     console_1.option('l', 'list configuration settings'),
@@ -157,4 +157,5 @@ ConfigCmd = __decorate([
 ], ConfigCmd);
 exports.ConfigCmd = ConfigCmd;
 exports.default = ConfigCmd;
+var _a, _b, _c, _d;
 //# sourceMappingURL=r-config.js.map

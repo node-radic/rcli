@@ -1,6 +1,6 @@
 import { createSocket, Socket } from "dgram";
 import { OutputHelper, command, option, Config, inject, lazyInject, Dispatcher, CommandArguments, InputHelper } from "@radic/console";
-import { UDPSocketFactory } from "../lib/services/sockets.udp";
+import { UDPSocketFactory } from "../services/sockets.udp";
 
 @command(`socket
 {type:string@either server or client}

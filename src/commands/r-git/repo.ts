@@ -1,9 +1,9 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
 import { Auth, RConfig } from "../../";
-import { services } from "../../lib/core/static";
+import { services } from "../../services/static";
 import { GitHubServer } from "../../lib/git/index";
 import { AuthMethodToken} from "../../interfaces";
-import { Database } from "../../lib/database/Database";
+import { Database } from "../../database/Database";
 
 @command(`repo 
 [service:string@The service (github, bitbucket)]

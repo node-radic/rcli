@@ -1,11 +1,12 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
-import { Auth, RConfig } from "../../";
+import { RConfig } from "../../";
 
-@command(`logout`
-    , 'Logout of the system', <CommandConfig> {
+@command(`remove
+[name:string@the name of the service connection]`
+    , 'Remove a service connection', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class AuthLogoutCmd {
+export class RemoveCmd {
 
     @lazyInject('cli.helpers.output')
     out: OutputHelper;
@@ -22,17 +23,9 @@ export class AuthLogoutCmd {
     @lazyInject('cli.events')
     events: Dispatcher;
 
-    @lazyInject('r.auth')
-    auth: Auth;
-
     async handle(args: CommandArguments, ...argv: any[]) {
-
-        if ( await this.auth.isLoggedIn()){
-            await this.auth.logout();
-        }
-
-        this.log.info(`You have been logged out`)
+        return this.log.warn('Remmoving not yet implemented')
     }
 
 }
-export default AuthLogoutCmd
+export default RemoveCmd

@@ -1,5 +1,7 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
-import { Auth, AuthMethod, Credential, RConfig, services } from "../../";
+import { Credential, RConfig } from "../../";
+import { services } from "../../services/static";
+import { AuthMethod } from "../../services/AuthMethod";
 
 
 @command(`add 
@@ -9,7 +11,7 @@ import { Auth, AuthMethod, Credential, RConfig, services } from "../../";
     , 'Add a service connection (github, etc) to your user', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class AuthLoginCmd {
+export class AddCmd {
 
     @lazyInject('cli.helpers.output')
     out: OutputHelper;
@@ -26,15 +28,9 @@ export class AuthLoginCmd {
     @lazyInject('cli.events')
     events: Dispatcher;
 
-    @lazyInject('r.auth')
-    auth: Auth;
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
-        if ( ! await this.auth.isLoggedIn() ) {
-            this.log.error(`You have to be logged in`)
-            return;
-        }
         let name    = args.name || await this.ask.ask('Name?')
         let service = args.service || await this.ask.list('Service?', Object.keys(services))
         let method  = args.method || await this.ask.list('Method?', services[ service ])
@@ -45,13 +41,18 @@ export class AuthLoginCmd {
         let secret = await this.ask.ask(AuthMethod.getSecretName(m))
 
         let cred: Partial<Credential> = { service, method, name, key, secret }
-        let result                    = await this.auth.addCredential(cred)
+        return Credential.query()
+            .insert(cred)
+            .then((cred: Credential) => {
+                this.log.debug('add service', cred)
+                this.log.info('Added service connection ')
+            })
+            .catch((err) => {
+                this.log.error('Cannot add service connection', cred);
+            })
 
-        this.log.debug('add service', result)
-
-        this.log.info('Added service connection credentials')
 
     }
 
 }
-export default AuthLoginCmd
+export default AddCmd

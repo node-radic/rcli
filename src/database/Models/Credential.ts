@@ -1,10 +1,8 @@
 import { JsonSchema, Model, RelationMapping } from "objection";
-import { User } from "./User";
 
 
 export class Credential extends Model {
     readonly id: number
-             user: User
              service: string
              name: string
              method: string
@@ -19,7 +17,7 @@ export class Credential extends Model {
             required  : [ 'name', 'service', 'method', 'secret' ],
             properties: {
                 id     : { type: 'integer' },
-                user_id: { type: 'integer' },
+                // user_id: { type: 'integer' },
                 service: { type: 'string', minLength: 1, maxLength: 255 },
                 name   : { type: 'string', minLength: 1, maxLength: 255 },
                 method : { type: 'string', minLength: 1, maxLength: 255 },
@@ -29,16 +27,16 @@ export class Credential extends Model {
         }
     }
 
-    // This object defines the relations to other models.
-    static relationMappings = {
-        user: <RelationMapping> {
-            relation  : Model.BelongsToOneRelation,
-            modelClass: __dirname + '/User.js',
-            join      : {
-                from: 'Credentials.user_id',
-                to  : 'Users.id'
-            }
-        }
-    }
+    // // This object defines the relations to other models.
+    // static relationMappings = {
+    //     user: <RelationMapping> {
+    //         relation  : Model.BelongsToOneRelation,
+    //         modelClass: __dirname + '/User.js',
+    //         join      : {
+    //             from: 'Credentials.user_id',
+    //             to  : 'Users.id'
+    //         }
+    //     }
+    // }
 }
 export default Credential

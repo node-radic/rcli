@@ -1,6 +1,6 @@
 import { command, CommandArguments, inject, InputHelper, OutputHelper } from "@radic/console";
 import { Auth, AuthService } from "../";
-import { Database } from "../lib/database/Database";
+import { Database } from "../database/Database";
 
 @command('scaf', 'Project scaffolding')
 export default class ScaffCmd {

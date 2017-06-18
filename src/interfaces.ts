@@ -53,3 +53,20 @@ export interface ICredential {
 export interface LoginCredential<T extends BaseAuthMethod> extends ICredential {
     login: T
 }
+
+export interface List<T> {
+    [index: number]: T;
+    length: number;
+}
+
+export interface Dictionary<T> {
+    [index: string]: T;
+}
+
+export interface NumericDictionary<T> {
+    [index: number]: T;
+}
+
+export interface StringRepresentable {
+    toString(): string;
+}

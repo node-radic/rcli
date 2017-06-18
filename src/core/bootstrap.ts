@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-import "../src/index";
+import "../index";
 import { Cli, CliConfig, container, log } from "@radic/console";
-import { RConfig, paths } from "../src";
 import * as winston from "winston";
 import * as Raven from "raven";
-import { PKG } from "./lib/core/static";
+import { PKG } from "../services/static";
 import { Client } from "raven";
-import { Database } from "./lib/database/Database";
+import { Database } from "../database/Database";
+import { RConfig } from "./config";
+import { paths } from "./paths";
 
 export function bootstrapRaven(){
 

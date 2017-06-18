@@ -1,5 +1,5 @@
 import { helper, HelperOptions, HelperOptionsConfig, InputHelper, OutputHelper, lazyInject, Log } from "@radic/console";
-import { RConfig } from "../lib/core/config";
+import { RConfig } from "../core/config";
 import * as _ from "lodash";
 import * as faker from "faker";
 import { existsSync } from "fs";

@@ -1,10 +1,10 @@
 import { lazyInject, singleton } from "@radic/console";
-import { AuthMethod } from "./methods";
+import { AuthMethod } from "../../services/methods";
 import { BaseAuthMethod, LoginCredential } from "../../interfaces";
-import { Database } from "../database/Database";
-import { User } from "../database/Models/User";
-import { RConfig } from "../core/config";
-import { Credential } from "../database/Models/Credential";
+import { Database } from "../../database/Database";
+import { User } from "../../database/Models/User";
+import { RConfig } from "../../core/config";
+import { Credential } from "../../database/Models/Credential";
 
 
 @singleton('r.auth')
