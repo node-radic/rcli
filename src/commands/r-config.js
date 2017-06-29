@@ -69,7 +69,7 @@ var ConfigCmd = (function () {
         if (rootConfig === void 0) { rootConfig = false; }
         var dotted = util_1.dotize(this[rootConfig ? 'configCore' : 'config'].get(path || ''), '');
         Object.keys(dotted).forEach(function (key) {
-            _this.out.line("'{darkorange}" + key + "{/darkorange} : {green}" + dotted[key] + "{/green}");
+            _this.out.line("{darkorange}" + key + "{/darkorange} : {green}" + dotted[key] + "{/green}");
         });
         return this;
     };
@@ -98,24 +98,24 @@ __decorate([
     __metadata("design:type", _1.PersistentFileConfig)
 ], ConfigCmd.prototype, "configCore", void 0);
 __decorate([
-    console_1.lazyInject('cli.helpers.help'),
-    __metadata("design:type", typeof (_a = typeof console_1.OutputHelper !== "undefined" && console_1.OutputHelper) === "function" && _a || Object)
+    console_1.inject('cli.helpers.help'),
+    __metadata("design:type", console_1.OutputHelper)
 ], ConfigCmd.prototype, "help", void 0);
 __decorate([
-    console_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", typeof (_b = typeof console_1.OutputHelper !== "undefined" && console_1.OutputHelper) === "function" && _b || Object)
+    console_1.inject('cli.helpers.output'),
+    __metadata("design:type", console_1.OutputHelper)
 ], ConfigCmd.prototype, "out", void 0);
 __decorate([
-    console_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", typeof (_c = typeof console_1.InputHelper !== "undefined" && console_1.InputHelper) === "function" && _c || Object)
+    console_1.inject('cli.helpers.output'),
+    __metadata("design:type", console_1.InputHelper)
 ], ConfigCmd.prototype, "ask", void 0);
 __decorate([
     console_1.inject('r.config'),
     __metadata("design:type", Function)
 ], ConfigCmd.prototype, "config", void 0);
 __decorate([
-    console_1.lazyInject('r.log'),
-    __metadata("design:type", typeof (_d = typeof console_1.Log !== "undefined" && console_1.Log) === "function" && _d || Object)
+    console_1.inject('r.log'),
+    __metadata("design:type", Object)
 ], ConfigCmd.prototype, "log", void 0);
 __decorate([
     console_1.option('l', 'list configuration settings'),
@@ -157,5 +157,4 @@ ConfigCmd = __decorate([
 ], ConfigCmd);
 exports.ConfigCmd = ConfigCmd;
 exports.default = ConfigCmd;
-var _a, _b, _c, _d;
 //# sourceMappingURL=r-config.js.map

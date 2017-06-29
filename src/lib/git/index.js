@@ -12,7 +12,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = require("axios");
 var _ = require("lodash");
-var methods_1 = require("../../services/methods");
+var services_1 = require("../../services");
 var AbstractGitRestClient = (function () {
     function AbstractGitRestClient() {
         this.client = this.createClient();
@@ -34,10 +34,10 @@ var AbstractGitRestClient = (function () {
     };
     AbstractGitRestClient.prototype.setAuth = function (method, loginId, loginAuth) {
         switch (method) {
-            case methods_1.AuthMethod.basic:
+            case services_1.AuthMethod.basic:
                 this.configure({ auth: { username: loginId, password: loginAuth } });
                 break;
-            case methods_1.AuthMethod.oauth2:
+            case services_1.AuthMethod.oauth2:
         }
     };
     return AbstractGitRestClient;
@@ -49,7 +49,7 @@ var GithubRestClient = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     GithubRestClient.prototype.getAuthMethods = function () {
-        return [methods_1.AuthMethod.basic, methods_1.AuthMethod.token];
+        return [services_1.AuthMethod.basic, services_1.AuthMethod.token];
     };
     return GithubRestClient;
 }(AbstractGitRestClient));

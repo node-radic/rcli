@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, Log, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
 
 @command(`remove
@@ -8,19 +8,19 @@ import { RConfig } from "../../";
     })
 export class RemoveCmd {
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @lazyInject('cli.helpers.input')
+    @inject('cli.helpers.input')
     ask: InputHelper;
 
-    @lazyInject('r.log')
+    @inject('r.log')
     log: Log;
 
-    @lazyInject('r.config')
+    @inject('r.config')
     config: RConfig
 
-    @lazyInject('cli.events')
+    @inject('cli.events')
     events: Dispatcher;
 
     async handle(args: CommandArguments, ...argv: any[]) {

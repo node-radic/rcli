@@ -1,6 +1,6 @@
 export type SSHConnectionMethod = 'key' | 'password'
 
-export interface SSHConnection {
+export interface ISSHConnection {
     host?: string
     port: number,
     method: SSHConnectionMethod,

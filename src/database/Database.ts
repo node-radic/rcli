@@ -13,6 +13,7 @@ export class Database {
     public get knex(): Knex {return this._knex; }
 
     constructor(options: Config = {}) {
+
         this.options = _.merge({
             client          : 'sqlite3',
             useNullAsDefault: true,
@@ -23,6 +24,7 @@ export class Database {
         const knex   = Knex(this.options)
         Model.knex(knex);
         this._knex = knex;
+
     }
 
     public migrate(): Promise<any> {

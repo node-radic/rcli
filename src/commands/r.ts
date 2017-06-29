@@ -1,8 +1,9 @@
-import { Cli, command, CommandConfig, inject, lazyInject, Log, OutputHelper } from "@radic/console";
+import { Cli, CliExecuteCommandParsedEvent, command, CommandConfig, CommandDescriptionHelper, Dispatcher, inject, lazyInject, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../";
+import * as omelette from "omelette";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
-    subCommands: [ 'ssh', 'services', 'git', 'config', 'info', 'socket' ],
+    subCommands: [ 'ssh', 'connect', 'git', 'config', 'info', 'socket', 'tree', 'completion'],
     alwaysRun  : true,
     onMissingArgument: 'help',
     helpers: {
@@ -14,17 +15,19 @@ import { RConfig } from "../";
     }
 })
 export class RcliCmd {
-    @lazyInject('cli.helpers.output')
-    protected out: OutputHelper;
 
-    @lazyInject('r.log')
+
+
+    @inject('cli.helpers.help')
+    protected help: CommandDescriptionHelper;
+
+    @inject('r.log')
     protected log: Log;
 
     @inject('r.config')
     protected config: RConfig;
 
     always(){
-
         if ( this.config('debug') === true ) {
             this.log.level = 'debug';
         }
@@ -32,7 +35,6 @@ export class RcliCmd {
 
 
     handle(...args: any[]) {
-        this.out.success('Try -h for options')
         return true;
     }
 }

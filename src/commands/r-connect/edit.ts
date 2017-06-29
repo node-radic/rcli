@@ -1,6 +1,5 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
-import { RConfig } from "../../";
-import { Credential } from "../../database/Models/Credential";
+import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, Log, OutputHelper } from "@radic/console";
+import { RConfig,Credential } from "../../";
 
 @command(`edit 
 [name:string@the service connection name]
@@ -11,19 +10,19 @@ import { Credential } from "../../database/Models/Credential";
     })
 export class EditCmd {
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @lazyInject('cli.helpers.input')
+    @inject('cli.helpers.input')
     ask: InputHelper;
 
-    @lazyInject('r.log')
+    @inject('r.log')
     log: Log;
 
-    @lazyInject('r.config')
+    @inject('r.config')
     config: RConfig
 
-    @lazyInject('cli.events')
+    @inject('cli.events')
     events: Dispatcher;
 
 

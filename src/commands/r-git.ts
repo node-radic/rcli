@@ -1,30 +1,10 @@
 import { OutputHelper ,command, option ,Config,inject, lazyInject } from "@radic/console";
 
-@command('git', 'Remote git communication', ['repo'], {
-    onMissingArgument: 'help',
-    group: 'API'
+@command('git {command}', 'Remote git communication', ['repo'], {
+    onMissingArgument: 'help'
 })
 export class GitCmd {
-    @inject('r.config')
-    config: Config
-
-    @lazyInject('cli.helpers.output')
-    protected out: OutputHelper;
-
-
-    @option('l', 'list configuration, or part of it')
-    list: boolean
-
-    @option('d', 'delete configuration on [path] ')
-    delete: boolean
-
     handle(args: { [name: string]: any }) {
-        let path, value, list, del;
-        if ( args[ 'path' ] ) path = args[ 'path' ]
-        if ( args[ 'value' ] ) value = args[ 'value' ]
-        list = this.list;
-        del  = this.delete;
-        this.out.dump({path, value, list, del})
 
     }
 }

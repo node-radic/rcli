@@ -44,6 +44,7 @@ export function setPermissions(paths) {
 
 export let paths: Paths;
 export function setPaths(overrides: any = {}, _root: string = null, _home: string = null, r: string = '.rcli'): Paths {
+
     if ( _root ) root = _root
     if ( _home ) home = _home
 
@@ -73,6 +74,7 @@ export function setPaths(overrides: any = {}, _root: string = null, _home: strin
     }
     container.bind('r.paths').toConstantValue(paths);
     setPermissions(paths)
+
     return paths
 }
 

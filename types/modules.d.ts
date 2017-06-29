@@ -197,6 +197,23 @@ declare module "cliui" {
     export = cliui;
 }
 
+interface Omelette extends NodeJS.EventEmitter {
+    setProgram(programs: string): string[]
+    setFragments(fragments: string | string[])
+    generate(): number
+    tree(objectTree: Object): this
+    checkInstall(): boolean
+    getActiveShell(): 'bash' | 'zsh' | 'fish' | undefined;
+    init(): number | undefined;
+}
+interface OmeletteStatic {
+    (template: string): Omelette
+}
+declare module "omelette" {
+    var omelette: OmeletteStatic;
+    export = omelette;
+}
+
 
 declare module "lastpass" {
     interface Lastpass {
@@ -215,4 +232,5 @@ declare module "lastpass" {
     var Lastpass: LastpassConstructor
     export default Lastpass
 }
+
 

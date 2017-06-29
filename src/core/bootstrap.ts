@@ -1,17 +1,16 @@
 #!/usr/bin/env node
-import "../index";
-import { Cli, CliConfig, container, log } from "@radic/console";
+import { Cli, CliConfig, container, Event, log } from "@radic/console";
 import * as winston from "winston";
 import * as Raven from "raven";
-import { PKG } from "../services/static";
 import { Client } from "raven";
+import { PKG } from "../services/static";
 import { Database } from "../database/Database";
 import { RConfig } from "./config";
 import { paths } from "./paths";
 
-export function bootstrapRaven(){
+export function bootstrapRaven() {
 
-    const rconfig    = container.get<RConfig>('r.config')
+    const rconfig = container.get<RConfig>('r.config')
     if ( rconfig.has('raven.dsn') ) {
         const sentry: Client = Raven.config(rconfig('raven.dsn')).install({
             name   : 'rcli',
@@ -45,7 +44,7 @@ export function bootstrapRcli(): Promise<Cli> {
             maxsize    : 300000,
             maxFiles   : 4,
             options    : {
-                flags          : 'w+',
+                flags          : 'a',
                 defaultEncoding: 'utf8',
                 fd             : null,
                 mode           : 0o666,
@@ -61,7 +60,7 @@ export function bootstrapRcli(): Promise<Cli> {
         transports.push(new (winston.transports[ 'Sentry' ])({
             dsn        : rconfig('raven.dsn'),
             level      : 'info',
-             patchGlobal: true
+            patchGlobal: true
         }))
     }
 
@@ -83,6 +82,7 @@ export function bootstrapRcli(): Promise<Cli> {
     cli
         .helper('input')
         .helper('output')
+        .helper('completion')
         .helper('ssh.bash')
         .helper('help', {
             addShowHelpFunction: true,
@@ -96,6 +96,7 @@ export function bootstrapRcli(): Promise<Cli> {
             option: { key: 'v', name: 'verbose' }
         })
 
+    // cli.events.on('**', (event: Event) => event && event.event && console.log('event', event.event, process.uptime()))
     return new Promise((resolve, reject) => {
         const db = new Database();
         container.bind('r.db').toConstantValue(db);

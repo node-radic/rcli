@@ -18,7 +18,7 @@ export class SocketCmd {
     @inject('service.sockets.udp')
     sockets:UDPSocketFactory
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     protected out: OutputHelper;
 
 

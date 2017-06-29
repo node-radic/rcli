@@ -1,19 +1,13 @@
-import { command, CommandArguments, CommandConfig, inject, Log, option, OptionConfig, OutputHelper } from "@radic/console";
-import { Paths, RConfig } from "..";
+import { command, CommandConfig, inject, Log, OptionConfig, OutputHelper } from "@radic/console";
+import { Paths } from "..";
 
-@command('ssh {operation}', 'SSH connection helper', [ 'add',  'list', 'edit', 'ssh', 'remove' ], { //'bulk',
-    onMissingArgument: 'help',
-    helpers          : {
-        help: {
-            app: { title: 'SSH Connection Helper' }
-        }
-    }
+@command('ssh {command}', 'SSH connection helper', [ 'add', 'list', 'edit', 'remove', 'console', 'mount', 'umount' ], { //'bulk',
+    onMissingArgument: 'help'
 })
-export class RcliConnectCmd {
+export class RcliSshCmd {
 
     _config: CommandConfig
     _options: OptionConfig[]
-    showHelp: () => void
 
     @inject('cli.helpers.output')
     out: OutputHelper;
@@ -23,17 +17,10 @@ export class RcliConnectCmd {
 
 
     @inject('r.paths')
-    paths:Paths
+    paths: Paths
 
-    @option('e', 'open the givein connectionin editor')
-    editor:string
+    handle() {
 
-
-
-
-    handle(args: CommandArguments, argv: any[]) {
-        if(this.editor){
-        }
     }
 }
-export default RcliConnectCmd
+export default RcliSshCmd

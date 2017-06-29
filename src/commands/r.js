@@ -23,18 +23,17 @@ var RcliCmd = (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this.out.success('Try -h for options');
         return true;
     };
     return RcliCmd;
 }());
 __decorate([
-    console_1.lazyInject('cli.helpers.output'),
-    __metadata("design:type", typeof (_a = typeof console_1.OutputHelper !== "undefined" && console_1.OutputHelper) === "function" && _a || Object)
-], RcliCmd.prototype, "out", void 0);
+    console_1.inject('cli.helpers.help'),
+    __metadata("design:type", console_1.CommandDescriptionHelper)
+], RcliCmd.prototype, "help", void 0);
 __decorate([
-    console_1.lazyInject('r.log'),
-    __metadata("design:type", typeof (_b = typeof console_1.Log !== "undefined" && console_1.Log) === "function" && _b || Object)
+    console_1.inject('r.log'),
+    __metadata("design:type", Object)
 ], RcliCmd.prototype, "log", void 0);
 __decorate([
     console_1.inject('r.config'),
@@ -42,7 +41,7 @@ __decorate([
 ], RcliCmd.prototype, "config", void 0);
 RcliCmd = __decorate([
     console_1.command('r {command:string@any of the listed commands}', {
-        subCommands: ['ssh', 'services', 'git', 'config', 'info', 'socket'],
+        subCommands: ['ssh', 'connect', 'git', 'config', 'info', 'socket', 'tree', 'completion'],
         alwaysRun: true,
         onMissingArgument: 'help',
         helpers: {
@@ -56,5 +55,4 @@ RcliCmd = __decorate([
 ], RcliCmd);
 exports.RcliCmd = RcliCmd;
 exports.default = RcliCmd;
-var _a, _b;
 //# sourceMappingURL=r.js.map

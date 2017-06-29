@@ -1,4 +1,7 @@
 import { JsonSchema, Model, RelationMapping } from "objection";
+import { container } from "@radic/console";
+import { GitHubServer, GitServer } from "../../services/apis/git";
+import { AxiosInstance } from "axios";
 
 
 export class Credential extends Model {
@@ -8,6 +11,15 @@ export class Credential extends Model {
              method: string
              key: string
              secret: string
+
+    public getApiService() : GitServer {
+        if(this.service === 'github'){
+            return container.get<GitHubServer>('r.api.github').setCredentials(this)
+        }
+
+    }
+
+
 
     static tableName = 'Credentials';
 

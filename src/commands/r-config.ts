@@ -19,19 +19,19 @@ export class ConfigCmd {
     @inject('r.config.core')
     configCore: PersistentFileConfig
 
-    @lazyInject('cli.helpers.help')
+    @inject('cli.helpers.help')
     help: OutputHelper;
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     ask: InputHelper;
 
     @inject('r.config')
     config: RConfig
 
-    @lazyInject('r.log')
+    @inject('r.log')
     log: Log
 
     @option('l', 'list configuration settings')
@@ -119,7 +119,7 @@ export class ConfigCmd {
     protected listPath(path, rootConfig = false) {
         let dotted = dotize(this[rootConfig ? 'configCore' : 'config'].get(path || ''),'')
         Object.keys(dotted).forEach(key => {
-            this.out.line(`'{darkorange}${key}{/darkorange} : {green}${dotted[ key ]}{/green}`)
+            this.out.line(`{darkorange}${key}{/darkorange} : {green}${dotted[ key ]}{/green}`)
         })
         return this;
     }

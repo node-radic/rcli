@@ -10,19 +10,32 @@ import { container } from "@radic/console";
 import { isAbsolute, join } from "path";
 import * as globule from "globule";
 
-interface RConfig extends IConfigProperty {}
+
+interface RConfig extends IConfigProperty {
+    save(): this
+
+    load(): this
+
+    lock(): this
+
+    unlock(): this
+
+    isLocked(): boolean
+
+    reset(): this
+}
 
 
 let defaultConfig: any = {
-    debug   : false,
-    env     : {},
-    cli     : {
+    debug  : false,
+    env    : {},
+    cli    : {
         showCopyright: true
     },
-    auth    : {
+    auth   : {
         connections: []
     },
-    dgram   : {
+    dgram  : {
         server: {
             host: '127.0.0.1',
             port: 41333
@@ -32,10 +45,10 @@ let defaultConfig: any = {
             port: Math.round(Math.random() * 10000) + 1000
         }
     },
-    pmove   : {
+    pmove  : {
         extensions: [ 'mp4', 'wma', 'flv', 'mkv', 'avi', 'wmv', 'mpg' ]
     },
-    connect : {}
+    connect: {}
 };
 
 // load .env stuff
@@ -51,16 +64,16 @@ function parseEnvVal(val: any) {
 class PersistentFileConfig extends Config {
     cryptr: any;
     defaultConfig: Object;
-    protected autoload:boolean = true;
-    protected filePath:string
+    protected autoload: boolean    = true;
+    protected filePath: string
     protected saveEnabled: boolean = false;
 
     constructor(obj: Object) {
         super({});
-        this.cryptr        = new Cryptr((new Keys())._public)
+        this.cryptr        = new Cryptr((new Keys()).public)
         this.defaultConfig = obj;
-        this.filePath = paths.userDataConfig;
-        if(this.autoload) {
+        this.filePath      = paths.userDataConfig;
+        if ( this.autoload ) {
             this.load();
             this.loadEnv();
         }
@@ -70,7 +83,6 @@ class PersistentFileConfig extends Config {
         super.set(prop, value);
         return this.save();
     }
-
 
     unset(prop: any): any {
         super.unset(prop);
@@ -184,13 +196,19 @@ class PersistentFileConfig extends Config {
 
         return this;
     }
+
+    public static makeProperty(config: PersistentFileConfig) :RConfig {
+        let prop = Config.makeProperty(config);
+        [ 'save', 'load', 'lock', 'unlock', 'reset', 'isLocked' ].forEach(fnName => prop[ fnName ] = config[ fnName ].bind(config))
+        return <RConfig> prop;
+    }
 }
 
 
 let _config = new PersistentFileConfig(defaultConfig);
 _config.load();
 // export the wrapped config
-const config: RConfig = Config.makeProperty(_config);
+const config: RConfig = PersistentFileConfig.makeProperty(_config);
 
 container.bind<PersistentFileConfig>('r.config.core').toConstantValue(_config);
 container.bind<RConfig>('r.config').toConstantValue(config);

@@ -18,7 +18,7 @@ export class RcliConnectEditCmd {
     @inject('cli.helpers.ssh.bash')
     ssh: SshBashHelper
 
-    @lazyInject('r.log')
+    @inject('r.log')
     log: Log;
 
     @inject('r.config')
@@ -55,7 +55,6 @@ export class RcliConnectEditCmd {
         if ( this.interactive ) {
             return this.startInteractive();
         }
-
         let name:string = 'connect.' + args.name;
         if ( ! this.config.has(name) ) {
             this.log.error('First argument : No such connection named ' + args.name)

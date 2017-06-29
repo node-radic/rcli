@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, lazyInject, Log, Dispatcher, option, OutputHelper,InputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, inject, Log, Dispatcher, option, OutputHelper,InputHelper } from "@radic/console";
 import { RConfig } from "../../core/config";
 import * as editor from 'open-in-editor';
 import { paths } from "../../core/paths";
@@ -36,19 +36,19 @@ $ r connect add srv1 admin 123.123.123.123 --port 5050 \\
     })
 export class RcliConnectAddCmd {
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @lazyInject('cli.helpers.input')
+    @inject('cli.helpers.input')
     ask: InputHelper;
 
-    @lazyInject('r.log')
+    @inject('r.log')
     log: Log;
 
-    @lazyInject('r.config')
+    @inject('r.config')
     config: RConfig
 
-    @lazyInject('cli.events')
+    @inject('cli.events')
     public events: Dispatcher;
 
 

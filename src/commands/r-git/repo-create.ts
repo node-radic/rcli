@@ -1,11 +1,13 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
 
-@command(`repo` , 'Git repository actions', ['create', 'list'], <CommandConfig> {
+@command(`create 
+{service:string@The service (github,bitbucket)}
+[connection:string@the service connection]`
+    ,'Create repository', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class GitRepoCmd {
-    showHelp: () => void
+export class GitRepoCreateCmd {
 
     @inject('cli.helpers.output')
     out: OutputHelper;
@@ -27,12 +29,11 @@ export class GitRepoCmd {
     service:string
 
     async handle(args: CommandArguments, ...argv: any[]) {
-        if(this.service){
 
-        }
 
-        this.showHelp();
+
+
     }
 
 }
-export default GitRepoCmd
+export default GitRepoCreateCmd

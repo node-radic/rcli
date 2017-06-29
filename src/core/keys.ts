@@ -12,8 +12,11 @@ export class Keys
 
 
     constructor() {
-        this._secret = cryptico.generateRSAKey('pass', 1024)
-        this._public = fs.existsSync(paths.userPublicKeyFile) ? this.loadUserKeyFiles() : this.generateUserKeyFiles();
+        // cryptico.generateRSAKey('pass', 1024)
+        if(!fs.existsSync(paths.userSecretKeyFile)){
+            fs.writeFileSync(paths.userSecretKeyFile, cryptico.generateRSAKey('pass', 1024))
+        }
+        this._secret = fs.readFileSync(paths.userSecretKeyFile,'utf-8')
     }
 
     generateUserKeyFiles() {
@@ -29,5 +32,10 @@ export class Keys
 
     get secret(): string { return this._secret }
 
-    get public(): string { return this._public }
+    get public(): string {
+        if(!this._public){
+            this._public = fs.existsSync(paths.userPublicKeyFile) ? this.loadUserKeyFiles() : this.generateUserKeyFiles();
+        }
+        return this._public
+    }
 }

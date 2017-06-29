@@ -1,9 +1,9 @@
 import { helper, HelperOptions, HelperOptionsConfig, InputHelper, OutputHelper, lazyInject, Log } from "@radic/console";
 import { RConfig } from "../core/config";
 import * as _ from "lodash";
-import * as faker from "faker";
 import { existsSync } from "fs";
 import { readJSONSync } from "fs-extra";
+import { SSHConnection } from "../database/Models/SSHConnection";
 
 /**SSH CONNNECT HELPER*/
 
@@ -105,6 +105,7 @@ export class SshBashHelper {
     }
 
     has(name): SshConnectHelperDataSet {
+        SSHConnection.query().where({name}).first().execute();
         return this.config.has('connect.' + name)
     }
 
@@ -247,15 +248,26 @@ resultFilled   : ${resultFilled}`)
         return this.keys().map(key => this.config.get<SshConnectHelperDataSet>('connect.' + key))
     }
 
+    _faker:any;
+    /**
+     * @type Faker.FakerStatic
+     */
+    protected get faker():any {
+        if(! this._faker){
+            this._faker = require('faker');
+        }
+        return this._faker;
+    }
+
     async    runSeeder(total: number = 50) {
         let confirm = await
             this.ask.confirm('Are you sure you want to seed 50 random connections');
         for ( let i = 0; i < 50; i ++ ) {
-            let name    = faker.name.findName('server');
-            let dataSet = this.getDataSet(name, faker.internet.userName(), faker.internet.ip())
+            let name    = this.faker.name.findName('server');
+            let dataSet = this.getDataSet(name, this.faker.internet.userName(), this.faker.internet.ip())
             if ( 4 % i ) {
                 dataSet.method   = 'password'
-                dataSet.password = faker.internet.password(5)
+                dataSet.password = this.faker.internet.password(5)
             }
             dataSet.port      = Math.round((Math.random() * 10000))
             dataSet.hostPath  = 2 % i ? '/' : '/home'

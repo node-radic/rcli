@@ -1,6 +1,6 @@
-import { command, CommandArguments, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, InputHelper, inject, Log, OutputHelper } from "@radic/console";
 import { RConfig } from "../../core/config";
-import { SSHConnection } from "../../interfaces";
+import { ISSHConnection } from "../../interfaces";
 import * as inquirer from "inquirer";
 import { Answers, ChoiceType } from "inquirer";
 import { SshBashHelper } from "../../helpers/helper.ssh.bash";
@@ -9,19 +9,19 @@ import { SshBashHelper } from "../../helpers/helper.ssh.bash";
 @command('remove [name:string@the connection to remote]', 'Remove one, multiple or all connections')
 export class RcliConnectRemoveCmd {
 
-    @lazyInject('r.log')
+    @inject('r.log')
     log:Log
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @lazyInject('cli.helpers.input')
+    @inject('cli.helpers.input')
     ask: InputHelper;
 
-    @lazyInject('r.config')
+    @inject('r.config')
     config: RConfig;
 
-    @lazyInject('cli.helpers.ssh.bash')
+    @inject('cli.helpers.ssh.bash')
     ssh:SshBashHelper;
 
 
@@ -47,7 +47,7 @@ export class RcliConnectRemoveCmd {
         let keys    = Object.keys(this.config.get('connect'));
         let choices = [ new inquirer.Separator('--------') ]
         keys.forEach((key) => {
-            const conn: SSHConnection = this.config.get<SSHConnection>('connect.' + key)
+            const conn: ISSHConnection = this.config.get<ISSHConnection>('connect.' + key)
             let label: string         = [ conn.name ||  key, ' :: ', conn.user, '@', conn.host, ':', conn.port, ':', conn.hostPath, ' -> ', conn.localPath, ' using ', conn.method ].join('');
             choices.push(<any> {
                 name : label,
