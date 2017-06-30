@@ -140,7 +140,7 @@ class PersistentFileConfig extends Config {
     protected backup(data, encrypt: boolean = true): string {
         let totalFiles  = globule.find(join(paths.dbBackups, '*')).length;
         let prefix      = encrypt ? '.nocrypt.' : '.crypt.'
-        let filePath    = join(paths.dbBackups, totalFiles + prefix + moment().format('YYYY-MM-hh:mm:ss'));
+        let filePath    = join(paths.backups, totalFiles + prefix + moment().format('YYYY-MM-hh:mm:ss'));
         const str       = JSON.stringify(this.data);
         const encrypted = this.cryptr.encrypt(str);
         if ( encrypt ) {
@@ -159,11 +159,11 @@ class PersistentFileConfig extends Config {
         return this.backup(JSON.stringify(super.raw(''), null, 4), false)
     }
 
-    restore(filePath: string): this {
-        filePath.includes('.crypt');
+    restore(filePath: string, encrypt: boolean = true): this {
+        // filePath.includes('.crypt');
         let content = readFileSync(isAbsolute(filePath) ? filePath : join(process.cwd(), filePath));
+        if(encrypt) content = this.cryptr.decrypt(content);
         this.data   = JSON.parse(content.toString());
-
         this.save();
         this.load()
         return this;
