@@ -51,6 +51,25 @@ export class RcliConnectEditCmd {
     connect:SSHConnection
 
     async handle(args: ConnectEditArguments, ...argv: any[]) {
+        let io = SSHConnection.interact()
+        let name = args.name || (await io.pick<SSHConnection>()).name
+        let con:SSHConnection = await SSHConnection.query().where('name', name).first().execute()
+        io.setDefaultsFor(con.toJSON());
+        con = await io.update<SSHConnection>(con.id, [
+            'name',
+            'host',
+            'port',
+            'user',
+            'method',
+            'password',
+            'localPath',
+            'hostPath'
+        ], {
+            method  : { type: 'list', choices: [ 'key', 'password' ] },
+            password: { when: (answers: any) => answers.method === 'password' }
+        })
+    }
+    async handle2(args: ConnectEditArguments, ...argv: any[]) {
 
         if ( this.interactive ) {
             return this.startInteractive();
@@ -95,7 +114,7 @@ export class RcliConnectEditCmd {
         let names = Object.keys(this.config('connect'));
         let name  = await this.ask.list('name', names);
         console.log('need to edit ' + name);
-        let availableFields       = [ 'user', 'host', 'port', 'method', 'localPath', 'hostPath' ]
+        let availableFields       = [ 'user', 'host', 'port', 'method', 'localPath', 'hostPath','password' ]
         let chosenFields: any = await this.ask.checkbox('Choose fields to edit', availableFields)
         let current               = this.config('connect.' + name);
 

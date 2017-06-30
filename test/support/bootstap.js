@@ -11,6 +11,6 @@ function startTestingBootstrap(options, startCommandFile) {
     if (names.length > 0)
         names.forEach(function (name, index) { return console_1.cli.helper(name, options.helpersCustomised[name] || {}); });
     if (startCommandFile)
-        require(__dirname + '/../src/commands/' + startCommandFile);
+        console_1.cli.start(__dirname + '/../src/commands/' + startCommandFile);
 }
 exports.startTestingBootstrap = startTestingBootstrap;

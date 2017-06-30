@@ -4,7 +4,7 @@ import { readJSONSync } from "fs-extra";
 import { existsSync, statSync } from "fs";
 import { container } from "@radic/console";
 import { chmod, mkdir } from "shelljs";
-let root = j(__dirname, '..', '..', '..'),
+let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()
 
@@ -34,9 +34,11 @@ export interface Paths {
 
 export function setPermissions(paths) {
 
-    [ paths.userData, paths.dbBackups ].filter(dir => ! existsSync(dir)).forEach(dir => {
-        mkdir('-p', dir)
-        chmod(755, dir)
+    [ paths.userDataConversion, paths.dbBackups ].forEach(dir => {
+        if(existsSync(dir)) {
+            mkdir('-p', dir)
+            chmod(755, dir)
+        }
     })
     let homeStats = statSync(paths.home);
 }

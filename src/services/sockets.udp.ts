@@ -24,7 +24,7 @@ export class UDPSocketFactory {
     constructor() {
     }
 
-    create(id?: string, port?: number) {
+    create(id?: string, port?: number) :Socket{
         const socket = createSocket('udp4')
         if ( port ) {
             socket.bind(parseInt(port.toString()))
@@ -37,12 +37,12 @@ export class UDPSocketFactory {
         return socket;
     }
 
-    createServer() {
+    createServer() :Socket{
         if ( this.server ) {
             return this.server;
         }
         const server = this.create('r.dgram.server');
-server.unref();
+        server.unref();
         server.on('error', (err:Error) => {
             console.log(`server error:\n${err.stack}`);
             server.close();
@@ -63,14 +63,16 @@ server.unref();
         server.bind(
             this.config('dgram.server.port'),
             this.config('dgram.server.host'), ()=>{
-            // server.addMembership('127.0.0.1')
+                // server.addMembership('127.0.0.1')
                 server.setBroadcast(true)
                 server.setMulticastLoopback(true)
-        })
+            })
+        server.on('close', () => this.createServer());
+
         return this.server = server;
     }
 
-    createClient() {
+    createClient():Socket {
         if ( this.client ) {
             return this.client;
         }

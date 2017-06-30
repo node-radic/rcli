@@ -100,7 +100,7 @@ export function bootstrapRcli(): Promise<Cli> {
     return new Promise((resolve, reject) => {
         const db = new Database();
         container.bind('r.db').toConstantValue(db);
-        db.migrate().then(() => {
+        db.migrateLatest().then(() => {
             resolve(cli)
         })
     })

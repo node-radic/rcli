@@ -1,5 +1,5 @@
-import { createSocket, Socket } from "dgram";
-import { OutputHelper, command, option, Config, inject, lazyInject, Dispatcher, CommandArguments, InputHelper } from "@radic/console";
+import { Socket } from "dgram";
+import { command, CommandArguments, Config, Dispatcher, inject, InputHelper, option, OutputHelper } from "@radic/console";
 import { UDPSocketFactory } from "../services/sockets.udp";
 
 @command(`socket
@@ -7,7 +7,7 @@ import { UDPSocketFactory } from "../services/sockets.udp";
 [message:string[]@message to send]`, 'Socket communication')
 export class SocketCmd {
     @inject('cli.events')
-    events:Dispatcher
+    events: Dispatcher
 
     @inject('r.config')
     config: Config
@@ -16,39 +16,44 @@ export class SocketCmd {
     input: InputHelper
 
     @inject('service.sockets.udp')
-    sockets:UDPSocketFactory
+    sockets: UDPSocketFactory
 
     @inject('cli.helpers.output')
     protected out: OutputHelper;
 
 
     @option('s', 'Send to a socket')
-    send:boolean
+    send: boolean
 
     @option('p', 'Port for sending')
-    port:number
+    port: number
 
 
-    async handle(args:CommandArguments) {
-        let socket:Socket;
-        if(args.type === 'server') {
-            const server = socket = this.sockets.createServer();
+    async handle(args: CommandArguments) {
+        let socket: Socket;
+        if ( args.type === 'server' ) {
+            return new Promise((res, rej) => this.sockets.createServer().on('close', () => {
+                res();
+            }))
         }
-        if(args.type === 'client'){
+        if ( args.type === 'client' ) {
+            // return new Promise((res, rej) => this.sockets.createServer().on('close', () => {
+            //     res();
+            // }))
             const client = socket = this.sockets.createClient()
         }
-        if(this.send){
+        if ( this.send ) {
             return this.communicateWith(socket, parseInt(this.port.toString()))
         }
-        return true;
+        return socket;
     }
 
 
-    async communicateWith(socket:Socket, port:number, host:string='0.0.0.0'){
+    async communicateWith(socket: Socket, port: number, host: string = '0.0.0.0') {
         let message = await this.input.ask('What do you want to send')
         socket.send(Buffer.from(message), port, host)
         let again = await this.input.confirm('Do you want to send something again?')
-        if(again){
+        if ( again ) {
             return await this.communicateWith(socket, port, host);
         }
     }

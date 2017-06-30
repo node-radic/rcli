@@ -41,7 +41,7 @@ __decorate([
 ], RcliCmd.prototype, "config", void 0);
 RcliCmd = __decorate([
     console_1.command('r {command:string@any of the listed commands}', {
-        subCommands: ['ssh', 'connect', 'git', 'config', 'info', 'socket', 'tree', 'completion'],
+        subCommands: ['ssh', 'connect', 'git', 'config', 'info', 'socket', 'serve', 'tree', 'completion', 'db'],
         alwaysRun: true,
         onMissingArgument: 'help',
         helpers: {

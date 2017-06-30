@@ -234,3 +234,29 @@ declare module "lastpass" {
 }
 
 
+
+
+interface FlatCache {
+    setKey(key:string, val:any)
+    getKey<T>(key:string) :T
+    removeKey(key:string)
+    /**
+     *
+     * very important, if you don't save no changes will be persisted.
+     * cache.save( true ) can be used to prevent the removal of non visited keys
+     *
+     * @param {boolean} noPrune can be used to prevent the removal of non visited keys
+     */
+    save(noPrune:boolean=false)
+
+}
+
+interface FlatCacheStatic {
+    load(id:string):FlatCache
+    clearCacheById(id:string)
+    clearAll()
+}
+declare module "flat-cache" {
+    var flatCache: FlatCacheStatic;
+    export = flatCache;
+}

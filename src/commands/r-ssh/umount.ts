@@ -1,6 +1,6 @@
 import { command, CommandArguments } from "@radic/console";
 import { RcliSshConnect } from "./connect";
-@command(`mount
+@command(`umount
 [name:string@Name of the connection]`,
     'umount the connection')
 export class RcliSshUMountCmd extends RcliSshConnect{

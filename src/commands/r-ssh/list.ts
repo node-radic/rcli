@@ -18,16 +18,13 @@ export class RcliConnectListCmd {
     @option('e', 'exclude columns')
     exclude:string[] = []
 
-    handle(args: CommandArguments, ...argv: any[]) {
-
-
-
-        let connect = this.config.get<SSHConnection[]>('connect', {});
-        let keys = Object.keys(connect);
-        let table = keys.map(name => {
-            let con = connect[ name ]
+    async handle(args: CommandArguments, ...argv: any[]) {
+        let cons :SSHConnection[] = await SSHConnection.query().select('*').execute();
+        let keys = Object.keys(cons);
+        let table = keys.map(i => {
+            let con = cons[ i ].toJSON()
+            delete con.id
             if ( con.password ) delete con.password
-            con.name = name;
             return con;
         })
 

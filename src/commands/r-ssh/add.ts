@@ -1,7 +1,8 @@
-import { command, CommandArguments, CommandConfig, inject, Log, Dispatcher, option, OutputHelper,InputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../../core/config";
-import * as editor from 'open-in-editor';
+import * as editor from "open-in-editor";
 import { paths } from "../../core/paths";
+import { SSHConnection } from "../../database/Models/SSHConnection";
 
 export interface ConnectAddArguments extends CommandArguments {
     name: string,
@@ -15,7 +16,7 @@ export interface ConnectAddArguments extends CommandArguments {
 [host:string@the host to connect]`
     , 'Add a connection', <CommandConfig> {
         onMissingArgument: 'help',
-        example: `
+        example          : `
 Interactive method works fastest. Answer some questions and done!
 $ r connect add -i 
 
@@ -76,17 +77,44 @@ export class RcliConnectAddCmd {
     @option('e', 'define in editor')
     editor: boolean
 
-    help:boolean = false;
+    help: boolean = false;
 
     async handle(args: ConnectAddArguments, ...argv: any[]) {
+        let io = SSHConnection.interact()
+        io.setDefaultsFor({
+            name     : args.name,
+            user     : args.user,
+            host     : args.host,
+            method   : 'key',
+            password : null,
+            port     : this.port,
+            localPath: this.localPath || '/mnt/' + args.name,
+            hostPath : this.hostPath || '/'
+        });
+        let con = await io.create([
+            'name',
+            'host',
+            'port',
+            'user',
+            'method',
+            'password',
+            'localPath',
+            'hostPath'
+        ], {
+            method  : { type: 'list', choices: [ 'key', 'password' ] },
+            password: { when: (answers: any) => answers.method === 'password' }
+        }, args)
+    }
 
-        if(this.editor){
+    async handle2(args: ConnectAddArguments, ...argv: any[]) {
+
+        if ( this.editor ) {
             this.askInEditor()
             return
         }
 
         this.events.on('add:help', () => this.help = true)
-        if(this.interactive || !args.name) return this.interact();
+        if ( this.interactive || ! args.name ) return this.interact();
 
         let data: any = {
             name     : args.name,
@@ -155,29 +183,29 @@ export class RcliConnectAddCmd {
         localPath = await this.ask.ask('Local mount point using SSHFS', '/mnt/' + name)
         hostPath  = await this.ask.ask('Host path to mount using SSHFS', '/')
 
-        let key   = 'connect.' + name;
-        let force:boolean     = false
-        if ( this.config.has(key) ){
+        let key            = 'connect.' + name;
+        let force: boolean = false
+        if ( this.config.has(key) ) {
             force = await this.ask.confirm('The given connection has already ben set. Backup and override it?')
-            if(force){
+            if ( force ) {
                 this.config.set('_backup:' + name, this.config.get(name))
             }
         }
-        this.config.set(`connect.${name}`, {name, user, host, port, method, password, localPath, hostPath});
+        this.config.set(`connect.${name}`, { name, user, host, port, method, password, localPath, hostPath });
 
         this.log.info(`Connection <${name}> added`)
         return true;
     }
 
-    handleInvalid(){
+    handleInvalid() {
         return this.interactive || this.help
     }
 
-    askInEditor(){
-        let editors = ['atom', 'code', 'sublime', 'webstorm', 'phpstorm', 'idea14ce', 'vim', 'visualstudio', 'emacs'];
+    askInEditor() {
+        let editors = [ 'atom', 'code', 'sublime', 'webstorm', 'phpstorm', 'idea14ce', 'vim', 'visualstudio', 'emacs' ];
         editor.configure({
             cmd: process.env.EDITOR
-        }, function(err) {
+        }, function (err) {
             console.error('Something went wrong: ' + err);
 
         });

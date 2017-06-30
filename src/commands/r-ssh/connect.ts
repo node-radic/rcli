@@ -1,10 +1,9 @@
 import { CommandArguments, CommandConfig, CommandDescriptionHelper, inject, injectable, InputHelper, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
-import { ISSHConnection } from "../../interfaces";
 import { ensureDirSync } from "fs-extra";
 import { execSync } from "child_process";
 import { rmdirSync } from "fs";
-import { Credential } from "../../database/Models/Credential";
+import { SSHConnection } from "../../database/Models/SSHConnection";
 //
 // @command(`connect
 // {name:string@name of the connection}
@@ -42,12 +41,8 @@ export abstract class RcliSshConnect {
 
     async handle(args: CommandArguments) {
 
-        let choices = await Credential.query()
-            .column('name')
-            .where('service', 'github')
-            .orWhere('service', 'bitbucket')
-
-        let name       = args.name || await this.ask.list('Service connection name?', Object.keys(this.config.get('connect'))),
+        let io         = SSHConnection.interact(),
+            name       = args.name || (await io.pick<SSHConnection>()).name,
             type       = args.type,
             validTypes = [ 'ssh', 'mount', 'umount' ];
 
@@ -57,17 +52,12 @@ export abstract class RcliSshConnect {
             return false
         }
 
-        if ( false === this.config.has('connect.' + name) ) {
-            this.log.error(`Given name [${name}] does not exist.`)
-            return false
-        }
-
-        let connect = this.config.get<ISSHConnection>('connect.' + name);
-        this[ type ](connect);
+        let con: SSHConnection = await SSHConnection.query().where('name', name).first().execute()
+        this[ type ](con.toJSON());
     }
 
 
-    mount(target: ISSHConnection) {
+    mount(target: SSHConnection) {
         let cmd: string = `${this.bins.sshfs} ${target.user}@${target.host}:${target.hostPath} ${target.localPath} -p ${target.port}`;
         if ( target.method === 'password' ) {
             cmd = `echo ${target.password} | ${cmd} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o reconnect -o workaround=rename -o password_stdin`
@@ -83,14 +73,14 @@ export abstract class RcliSshConnect {
         // process.stdout.write(cmd);
     }
 
-    umount(target: ISSHConnection) {
+    umount(target: SSHConnection) {
         let cmd: string = `sudo ${this.bins.umount} ${target.localPath} -f`;
         execSync(cmd);
         rmdirSync(target.localPath);
         this.log.info(`Unmounted ${target.localPath} success`);
     }
 
-    ssh(target: ISSHConnection) {
+    ssh(target: SSHConnection) {
         let cmd = '';
         if ( target.method === 'password' ) {
             cmd = `${this.bins.sshpass} -p ${target.password} `
