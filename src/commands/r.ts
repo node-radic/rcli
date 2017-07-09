@@ -3,7 +3,7 @@ import { RConfig } from "../";
 import * as omelette from "omelette";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
-    subCommands: [ 'ssh', 'connect', 'git', 'config', 'info', 'socket','serve', 'tree', 'completion', 'db'],
+    subCommands: [ 'ssh', 'connect', 'git', 'config', 'info', 'socket','serve', 'tree', 'completion', 'db', 'jira'],
     alwaysRun  : true,
     onMissingArgument: 'help',
     helpers: {

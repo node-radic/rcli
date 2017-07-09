@@ -12,3 +12,7 @@ src/**/*.js.map
 /docs
 /console.iml
 /gulpfile.js
+/tmp
+/*.log
+/*.iml
+/*.out

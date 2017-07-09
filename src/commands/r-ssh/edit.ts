@@ -15,9 +15,6 @@ export class RcliConnectEditCmd {
     @inject('cli.helpers.input')
     ask: InputHelper;
 
-    @inject('cli.helpers.ssh.bash')
-    ssh: SshBashHelper
-
     @inject('r.log')
     log: Log;
 
@@ -44,11 +41,6 @@ export class RcliConnectEditCmd {
 
     @option('R', 'path on the remote server to mount (sshfs)')
     hostPath: string;
-
-    @option('i', 'Interactive mode')
-    interactive: boolean;
-
-    connect:SSHConnection
 
     async handle(args: ConnectEditArguments, ...argv: any[]) {
         let io = SSHConnection.interact()

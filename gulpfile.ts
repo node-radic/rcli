@@ -5,20 +5,21 @@ import { join, resolve } from "path";
 import * as _ from "lodash";
 import { execSync } from "child_process";
 import { rm } from "shelljs";
-
+// import * as npm from 'npm'
+// npm.
 const c = {
-    src          : [ 'src/**/*.ts' ],
-    fileName     : 'console',
-    moduleName   : '@radic/console',
-    umdModuleName: 'radic.console'
+    src          : [ "src/**/*.ts", "!src/**/*.spec.ts" ],
+    fileName     : 'rcli',
+    moduleName   : '@radic/rcli',
+    umdModuleName: 'radic.rcli'
 };
 
-const binFile = `#!/usr/bin/env node
-import cli from '../spec/groups/fixture/index'
-let parsedRootNode = cli.parse()
-let parsedNode = cli.resolve()
-
-cli.handle(parsedNode);`
+// const binFile = `#!/usr/bin/env node
+// import cli from '../spec/groups/fixture/index'
+// let parsedRootNode = cli.parse()
+// let parsedNode = cli.resolve()
+//
+// cli.handle(parsedNode);`
 
 const tsProject = {
     lib : tsc.createProject("tsconfig.json", { module: "es2015", declaration: true, typescript: require("typescript") }),
@@ -50,10 +51,7 @@ gulp.task('clean:build', () => gulp.src([ 'dist', 'dts', 'es', 'lib', 'umd', 'co
 gulp.task('clean:src', () => gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]).pipe(clean()));
 
 gulp.task("build:lib", () => {
-    return gulp.src([
-        "src/**/*.ts",
-        "!src/**/*.spec.ts"
-    ])
+    return gulp.src(c.src)
         .pipe(tsProject.lib())
         .on("error", function (err) {
             process.exit(1);
@@ -61,31 +59,31 @@ gulp.task("build:lib", () => {
         .pipe(gulp.dest("lib/"))
 });
 
-gulp.task('build:umd', [ 'build:lib' ], (cb) => {
-    pump([
-
-        gulp.src('lib/**/*.js'),
-        rollup({
-            entry     : './lib/index.js',
-            format    : 'umd',
-            moduleName: 'radic.console',
-            globals   : { lodash: '_' }
-        }),
-        gulp.dest('./'),
-        clean(),
-        rename('radic.console.js'),
-        gulp.dest('./')
-    ], cb)
-});
-
-gulp.task('build:umd:minify', [ 'build:umd' ], (cb) => {
-    pump([
-        gulp.src('./radic.console.js'),
-        uglify(),
-        rename('radic.console.min.js'),
-        gulp.dest('./')
-    ], cb)
-});
+// gulp.task('build:umd', [ 'build:lib' ], (cb) => {
+//     pump([
+//
+//         gulp.src('lib/**/*.js'),
+//         rollup({
+//             entry     : './lib/index.js',
+//             format    : 'umd',
+//             moduleName: c.moduleName,
+//             globals   : { lodash: '_' }
+//         }),
+//         gulp.dest('./'),
+//         clean(),
+//         rename(c.fileName),
+//         gulp.dest('./')
+//     ], cb)
+// });
+//
+// gulp.task('build:umd:minify', [ 'build:umd' ], (cb) => {
+//     pump([
+//         gulp.src('./radic.console.js'),
+//         uglify(),
+//         rename('radic.console.min.js'),
+//         gulp.dest('./')
+//     ], cb)
+// });
 
 gulp.task("build:src", () => {
     return gulp.src([
@@ -127,7 +125,7 @@ gulp.task("test", () => {
     process.stdout.write(require.resolve('@radic/console'))
 
     let jasmineJson = join(__dirname, 'jasmine.json');
-    let done        = gulp.src(jasmineJson.spec_files)
+    let done        = gulp.src(jasmineJson[ 'spec_files' ])
         .pipe(jasmine({
             reporter: new SpecReporter({
                 displayStacktrace  : true,
@@ -149,17 +147,17 @@ gulp.task('ghpages', () => {
         .pipe(ghPages());
 });
 
-gulp.task('create-bin', (cb) => {
-    fs.ensureDirSync(resolve(__dirname, 'bin'));
-    fs.writeFile(resolve(__dirname, 'bin', 'rcli.ts'), binFile, { encoding: 'utf-8' }, (err: NodeJS.ErrnoException) => {
-        if ( err ) throw err;
-        cb();
-    })
-})
+// gulp.task('create-bin', (cb) => {
+//     fs.ensureDirSync(resolve(__dirname, 'bin'));
+//     fs.writeFile(resolve(__dirname, 'bin', 'rcli.ts'), binFile, { encoding: 'utf-8' }, (err: NodeJS.ErrnoException) => {
+//         if ( err ) throw err;
+//         cb();
+//     })
+// })
 // Run test once and exit
-gulp.task('karma', function (done) {
-    new Server({
-        configFile: __dirname + '/karma.conf.js',
-        singleRun : true
-    }, done).start();
-});
+// gulp.task('karma', function (done) {
+    // new Server({
+    //     configFile: __dirname + '/karma.conf.js',
+    //     singleRun : true
+    // }, done).start();
+// });
