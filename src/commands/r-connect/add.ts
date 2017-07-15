@@ -1,7 +1,7 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
 import { Credential, RConfig } from "../../";
-import { services } from "../../services/static";
 import { AuthMethod } from "../../services/AuthMethod";
+import { Services } from "../../services/Services";
 
 
 @command(`add 
@@ -13,27 +13,30 @@ import { AuthMethod } from "../../services/AuthMethod";
     })
 export class AddCmd {
 
-    @inject('cli.helpers.output')
+    @lazyInject('cli.helpers.output')
     out: OutputHelper;
 
-    @inject('cli.helpers.input')
+    @lazyInject('cli.helpers.input')
     ask: InputHelper;
 
-    @inject('r.log')
+    @lazyInject('r.services')
+    services:Services;
+
+    @lazyInject('r.log')
     log: Log;
 
-    @inject('r.config')
+    @lazyInject('r.config')
     config: RConfig
 
-    @inject('cli.events')
+    @lazyInject('cli.events')
     events: Dispatcher;
 
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
         let name    = args.name || await this.ask.ask('Name?')
-        let service = args.service || await this.ask.list('Service?', Object.keys(services))
-        let method  = args.method || await this.ask.list('Method?', services[ service ])
+        let service = args.service || await this.ask.list('Service?', this.services.getNames())
+        let method  = args.method || await this.ask.list('Method?', this.services.getMethodsFor(service).map(method => method.toString()))
 
         let m: AuthMethod = AuthMethod[ method ]
 

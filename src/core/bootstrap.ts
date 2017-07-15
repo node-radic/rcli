@@ -3,10 +3,10 @@ import { Cli, CliConfig, container, Event, log } from "@radic/console";
 import * as winston from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";
-import { PKG } from "../services/static";
 import { Database } from "../database/Database";
 import { RConfig } from "./config";
 import { paths } from "./paths";
+import { PKG } from "./static";
 
 export function bootstrapRaven() {
 
@@ -84,6 +84,7 @@ export function bootstrapRcli(): Promise<Cli> {
         .helper('output')
         .helper('completion')
         .helper('ssh.bash')
+        .helper('connect')
         .helper('help', {
             addShowHelpFunction: true,
             showOnError        : true,

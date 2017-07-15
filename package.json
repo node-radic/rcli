@@ -19,22 +19,14 @@
     "src",
     "bin"
   ],
-  "nexe": {
-    "input": "./bin/r.js",
-    "output": "r^$",
-    "runtime": {
-      "framework": "node",
-      "version": "6.10.0",
-      "js-flags": "",
-      "ignoreFlags": true
-    }
-  },
   "private": false,
   "license": "MIT",
   "repository": "https://github.com/node-radic/rcli",
   "scripts": {
     "build": "gulp build",
     "clean": "gulp clean",
+    "compiler:init": "gulp compiler:init",
+    "compiler:compile": "gulp compiler:compile",
     "dev:init": "npm run dev:install; gulp build; npm run dev:docs",
     "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",
     "dev:docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
@@ -48,11 +40,13 @@
     "test": "npm run build && gulp test"
   },
   "dependencies": {
-    "@radic/console": "0.0.8",
+    "@radic/console": "0.0.11",
     "@radic/console-colors": "^0.9.5",
     "@radic/util": "^1.7.1",
+    "@types/crypto-js": "^3.1.33",
     "Validator": "^1.0.4",
     "cryptico": "^1.0.2",
+    "crypto-js": "^3.1.9-1",
     "cryptr": "^2.0.0",
     "faker": "^4.1.0",
     "flat-cache": "^1.2.2",
@@ -65,6 +59,7 @@
     "moment": "^2.18.1",
     "objection": "^0.7.12",
     "omelette": "^0.4.4",
+    "open": "0.0.5",
     "open-in-editor": "^2.2.0",
     "pg": "^6.4.0",
     "pn": "^1.0.0",
@@ -114,6 +109,7 @@
     "cryptico": "^1.0.2",
     "cryptr": "^2.0.0",
     "del": "^3.0.0",
+    "download": "^6.2.5",
     "es6-symbol": "^3.1.0",
     "globule": "^1.0.0",
     "gulp": "^3.9.1",

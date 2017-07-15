@@ -5,6 +5,7 @@
         "noImplicitAny": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
         "sourceMap": true,
         "module": "commonjs",
         "skipLibCheck": true,

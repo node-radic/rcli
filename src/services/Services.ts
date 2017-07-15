@@ -1,32 +1,60 @@
+import { interfaces } from "inversify";
+import { container, lazyInject, singleton } from "@radic/console";
 import { AuthMethod } from "./AuthMethod";
-import * as _ from "lodash";
-import { Dictionary } from '../interfaces';
+import { Dictionary, IService, ServiceConfig } from "../interfaces";
+import { Credential } from "../database/Models/Credential";
 
 
-let available: Dictionary<string[]> = {
-    github   : [ 'token', 'basic' ],
-    jira     : [ 'oauth2', 'basic' ],
-    bitbucket: [ 'oauth2', 'basic' ]
-}
+container.bind('r.services.factory').toFactory((ctx: interfaces.Context) => {
+    return (name: string, credentials: Credential) => {
+        const service             = ctx.container.get<IService>('r.services.' + name)
+        let config: ServiceConfig = Reflect.getMetadata('service', service.constructor)
+        service[ 'service' ]      = config;
+        service.setCredentials(credentials);
+        return service;
+    }
+})
 
+@singleton('r.services')
 export class Services {
-    items: Dictionary<AuthMethod[]> = {}
+    protected items: Dictionary<ServiceConfig> = {}
 
-    constructor(){
-        Object.keys(available).forEach(name => {
-            this.items[name] = available[name].map(method => AuthMethod[method]);
-        })
+    @lazyInject('r.services.factory')
+    factory: (name: string, credentials: Credential) => IService
+
+
+    has(name: string): boolean {
+        return this.items[ name ] !== undefined
     }
 
-    getAvailable(){
+    getNames(): string[] {
         return Object.keys(this.items);
     }
 
-    getSupportedMethodsFor(name:string){
-
+    all(): Dictionary<ServiceConfig> {
+        return this.items;
     }
 
-    supportsMethod(name:string, method:AuthMethod|string){
-        return method.toString() in this.items[name]
+    getMethodsFor(name: string) {
+        return this.items[ name ].methods
+    }
+
+    supportsMethod(name: string, method: AuthMethod | string) {
+        return method.toString() in this.items[ name ].methods
+    }
+
+    make<T extends IService>(name: string, credentials: Credential): T {
+        return <T> this.factory(name, credentials);
+    }
+
+    get(name: string): ServiceConfig {
+        return this.items[ name ];
+    }
+
+    register(config: ServiceConfig) {
+        if ( this.has(config.name) ) {
+            throw new Error(`Cannot register service [${config.name}] because it already exists`);
+        }
+        this.items[ config.name ] = config;
     }
 }

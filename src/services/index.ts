@@ -1,6 +1,8 @@
-export * from './static'
-export * from './sockets.udp'
 export * from './AuthMethod'
+export * from './Services'
+export * from './AbstractService'
+export * from './service.google'
+export * from './sockets.udp'
 export * from './apis/git'
 export * from './apis/jira'
 

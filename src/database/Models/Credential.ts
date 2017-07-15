@@ -22,8 +22,8 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
              extra: T
              default_for_service: boolean
 
-    static getDefaultFor(service:string):Promise<Credential>{
-        return Credential.query().where('service', 'jira').andWhere('default_for_service', 1).first().execute()
+    static getDefaultFor(service: string): Promise<Credential> {
+        return Credential.query().where('service', service).andWhere('default_for_service', 1).first().execute()
     }
 
     getApiService(): GitServer {
@@ -64,13 +64,7 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
                 method             : { type: 'string', minLength: 1, maxLength: 255 },
                 key                : { type: 'string', minLength: 1, maxLength: 255 },
                 secret             : { type: 'string', minLength: 1, maxLength: 255 },
-                extra              : {
-                    type: 'object', default: {
-                        port    : 443,
-                        protocol: 'https',
-                        strict  : false
-                    }
-                },
+                extra              : { type: 'object', default: {} },
                 default_for_service: { type: 'boolean', default: false }
             }
         }

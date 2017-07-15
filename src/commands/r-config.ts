@@ -8,9 +8,13 @@ import { readdirSync } from "fs";
 [value:any@A JSON parseable value]`,  'View/edit rcli configuration', <CommandConfig> {
     onMissingArgument: 'help',
     example:`
-$ config -l                     # list
-$ config dgram.server.port      # view
-$ config dgram.server.port 80   # edit
+$ config -l                         # list configuration
+$ config -L                         # list backups
+$ config dgram.server.port          # view
+$ config dgram.server.port 80       # set
+$ config dgram.server.port 80 -f    # forced set
+$ config dgram.server.port 80 -B    # create backup then set
+$ config dgram.server.port -d       # unset
 `
 })
 export class ConfigCmd {
@@ -25,7 +29,7 @@ export class ConfigCmd {
     @inject('cli.helpers.output')
     out: OutputHelper;
 
-    @inject('cli.helpers.output')
+    @inject('cli.helpers.input')
     ask: InputHelper;
 
     @inject('r.config')
@@ -64,7 +68,7 @@ export class ConfigCmd {
         let list;
         switch ( true ) {
             case this.listBackups:
-                this.listLocalBackups();
+                this.listBackupIds();
                 break
             case this.restore:
                 this.restoreBackup(args.path);
@@ -90,7 +94,7 @@ export class ConfigCmd {
 
         if ( args.path.length > 0 && args.value ) {
             if(!this.set(args.path, args.value)){
-                this.log.warn(`A value alredy exist for path [${args.path}] You could use -f|--force to override`)
+                this.log.warn(`A value already exist for path [${args.path}] You could use -f|--force to override`)
             } else {
                 this.log.info(`Value ${args.value} for path [${args.path}] set`)
             }
@@ -100,19 +104,19 @@ export class ConfigCmd {
 
     }
 
-    protected createBackup(path?: string) {
-        this.configCore.backupWithoutEncryption()
+    protected createBackup() {
+        this.configCore.backupWithEncryption()
         return this;
     }
 
-    protected restoreBackup(filePath?:string) {
-        this.configCore.restore(filePath)
+    protected restoreBackup(id?:string) {
+        this.configCore.restore(id)
     }
 
 
-    protected listLocalBackups() {
-        this.configCore.getLocalBackupFiles().forEach(filePath => {
-            this.out.line(' - ' + filePath)
+    protected listBackupIds() {
+        this.configCore.getBackupIds().forEach(id => {
+            this.out.line(' - ' + id)
         })
     }
 

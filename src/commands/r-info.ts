@@ -1,5 +1,5 @@
 import { command, CommandArguments, inject, InputHelper, option, OutputHelper } from "@radic/console";
-import { PKG } from "../";
+import { PKG } from "../core/static";
 import { SSHConnection } from "../database/Models/SSHConnection";
 
 @command('info', 'General information')

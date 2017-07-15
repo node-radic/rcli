@@ -28,15 +28,15 @@ export class AuthMethod extends StringType {
     private static getName(method: AuthMethod | string, key: boolean = true) {
         switch ( true ) {
             case method == AuthMethod.basic:
-                return key ? 'username' : 'password'
+                return key ? 'user' : 'password'
             case method == AuthMethod.oauth:
                 return key ? 'key' : 'secret'
             case method == AuthMethod.oauth2:
                 return key ? 'id' : 'secret'
             case method == AuthMethod.token:
-                return key ? 'username' : 'token'
+                return key ? 'user' : 'token'
             case method == AuthMethod.key:
-                return key ? 'username' : 'keyfile'
+                return key ? 'user' : 'keyfile'
         }
     }
 

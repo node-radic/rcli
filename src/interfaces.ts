@@ -1,3 +1,6 @@
+import { Credential } from "./database/Models/Credential";
+import { AxiosInstance } from "axios";
+import { AuthMethod } from "./services/AuthMethod";
 export type SSHConnectionMethod = 'key' | 'password'
 
 export interface ISSHConnection {
@@ -39,7 +42,7 @@ export interface AuthMethodKey extends BaseAuthMethod {
 export interface IUser {
     name: string
     password: string
-    credentials?:ICredential[]
+    credentials?: ICredential[]
 }
 export type AuthService = 'github' | 'bitbucket' | 'jira'
 export interface ICredential {
@@ -69,4 +72,32 @@ export interface NumericDictionary<T> {
 
 export interface StringRepresentable {
     toString(): string;
+}
+
+
+export interface ServiceConfig<T extends ServiceExtraFields=ServiceExtraFields> {
+    name: string
+    provides?: string
+    methods: AuthMethod[]
+    extra?: T
+}
+export type ServiceExtraFieldType = 'string' | 'number' | 'boolean'
+export interface ServiceExtraFieldConfig {
+    type: ServiceExtraFieldType
+    default?: any
+    description?: string
+}
+export interface ServiceExtraFields {
+    [name: string]: ServiceExtraFieldType | ServiceExtraFieldConfig
+}
+
+export interface IService <T extends ServiceExtraFields=ServiceExtraFields> {
+    client?: AxiosInstance
+    credentials?: Credential
+    service?: ServiceConfig<T>
+    setCredentials(cred: Credential): this
+}
+
+export interface IServiceConstructor extends Function {
+    new(): IService
 }

@@ -2,12 +2,14 @@ import * as gulp from "gulp";
 import * as fs from "fs-extra";
 import * as tsc from "gulp-typescript";
 import { join, resolve } from "path";
-import * as _ from "lodash";
-import { execSync } from "child_process";
+import { exec, execSync } from "child_process";
 import { rm } from "shelljs";
+import { tmpdir } from "os";
+
 // import * as npm from 'npm'
 // npm.
 const c = {
+    binFile      : 'bin/r.js',
     src          : [ "src/**/*.ts", "!src/**/*.spec.ts" ],
     fileName     : 'rcli',
     moduleName   : '@radic/rcli',
@@ -27,6 +29,29 @@ const tsProject = {
     test: tsc.createProject("tsconfig.json", { typescript: require("typescript") })
 };
 
+const isPlatform: (name: string) => boolean = (name: string) => process.platform === name
+
+function getCompilerData(): { from: string, archiveFileName: string, to: string, output: string } {
+
+    let from            = 'http://enclose.io/nodec/nodec-x64.zip',
+        archiveFileName = 'nodec-x64.zip',
+        output          = 'r.exe',
+        to;
+
+    if ( isPlatform('linux') ) {
+        from            = 'http://enclose.io/nodec/nodec-linux-x64.gz'
+        output          = 'r'
+        archiveFileName = 'nodec-linux-x64.gz';
+    } else if ( isPlatform('darwin') ) {
+        from            = 'http://enclose.io/nodec/nodec-darwin-x64.gz'
+        output          = 'r'
+        archiveFileName = 'nodec-darwin-x64.gz';
+    }
+
+    to = join(tmpdir(), archiveFileName);
+
+    return { from, archiveFileName, to, output }
+}
 
 const
     pump         = require('pump'),
@@ -41,7 +66,8 @@ const
     jasmine      = require("gulp-jasmine"),
     clean        = require('gulp-clean'),
     SpecReporter = require('jasmine-spec-reporter'),
-    ghPages      = require("gulp-gh-pages")
+    ghPages      = require("gulp-gh-pages"),
+    download     = require('download')
 ;
 
 // gulp.task('clean', [ 'clean:src', 'clean:build' ]);
@@ -115,6 +141,24 @@ gulp.task("build", (cb) => {
     // , "build:umd", "build:umd:minify"
 });
 
+//https://github.com/pmq20/node-compiler
+gulp.task('compiler:init', (cb) => {
+    if ( fs.existsSync('nodec') ) {
+        return cb();
+    }
+    const { from, archiveFileName, to } = getCompilerData();
+    download(from, to, { extract: true }).then(cb);
+})
+
+
+gulp.task('compiler:compile', (cb) => {
+    execSync('npm uninstall @radic/console', { stdio: 'inherit' })
+    rm('-r', 'node_modules/@radic/console')
+    execSync('npm install @radic/console', { stdio: 'inherit' })
+    process.stdout.write(require.resolve('@radic/console'))
+    execSync(resolve('nodec') + ' ' + c.binFile, { stdio: 'inherit' })
+    exec('npm link @radic/console', { stdio: 'inherit' }, cb)
+})
 
 gulp.task("test", () => {
 
@@ -156,8 +200,8 @@ gulp.task('ghpages', () => {
 // })
 // Run test once and exit
 // gulp.task('karma', function (done) {
-    // new Server({
-    //     configFile: __dirname + '/karma.conf.js',
-    //     singleRun : true
-    // }, done).start();
+// new Server({
+//     configFile: __dirname + '/karma.conf.js',
+//     singleRun : true
+// }, done).start();
 // });
