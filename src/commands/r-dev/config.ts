@@ -1,6 +1,6 @@
 import { command, CommandArguments, CommandConfig, container, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
 import { dotize } from "@radic/util";
-import { PersistentFileConfig, RConfig } from "../";
+import { PersistentFileConfig, RConfig } from "../../";
 import { readdirSync } from "fs";
 
 @command(`config 

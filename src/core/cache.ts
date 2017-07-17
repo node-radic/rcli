@@ -1,7 +1,8 @@
 import { PersistentFileConfig } from "./config";
 import { paths } from "./paths";
-import { container } from "@radic/console";
+import { container, lazyInject } from "@radic/console";
 import { IConfig } from "@radic/util";
+import { DAY } from "./static";
 // const cache = new PersistentFileConfig({}, paths.userCache, true, true, false);
 //
 // container.constant<PersistentFileConfig>('r.cache', cache);
@@ -11,10 +12,18 @@ export interface ICache extends IConfig {
 }
 
 export class Cache extends PersistentFileConfig implements ICache {
-    expires: number = 60000 * 1000;
+    expires: number                = DAY
+
+    @lazyInject('r.config')
+    config:IConfig;
 
     constructor() {
         super({}, paths.userCache, true, true, false);
+        this.saveEnabled = true;
+    }
+
+    protected isDebug(): boolean {
+        return this.config.get('debug', false) === true
     }
 
     set(prop: string, value: any, expires?: number): ICache {
@@ -30,7 +39,7 @@ export class Cache extends PersistentFileConfig implements ICache {
 
 
     get<T extends any>(prop?: any, defaultReturnValue?: any): T {
-        if ( ! prop ) {
+        if ( ! prop || prop.toString().length === 0) {
             return super.get<T>();
         }
         if ( ! this.has(prop) ) {
@@ -41,6 +50,9 @@ export class Cache extends PersistentFileConfig implements ICache {
 
 
     has(prop?: any): boolean {
+        if(prop.toString().endsWith('.meta') || prop.toString().endsWith('.data')){
+            return super.has(prop);
+        }
         if ( ! super.has(prop + '.meta') ) {
             return false;
         }
@@ -55,6 +67,14 @@ export class Cache extends PersistentFileConfig implements ICache {
     }
 
 
+    save(): this {
+        return super.save();
+    }
+
+
+    load(): this {
+        return super.load();
+    }
 }
 
 const cache = new Cache();

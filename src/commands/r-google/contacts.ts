@@ -1,13 +1,12 @@
 import { command, CommandArguments, container } from "@radic/console";
 
-@command('contacs {command}', 'Google Contacts', ['list'], {
-    onMissingArgument: 'help',
-    usage: `Google services like Contacts, Calendar etc`
+@command('contacts {command:string?The command you want to run}', 'Google Contacts', {
+    isGroup: true,
 })
-export class GoogleConnectCmd{
+export class GoogleContactsCmd{
 
     handle(args: CommandArguments) {
 
     }
 }
-export default GoogleConnectCmd
+export default GoogleContactsCmd

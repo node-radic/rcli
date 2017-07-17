@@ -1,9 +1,11 @@
-import { command, CommandArguments, inject, InputHelper, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
 import { PKG } from "../core/static";
-import { SSHConnection } from "../database/Models/SSHConnection";
 
 @command('info', 'General information')
 export class InfoCmd {
+
+    @inject('r.log')
+    log: Log
 
     @inject('cli.helpers.output')
     out: OutputHelper;
@@ -17,8 +19,7 @@ export class InfoCmd {
     async handle(args: CommandArguments) {
         const deps    = Object.keys(PKG.dependencies)
         const devDeps = Object.keys(PKG.devDependencies);
-        let o         = this.out;
-        o.line(`
+        this.out.line(`
 Created by Robin Radic. 
 Copyright 2017 MIT.
 
@@ -32,6 +33,17 @@ For a complete list, run this command with --deps
         if ( this.deps )
             deps.concat(devDeps.map(dep => `{grey}${dep}{grey}`)).sort().forEach(name => this.out.line(' -  ' + name))
 
+        let msg = 'log level: ' + this.log.level
+        this.log.error(msg)
+        this.log.warn(msg)
+        this.log.alert(msg)
+        this.log.notice(msg)
+        this.log.help(msg)
+        this.log.info(msg)
+        this.log.verbose(msg)
+        this.log.data(msg)
+        this.log.debug(msg)
+        this.log.silly(msg);
     }
 
 }

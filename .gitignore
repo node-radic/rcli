@@ -17,3 +17,4 @@ src/**/*.js.map
 /*.iml
 /*.out
 /nodec
+/test.*

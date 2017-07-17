@@ -1,8 +1,12 @@
 import "./yargs-parser";
+import {Question as BaseQuestion} from "inquirer";
 
-declare namespace global {
+namespace global {
     export interface CliTable extends Array<string[]> {
 
+    }
+    export interface Question extends BaseQuestion {
+        source?: (answers:any, input:any) => Promise<string[]>
     }
 }
 

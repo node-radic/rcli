@@ -26,6 +26,10 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
         return Credential.query().where('service', service).andWhere('default_for_service', 1).first().execute()
     }
 
+    /**
+     * @deprecated
+     * @returns {GitHubServer}
+     */
     getApiService(): GitServer {
         if ( this.service === 'github' ) {
             return container.get<GitHubServer>('r.api.github').setCredentials(this)
@@ -44,6 +48,12 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
     //         }
     //     }
     // }
+
+
+    /**
+     * @deprecated
+     * @returns {GitHubServer}
+     */
     getJiraService(): any {
         if ( this.service === 'jira' ) {
             return container.get<Jira>('r.api.jira').getApi(this);

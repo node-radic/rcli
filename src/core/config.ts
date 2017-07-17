@@ -50,13 +50,18 @@ export class ConfigCrypto {
         return this.secretKey;
     }
 
-    encrypt(data: any): string {
-        return AES.encrypt(JSON.stringify(data), this.getSecretKey()).toString();
+    encrypt(message: string): string {
+
+        const key       = this.getSecretKey()
+        const encrypted = AES.encrypt(message, key, {}).toString();
+        return encrypted;
     }
 
-    decrypt<T extends Object>(ciphertext: string): T {
-        const bytes = AES.decrypt(ciphertext, this.getSecretKey());
-        return JSON.parse(bytes.toString(enc.Utf8))
+    decrypt(ciphertext: string): string {
+        const key       = this.getSecretKey()
+        const bytes     = AES.decrypt(ciphertext, key);
+        const decrypted = bytes.toString(enc.Utf8);
+        return decrypted
     }
 }
 
@@ -66,9 +71,15 @@ export class ConfigBackupStore {
     crypto: ConfigCrypto;
 
 
-    create(data, encrypt: boolean = true): string {
+    create(data: any, encrypt: boolean = true): string {
         const filePath = this.createUniqueFilePath(encrypt);
-        writeFileSync(filePath, encrypt ? this.crypto.encrypt(data) : JSON.stringify(data), 'utf-8')
+        if ( kindOf(data) !== 'string' ) {
+            data = JSON.stringify(data);
+        }
+        if ( encrypt ) {
+            data = this.crypto.encrypt(data)
+        }
+        writeFileSync(filePath, data, 'utf-8')
         return basename(filePath, '.js');
     }
 
@@ -77,8 +88,11 @@ export class ConfigBackupStore {
     }
 
     get(id: string, decrypt: boolean = true): any {
-        const raw = readFileSync(join(paths.dbBackups, id + '.js'), 'utf-8')
-        return decrypt ? this.crypto.decrypt(raw) : JSON.parse(raw);
+        let raw:string = readFileSync(join(paths.dbBackups, id + '.js'), 'utf-8')
+        if ( decrypt ) {
+            raw = this.crypto.decrypt(raw);
+        }
+        return JSON.parse(raw);
     }
 
     protected createUniqueFilePath(encrypt: boolean = true): string {
@@ -165,15 +179,20 @@ export class PersistentFileConfig extends Config {
     save(): this {
         if ( this.saveEnabled === false ) return this;
         if ( ! this.useCrypto ) {
-            writeJsonSync(this.filePath, this.data);
+            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), 'utf-8')
             return this;
         }
-        const encrypted = this.crypto.encrypt(JSON.stringify(this.data));
-        writeFileSync(this.filePath, encrypted, 'utf8');
-        if ( this.get('debug', false) === true ) {
-            writeJsonSync(this.filePath + '.debug.json', this.data);
+        let json = JSON.stringify(this.data);
+        let encrypted = this.crypto.encrypt(json);
+        writeFileSync(this.filePath, encrypted, 'utf-8');
+        if ( this.isDebug() ) {
+            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), 'utf-8')
         }
         return this;
+    }
+
+    protected isDebug(): boolean {
+        return this.get('debug', false) === true;
     }
 
     load(): this {
@@ -181,8 +200,16 @@ export class PersistentFileConfig extends Config {
         if ( ! existsSync(this.filePath) ) {
             return this.save()
         }
-        const config = readFileSync(this.filePath, 'utf8');
-        return this.useCrypto ? this.merge(this.crypto.decrypt(config)) : this.merge(JSON.parse(config))
+        let config = readFileSync(this.filePath, 'utf8');
+        if ( this.useCrypto ) {
+            config = this.crypto.decrypt(config)
+        }
+        let data = JSON.parse(config);
+        this.data = {
+            ...this.data,
+            ...data
+        }
+        return this;
     }
 
     lock(): this {
@@ -200,7 +227,14 @@ export class PersistentFileConfig extends Config {
     reset(): this {
         if ( ! existsSync(this.filePath) ) return this;
         unlinkSync(this.filePath);
-        writeJsonSync(this.filePath, {})
+
+        let json = JSON.stringify({})
+        if ( this.useCrypto ) {
+            const encrypted = this.crypto.encrypt(json);
+            writeFileSync(this.filePath, encrypted, 'utf-8');
+            return this;
+        }
+        writeFileSync(this.filePath, json, 'utf-8');
         return this;
     }
 

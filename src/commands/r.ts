@@ -3,23 +3,18 @@ import { RConfig } from "../";
 import * as omelette from "omelette";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
-    subCommands: [ 'ssh', 'connect', 'git', 'config', 'paths', 'google','info', 'socket','serve', 'tree', 'completion', 'db', 'jira'],
+    // subCommands: [  'dev', 'connect', 'ssh', 'git',  'google','info', 'tree'], //'completion', 'jira',
+    isGroup: true,
     alwaysRun  : true,
-    onMissingArgument: 'help',
-    helpers: {
-        help: {
-            display: {
-                arguments: false
-            }
-        }
-    }
+    // helpers: {
+    //     help: {
+    //         display: {
+    //             arguments: false
+    //         }
+    //     }
+    // }
 })
 export class RcliCmd {
-
-
-
-    @inject('cli.helpers.help')
-    protected help: CommandDescriptionHelper;
 
     @inject('r.log')
     protected log: Log;

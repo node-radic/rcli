@@ -10,14 +10,16 @@ import { parse, stringify } from "querystring";
 import * as open from "open";
 import { lazyInject, Log } from "@radic/console";
 
+
+
 export interface GoogleServiceContacts {
     results: number,
     entries: GoogleServiceContact[]
 }
 export interface GoogleServiceContact {
-    id?:string
-    name?:string
-    numbers?:Array<{type: string, number:string}>
+    id?: string
+    name?: string
+    numbers?: Array<{ type: string, number: string, primary?:boolean }>
 }
 
 @service({
@@ -42,6 +44,7 @@ export class GoogleService extends AbstractService {
         options    = {
             ...options,
             ...{
+                baseURL: 'https://www.google.com',
                 params : {
                     alt: 'json'
                 },
@@ -54,7 +57,7 @@ export class GoogleService extends AbstractService {
     }
 
 
-    setCredentials(creds: Credential): this {
+    public setCredentials(creds: Credential): this {
         super.setCredentials(creds);
         if ( this.requestInterceptorId !== undefined ) {
             this.client.interceptors.request.eject(this.requestInterceptorId);
@@ -67,6 +70,7 @@ export class GoogleService extends AbstractService {
         }, (err) => {
             this.log.error(err);
         })
+        this.enableCache();
         return this;
     }
 
@@ -88,8 +92,20 @@ export class GoogleService extends AbstractService {
         })
     }
 
-    public getContacts(params: { q?: string, 'max-results'?: number, 'start-index'?: number, orderby?: 'lastmodified', sortorder?: 'ascending' | 'descending' } = {}) : Promise<GoogleServiceContacts> {
-        return this.get(`https://www.google.com/m8/feeds/contacts/${this.credentials.extra[ 'email' ]}/full`, {
+    protected splitContactName(name:string) : {givenName:string, familyName:string, fullName:string} {
+
+        let fullName   = `<gd:fullName>${name}</gd:fullName>`;
+        let givenName  = `<gd:givenName>${name}</gd:givenName>`;
+        let familyName = ''
+        if ( name.split(' ').length > 1 ) {
+            givenName  = `<gd:givenName>${name.split(' ')[ 0 ]}</gd:givenName>`
+            familyName = `<gd:familyName>${name.split(' ')[ 1 ]}</gd:familyName>`
+        }
+        return {givenName, fullName, familyName};
+    }
+
+    public getContacts(params: { q?: string, 'max-results'?: number, 'start-index'?: number, orderby?: 'lastmodified', sortorder?: 'ascending' | 'descending' } = {}): Promise<GoogleServiceContacts> {
+        return this.get(`/m8/feeds/contacts/default/full`, {
             params
         }).then((res) => {
             let feed    = res.data.feed;
@@ -108,6 +124,73 @@ export class GoogleService extends AbstractService {
             });
 
             return Promise.resolve({ results: parseInt(feed[ 'openSearch$totalResults' ][ '$t' ]), entries })
+        })
+    }
+
+    public setContact(id:string, data:GoogleServiceContact) : Promise<any> {
+        let name = '';
+        if(data.name){
+            let {familyName,fullName,givenName} = this.splitContactName(name);
+            name = `<gd:name>${givenName}${familyName}${fullName}</gd:name>`
+        }
+        let numbers = '';
+        if(data.numbers){
+            numbers = data.numbers.map((number) => {
+                let primary = number.primary ? 'primary=true' : '';
+                return `<gd:phoneNumber rel="http://schemas.google.com/g/2005#${number.type}" ${primary}>${number.number}</gd:phoneNumber>`
+            }).join('\n')
+        }
+        let body = `<entry gd:etag="*">
+<id>http://www.google.com/m8/feeds/contacts/default/base/${id}</id>
+  <atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/>
+${name}
+${numbers}
+</entry>`
+        return this.put('/m8/feeds/contacts/default/full/' + id, {}, {
+            data: body,
+            headers: {
+                'content-type': 'application/atom+xml',
+                'if-match': '*'
+            }
+        }).then((res) => {
+            if(res.status !== 200){
+                return Promise.reject('The server responded with a non 200 status: ' + res.status + ' ' + res.statusText)
+            }
+            return Promise.resolve()
+        });
+    }
+
+    public deleteContact(id:string){
+        this.delete('/m8/feeds/contacts/default/full/' + id).then(res  => {
+            if(res.status  !== 200){
+                return Promise.reject('The server responded with a non 200 status: ' + res.status + ' ' + res.statusText)
+            }
+            return Promise.resolve()
+        })
+    }
+
+    public createContact(name: string, number: string, type: string = 'mobile') : Promise<string> {
+        let {familyName,fullName,givenName} = this.splitContactName(name);
+        let body = `<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005">
+  <atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/>
+  <gd:name>
+      ${givenName}
+      ${familyName}
+      ${fullName}
+  </gd:name>
+  <gd:phoneNumber rel="http://schemas.google.com/g/2005#${type}">  ${number}</gd:phoneNumber>
+</atom:entry>`;
+        return this.post('/m8/feeds/contacts/default/full', {}, {
+            data: body,
+            headers: {
+                'content-type': 'application/atom+xml'
+            }
+        }).then((res) => {
+            if(res.status !== 201){
+                return Promise.reject('The server responded with a non 201 status: ' + res.status + ' ' + res.statusText)
+            }
+            let idSegments: string[] = res.data[ 'id' ][ '$t' ].split('/');
+            return Promise.resolve(idSegments[idSegments.length -1]);
         })
     }
 

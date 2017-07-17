@@ -2,10 +2,11 @@ import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelp
 import { RConfig } from "../../";
 import { GitHubServer } from "../../services/apis/git";
 import { Credential } from "../../database/Models/Credential";
+import { ConnectHelper } from "../../helpers/helper.connect";
 
 @command(`repo
-[connection:string@The connection (github,bitbucket)]
 [action:string@which action to perform(list, create, delete)]
+[connection:string@The connection (github,bitbucket)]
 [full_name:string@full name for repository]`, 'Git repository actions', <CommandConfig> {
     onMissingArgument: 'help'
 })
@@ -17,6 +18,9 @@ export class GitRepoCmd {
 
     @inject('cli.helpers.input')
     ask: InputHelper;
+
+    @inject('cli.helpers.connect')
+    connect:ConnectHelper
 
     @inject('r.log')
     log: Log;
@@ -36,15 +40,7 @@ export class GitRepoCmd {
     async handle(args: CommandArguments, ...argv: any[]) {
 
         let actions = [ 'create', 'delete', 'list' ]
-        let choices = await Credential.query()
-            .column('name')
-            .where('service', 'github')
-            .orWhere('service', 'bitbucket')
-
-
-        let connectionName = args.connection || await this.ask.list('Service connection name?', choices)
-        let cred           = await Credential.query().where('name', connectionName).first()
-        if ( ! cred ) return this.log.error(`Connection [${connectionName}] not found`)
+        const cred = await this.connect.getCredentialForService(this.service || ['github', 'bitbucket'], args.connection);
         let api: GitHubServer = <GitHubServer> cred.getApiService()
         let action            = args.action || await this.ask.list('What to do?', actions);
 

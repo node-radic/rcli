@@ -1,6 +1,6 @@
 import { command, CommandArguments, lazyInject, Log, option, OutputHelper } from "@radic/console";
-import { Paths } from "../core/paths";
-import { RCFile, RCFileKey } from "../core/config";
+import { Paths } from "../../core/paths";
+import { RCFile, RCFileKey } from "../../core/config";
 
 export interface PathsCommandArguments extends CommandArguments {
     action: 'list' | 'set' | 'revert'

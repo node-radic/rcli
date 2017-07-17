@@ -42,7 +42,7 @@
   "dependencies": {
     "@radic/console": "0.0.11",
     "@radic/console-colors": "^0.9.5",
-    "@radic/util": "^1.7.1",
+    "@radic/util": "^1.7.3",
     "@types/crypto-js": "^3.1.33",
     "Validator": "^1.0.4",
     "cryptico": "^1.0.2",
@@ -169,7 +169,7 @@
     "tsd": "0.5.6",
     "tslint": "^3.15.1",
     "typedoc": "^0.5.10",
-    "typescript": "^2.3.4",
+    "typescript": "^2.4.1",
     "validatorjs": "^3.12.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"

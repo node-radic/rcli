@@ -1,6 +1,6 @@
 import { command, CommandArguments, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
-import { PKG } from "../core/static";
-import { Database } from "../database/Database";
+import { PKG } from "../../core/static";
+import { Database } from "../../database/Database";
 
 @command('db', 'General information')
 export class DBCmd {

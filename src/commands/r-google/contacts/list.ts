@@ -39,19 +39,10 @@ export class GoogleContactsListCmd {
                     }
                 });
                 this.out.columns(rowData, {
-                    showHeaders: true
+                    showHeaders: false
                 })
                 return Promise.resolve(data);
             })
-
-
-        // return google.request({
-        //     method: 'OPTIONS',
-        //     url: `https://www.google.com/m8/feeds/contacts/${cred.extra['email']}/full`
-        // }).then((res) => {
-        //     console.dir(res, {colors:true,depth:15});
-        //
-        // })
     }
 }
 export default GoogleContactsListCmd

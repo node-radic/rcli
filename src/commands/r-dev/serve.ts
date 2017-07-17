@@ -1,6 +1,6 @@
 import { Cli, command, CommandArguments, inject, InputHelper, Log, OutputHelper } from "@radic/console";
 import { ChildProcess, fork } from "child_process";
-import { paths } from "../core/paths";
+import { paths } from "../../core/paths";
 
 @command('serve', 'start serve')
 export class Servecmd {

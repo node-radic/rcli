@@ -44,7 +44,9 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
             return this;
         }
         this.cacheResponseInterceptorId = this._client.interceptors.response.use((res) => {
-            this._cache.set(this.getCacheKey(res.config.url, res.config.params), res.data);
+            if(res.config.method.toLowerCase() === 'get'){
+                this._cache.set(this.getCacheKey(res.config.url, res.config.params), res.data);
+            }
             return res;
         }, this.handleInterceptorError)
         return this;
@@ -65,9 +67,9 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
     }
 
     protected getCacheKey(url:string, params?:any):string{
-        let key = `service.${this.service.name}.${url}`// + this.service.name + '.' + req.url;
+        let key = `service.${this.service.name}.${url.replace(/\./g, '__')}`
         if ( params ) {
-            key += this.getParamsHash(params);
+            key += '?' + this.getParamsHash(params);
         }
         return key
     }
@@ -112,9 +114,11 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
     }
 
     request(config: AxiosRequestConfig): AxiosPromise {
-        let key = this.getCacheKey(config.url, config.params);
-        if(this._cache.has(key)){
-            return Promise.resolve(this._cache.get(key, {}))
+        if(this.isCacheEnabled() && config.method.toLowerCase() === 'get') {
+            let key = this.getCacheKey(config.url, config.params);
+            if ( this._cache.has(key) ) {
+                return Promise.resolve(this._cache.get(key, {}))
+            }
         }
         return this._client.request(config).catch(this.handleCatchedError);
     }
