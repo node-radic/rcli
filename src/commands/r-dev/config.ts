@@ -1,13 +1,12 @@
-import { command, CommandArguments, CommandConfig, container, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Config, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
 import { dotize } from "@radic/util";
-import { PersistentFileConfig, RConfig } from "../../";
-import { readdirSync } from "fs";
+import { PersistentFileConfig } from "../../";
 
 @command(`config 
 [path:string@dot notated string] 
-[value:any@A JSON parseable value]`,  'View/edit rcli configuration', <CommandConfig> {
+[value:any@A JSON parseable value]`, 'View/edit rcli configuration', <CommandConfig> {
     onMissingArgument: 'help',
-    example:`
+    example          : `
 $ config -l                         # list configuration
 $ config -L                         # list backups
 $ config dgram.server.port          # view
@@ -21,7 +20,12 @@ export class ConfigCmd {
     showHelp: () => void
 
     @inject('r.config.core')
-    configCore: PersistentFileConfig
+    configRcli: PersistentFileConfig
+
+    @inject('cli.config')
+    configCli: Config
+
+    config: PersistentFileConfig | Config
 
     @inject('cli.helpers.help')
     help: OutputHelper;
@@ -31,9 +35,8 @@ export class ConfigCmd {
 
     @inject('cli.helpers.input')
     ask: InputHelper;
-
-    @inject('r.config')
-    config: RConfig
+    // @inject('r.config')
+    // config: RConfig
 
     @inject('r.log')
     log: Log
@@ -47,23 +50,25 @@ export class ConfigCmd {
     @option('f', 'force the operation')
     force: boolean
 
-    @option('B', 'create a backup before any alteration')
+    @option('B', '(rcli) create a backup before any alteration')
     backup: boolean
 
-    @option('p', 'If backing up, backup as plain json readable file')
-    plain:boolean
+    @option('p', '(rcli) If backing up, backup as plain json readable file')
+    plain: boolean
 
-    @option('r', 'If backing up, backup as plain json readable file')
-    root:boolean
-
-    @option('e', 'restore a backup')
+    @option('e', '(rcli) restore a backup')
     restore: boolean
 
-    @option('L', 'List all local backups')
+    @option('L', '(rcli) List all local backups')
     listBackups: boolean
+
+    @option('c', 'Configure CLI config')
+    useCli: boolean
 
     handle(args: CommandArguments): any {
         args.path = args.path || ''
+
+        this.config = this.useCli ? this.configCli : this.configRcli
 
         let list;
         switch ( true ) {
@@ -82,7 +87,7 @@ export class ConfigCmd {
                 this.unset(args.path);
                 this.log.verbose(`config value at [${args.path}] has been removed`)
                 break;
-            case this.root:
+            case this.useCli:
                 list = this.listPath(args.path, true);
                 break;
             case this.list:
@@ -91,9 +96,8 @@ export class ConfigCmd {
         }
 
 
-
         if ( args.path.length > 0 && args.value ) {
-            if(!this.set(args.path, args.value)){
+            if ( ! this.set(args.path, args.value) ) {
                 this.log.warn(`A value already exist for path [${args.path}] You could use -f|--force to override`)
             } else {
                 this.log.info(`Value ${args.value} for path [${args.path}] set`)
@@ -105,23 +109,23 @@ export class ConfigCmd {
     }
 
     protected createBackup() {
-        this.configCore.backupWithEncryption()
+        this.configRcli.backupWithEncryption()
         return this;
     }
 
-    protected restoreBackup(id?:string) {
-        this.configCore.restore(id)
+    protected restoreBackup(id?: string) {
+        this.configRcli.restore(id)
     }
 
 
     protected listBackupIds() {
-        this.configCore.getBackupIds().forEach(id => {
+        this.configRcli.getBackupIds().forEach(id => {
             this.out.line(' - ' + id)
         })
     }
 
     protected listPath(path, rootConfig = false) {
-        let dotted = dotize(this[rootConfig ? 'configCore' : 'config'].get(path || ''),'')
+        let dotted = dotize(this[ rootConfig ? 'configCore' : 'configCli' ].get(path || ''), '')
         Object.keys(dotted).forEach(key => {
             this.out.line(`{darkorange}${key}{/darkorange} : {green}${dotted[ key ]}{/green}`)
         })
@@ -130,14 +134,14 @@ export class ConfigCmd {
 
     protected set(path, value): this {
         if ( false !== this.config.has(path) || this.force ) {
-            this.configCore.unlock()
-            this.configCore.set(path, JSON.parse(value))
-            this.configCore.lock()
+            ! this.useCli && this.configRcli.unlock()
+            this.useCli ? this.configCli.set(path, JSON.parse(value)) : this.configRcli.set(path, JSON.parse(value))
+            ! this.useCli && this.configRcli.lock()
         }
         return this
     }
 
-    protected unset(path:string): boolean {
+    protected unset(path: string): boolean {
         path.split(/\s/g).forEach(path => {
             if ( this.config.has(path) ) {
                 this.config.unset(path)

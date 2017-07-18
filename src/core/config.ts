@@ -1,6 +1,6 @@
 import * as moment from "moment";
 import { Config, getRandomId, IConfig, IConfigProperty, kindOf } from "@radic/util";
-import { existsSync, readFileSync, writeFileSync, writeJsonSync } from "fs-extra";
+import { existsSync, readFileSync, writeFileSync } from "fs-extra";
 import * as dotenv from "dotenv";
 import { paths, setPaths } from "./paths";
 import { unlinkSync } from "fs";
@@ -88,7 +88,7 @@ export class ConfigBackupStore {
     }
 
     get(id: string, decrypt: boolean = true): any {
-        let raw:string = readFileSync(join(paths.dbBackups, id + '.js'), 'utf-8')
+        let raw: string = readFileSync(join(paths.dbBackups, id + '.js'), 'utf-8')
         if ( decrypt ) {
             raw = this.crypto.decrypt(raw);
         }
@@ -124,6 +124,14 @@ let defaultConfig: any = {
     pmove: {
         extensions: [ 'mp4', 'wma', 'flv', 'mkv', 'avi', 'wmv', 'mpg' ]
     },
+    ssh  : {
+        bins: {
+            ssh    : 'ssh',
+            sshfs  : 'sshfs',
+            sshpass: 'sshpass',
+            umount : 'umount'
+        }
+    }
 };
 
 // load .env stuff
@@ -149,7 +157,11 @@ export class PersistentFileConfig extends Config {
 
     protected saveEnabled: boolean = false;
 
-    constructor(obj: Object, protected filePath: string = null, public useCrypto: boolean = true, autoload: boolean = true, autoloadEnv: boolean = true) {
+    constructor(obj: Object,
+                protected filePath: string = null,
+                public useCrypto: boolean  = true,
+                autoload: boolean          = true,
+                autoloadEnv: boolean       = true) {
         super({});
         this.defaultConfig = obj;
         this.filePath      = filePath || paths.userDataConfig;
@@ -182,11 +194,11 @@ export class PersistentFileConfig extends Config {
             writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), 'utf-8')
             return this;
         }
-        let json = JSON.stringify(this.data);
+        let json      = JSON.stringify(this.data);
         let encrypted = this.crypto.encrypt(json);
         writeFileSync(this.filePath, encrypted, 'utf-8');
         if ( this.isDebug() ) {
-            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), 'utf-8')
+            writeFileSync(this.filePath + '.debug.json', JSON.stringify(this.data, null, 4), 'utf-8')
         }
         return this;
     }
@@ -204,7 +216,7 @@ export class PersistentFileConfig extends Config {
         if ( this.useCrypto ) {
             config = this.crypto.decrypt(config)
         }
-        let data = JSON.parse(config);
+        let data  = JSON.parse(config);
         this.data = {
             ...this.data,
             ...data

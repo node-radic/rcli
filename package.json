@@ -21,7 +21,7 @@
   ],
   "private": false,
   "license": "MIT",
-  "repository": "https://github.com/node-radic/rcli",
+  "repository": "https://bitbucket.org/robin-radic/rcli",
   "scripts": {
     "build": "gulp build",
     "clean": "gulp clean",
@@ -90,6 +90,7 @@
     "@types/moment": "^2.13.0",
     "@types/node": "^7.0.8",
     "@types/npm": "^2.0.28",
+    "@types/raven": "^1.2.4",
     "@types/reflect-metadata": "^0.0.5",
     "@types/shelljs": "^0.7.1",
     "@types/sinon": "^2.3.1",

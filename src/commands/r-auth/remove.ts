@@ -6,7 +6,7 @@ import { RConfig } from "../../";
     , 'Remove a service connection', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class RemoveCmd {
+export class AuthRemoveCmd {
 
     @inject('cli.helpers.output')
     out: OutputHelper;
@@ -28,4 +28,4 @@ export class RemoveCmd {
     }
 
 }
-export default RemoveCmd
+export default AuthRemoveCmd

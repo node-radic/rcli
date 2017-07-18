@@ -6,7 +6,7 @@ import { Credential } from "../../database/Models/Credential";
     , 'List all added service credentials', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class ListCmd {
+export class AuthListCmd {
 
     @inject('cli.helpers.output')
     out: OutputHelper;
@@ -45,4 +45,4 @@ export class ListCmd {
     }
 
 }
-export default ListCmd
+export default AuthListCmd

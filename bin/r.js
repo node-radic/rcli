@@ -5,5 +5,8 @@ var src_1 = require("../src");
 src_1.bootstrapRaven();
 src_1.bootstrapRcli().then(function (cli) {
     cli.start(__dirname + '/../src/commands/r');
+})
+    .catch(function (reason) {
+    throw new Error(reason);
 });
 //# sourceMappingURL=r.js.map

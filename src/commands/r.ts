@@ -1,6 +1,5 @@
-import { Cli, CliExecuteCommandParsedEvent, command, CommandConfig, CommandDescriptionHelper, Dispatcher, inject, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { Dispatcher, Cli, CliExecuteCommandParsedEvent, command, CommandConfig, CommandDescriptionHelper, inject, lazyInject, Log, option, OutputHelper, Event } from "@radic/console";
 import { RConfig } from "../";
-import * as omelette from "omelette";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
     // subCommands: [  'dev', 'connect', 'ssh', 'git',  'google','info', 'tree'], //'completion', 'jira',
@@ -16,16 +15,23 @@ import * as omelette from "omelette";
 })
 export class RcliCmd {
 
-    @inject('r.log')
+    @lazyInject('cli.events')
+    protected events: Dispatcher;
+
+    @lazyInject('r.log')
     protected log: Log;
 
-    @inject('r.config')
+    @lazyInject('r.config')
     protected config: RConfig;
 
     always(){
-        if ( this.config('debug') === true ) {
+        if ( this.config.get('debug', false) === true ) {
             this.log.level = 'debug';
         }
+        if(this.log.level === 'silly') {
+            this.events.on('**', (event: string) => event && this.log.info(process.uptime() + ': ' + (event[ 'event' ] || event)))
+        }
+
     }
 
 

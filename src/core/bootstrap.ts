@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Cli, CliConfig, container, log } from "@radic/console";
+import { Cli, CliConfig, container, log, Event } from "@radic/console";
 import * as winston from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";
@@ -12,7 +12,7 @@ import { Inquirer } from "inquirer";
 export function bootstrapRaven() {
 
     const rconfig = container.get<RConfig>('r.config')
-    if ( rconfig.has('raven.dsn') ) {
+    if ( rconfig.has('raven.dsn') && false === container.isBound('sentry') ) {
         const sentry: Client = Raven.config(rconfig('raven.dsn')).install({
             name   : 'rcli',
             release: PKG.version,
@@ -32,6 +32,7 @@ export function bootstrapRaven() {
 }
 
 export function bootstrapRcli(): Promise<Cli> {
+    bootstrapRaven();
     const rconfig = container.get<RConfig>('r.config')
     const cli     = container.get<Cli>('cli');
     log.transports.push(<any>
@@ -71,8 +72,14 @@ export function bootstrapRcli(): Promise<Cli> {
         transports      : log.transports,
         handleExceptions: true
     })
+    container.unbind('cli.log')
+    container.bind('cli.log').toConstantValue(cli.log)
     container.bind('r.log').toConstantValue(cli.log)
 
+    // const eventHandler = (event:string) => event && cli.log.info(event['event'] || event);
+    // if(process.argv.includes('-vvvv')) {
+    //     cli.events.on('**', (event: string) => event && cli.log.info(process.uptime() + ': ' + (event[ 'event' ] || event)))
+    // }
 
     cli.config(<CliConfig> {
         commands: {

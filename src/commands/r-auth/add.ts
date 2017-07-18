@@ -11,7 +11,7 @@ import { Services } from "../../services/Services";
     , 'Add a service connection (github, etc) to your user', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class AddCmd {
+export class AuthAddCmd {
 
     @lazyInject('cli.helpers.output')
     out: OutputHelper;
@@ -58,4 +58,4 @@ export class AddCmd {
     }
 
 }
-export default AddCmd
+export default AuthAddCmd

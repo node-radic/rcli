@@ -58,11 +58,12 @@ export abstract class RcliSshConnect {
 
 
     mount(target: SSHConnection) {
-        let cmd: string = `${this.bins.sshfs} ${target.user}@${target.host}:${target.hostPath} ${target.localPath} -p ${target.port}`;
+        let cmd: string = `${this.config('ssh.bins.sshfs')} ${target.user}@${target.host}:${target.hostPath} ${target.localPath} -p ${target.port}`;
+        let opts:string = ' -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o reconnect -o workaround=rename';
         if ( target.method === 'password' ) {
-            cmd = `echo ${target.password} | ${cmd} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o reconnect -o workaround=rename -o password_stdin`
+            cmd = `echo ${target.password} | ${cmd} ${opts} -o password_stdin`
         } else {
-            cmd += ' -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=nof -o reconnect -o workaround=rename';
+            cmd += opts;
         }
         if ( this.dirs ) {
             ensureDirSync(target.localPath);
@@ -74,7 +75,7 @@ export abstract class RcliSshConnect {
     }
 
     umount(target: SSHConnection) {
-        let cmd: string = `sudo ${this.bins.umount} ${target.localPath} -f`;
+        let cmd: string = `sudo ${this.config('ssh.bins.umount')} ${target.localPath} -f`;
         execSync(cmd);
         rmdirSync(target.localPath);
         this.log.info(`Unmounted ${target.localPath} success`);
@@ -83,7 +84,7 @@ export abstract class RcliSshConnect {
     ssh(target: SSHConnection) {
         let cmd = '';
         if ( target.method === 'password' ) {
-            cmd = `${this.bins.sshpass} -p ${target.password} `
+            cmd = `${this.config('ssh.bins.sshpass')} -p ${target.password} `
 
         }
 

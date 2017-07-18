@@ -8,7 +8,7 @@ import { RConfig,Credential } from "../../";
     , 'Login to the system', <CommandConfig> {
         onMissingArgument: 'help'
     })
-export class EditCmd {
+export class AuthEditCmd {
 
     @inject('cli.helpers.output')
     out: OutputHelper;
@@ -40,4 +40,4 @@ export class EditCmd {
     }
 
 }
-export default EditCmd
+export default AuthEditCmd

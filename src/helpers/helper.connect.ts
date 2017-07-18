@@ -29,21 +29,25 @@ export class ConnectHelper {
             let connectionName = connectionArg;
 
             if ( ! connectionName ) {
+                // try getting the default_for_connection credential first
                 let choices: any = await Credential.query()
                     .column('name')
                     .whereIn('service', services)
                     .andWhere('default_for_connection', true);
 
+                // if empty result, get credentials for service
                 if ( choices.length === 0 ) {
                     choices = await Credential.query().column('name').whereIn('service', services)
                 }
 
+                // if only 1 result use it. otherwise let the user pick it
                 if ( choices.length === 1 ) {
                     connectionName = choices[ 0 ].name
                 } else if ( choices.length > 1 ) {
                     connectionName = await this.ask.list('The service connection', choices.map(choice => choice.name));
                 }
             }
+
 
             const cred: Credential = await Credential.query().where('name', connectionName).first().execute()
 
