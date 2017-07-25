@@ -1,15 +1,15 @@
-import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { AbstractService } from "./AbstractService";
 import { service } from "../decorators";
 import { AuthMethod } from "./AuthMethod";
-import { Credential } from "../database/Models/Credential";
+import { Credential, CredentialsExtraField } from "../database/Models/Credential";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 import { getRandomId } from "@radic/util";
 import { parse, stringify } from "querystring";
 import * as open from "open";
 import { lazyInject, Log } from "@radic/console";
-
+import { ServiceExtraFields } from "../interfaces";
 
 
 export interface GoogleServiceContacts {
@@ -19,21 +19,35 @@ export interface GoogleServiceContacts {
 export interface GoogleServiceContact {
     id?: string
     name?: string
-    numbers?: Array<{ type: string, number: string, primary?:boolean }>
+    numbers?: Array<{ type: string, number: string, primary?: boolean }>
 }
-
+export interface GoogleServiceExtraFields extends ServiceExtraFields {
+    email        ?: string
+    token_type   ?: string
+    access_type  ?: string
+    refresh_token?: string
+    expires_at   ?: number
+    expires_in   ?: string
+    id_token     ?: string
+}
 @service({
     name   : 'google',
     methods: [ AuthMethod.oauth2 ],
     extra  : {
-        email: {
+        email        : {
             type       : 'string',
             description: 'The email '
-        }
+        },
+        token_type   : 'string',
+        access_type  : 'string',
+        refresh_token: 'string',
+        expires_at   : 'number',
+        expires_in   : 'string',
+        id_token     : 'string'
     }
 
 })
-export class GoogleService extends AbstractService {
+export class GoogleService extends AbstractService<GoogleServiceExtraFields> {
     protected _auth: GoogleServiceAuth
     public get auth(): GoogleServiceAuth {return this._auth }
 
@@ -41,6 +55,7 @@ export class GoogleService extends AbstractService {
 
     public configure(options: AxiosRequestConfig = {}): AxiosRequestConfig {
         this._auth = new GoogleServiceAuth(this.credentials);
+
         options    = {
             ...options,
             ...{
@@ -57,7 +72,7 @@ export class GoogleService extends AbstractService {
     }
 
 
-    public setCredentials(creds: Credential): this {
+    public setCredentials(creds: Credential<GoogleServiceExtraFields>): Promise<this> {
         super.setCredentials(creds);
         if ( this.requestInterceptorId !== undefined ) {
             this.client.interceptors.request.eject(this.requestInterceptorId);
@@ -71,7 +86,7 @@ export class GoogleService extends AbstractService {
             this.log.error(err);
         })
         this.enableCache();
-        return this;
+        return Promise.resolve(this);
     }
 
     protected authorize(): Promise<any> {
@@ -82,8 +97,8 @@ export class GoogleService extends AbstractService {
                 this.log.info('If opening of your browser fails, visit this url: ')
                 this.log.info(url);
                 open(url, 'firefox')
-                let code = await this._auth.authorize();
-                await this._auth.exchangeCode(code);
+                let code = await this._auth.startAuthorization();
+                await this._auth.finishAuthorization(code);
             }
             if ( this._auth.needsRefresh() ) {
                 await this._auth.refreshAccessToken();
@@ -92,7 +107,7 @@ export class GoogleService extends AbstractService {
         })
     }
 
-    protected splitContactName(name:string) : {givenName:string, familyName:string, fullName:string} {
+    protected splitContactName(name: string): { givenName: string, familyName: string, fullName: string } {
 
         let fullName   = `<gd:fullName>${name}</gd:fullName>`;
         let givenName  = `<gd:givenName>${name}</gd:givenName>`;
@@ -101,7 +116,7 @@ export class GoogleService extends AbstractService {
             givenName  = `<gd:givenName>${name.split(' ')[ 0 ]}</gd:givenName>`
             familyName = `<gd:familyName>${name.split(' ')[ 1 ]}</gd:familyName>`
         }
-        return {givenName, fullName, familyName};
+        return { givenName, fullName, familyName };
     }
 
     public getContacts(params: { q?: string, 'max-results'?: number, 'start-index'?: number, orderby?: 'lastmodified', sortorder?: 'ascending' | 'descending' } = {}): Promise<GoogleServiceContacts> {
@@ -127,14 +142,14 @@ export class GoogleService extends AbstractService {
         })
     }
 
-    public setContact(id:string, data:GoogleServiceContact) : Promise<any> {
+    public setContact(id: string, data: GoogleServiceContact): Promise<any> {
         let name = '';
-        if(data.name){
-            let {familyName,fullName,givenName} = this.splitContactName(name);
-            name = `<gd:name>${givenName}${familyName}${fullName}</gd:name>`
+        if ( data.name ) {
+            let { familyName, fullName, givenName } = this.splitContactName(name);
+            name                                    = `<gd:name>${givenName}${familyName}${fullName}</gd:name>`
         }
         let numbers = '';
-        if(data.numbers){
+        if ( data.numbers ) {
             numbers = data.numbers.map((number) => {
                 let primary = number.primary ? 'primary=true' : '';
                 return `<gd:phoneNumber rel="http://schemas.google.com/g/2005#${number.type}" ${primary}>${number.number}</gd:phoneNumber>`
@@ -147,31 +162,31 @@ ${name}
 ${numbers}
 </entry>`
         return this.put('/m8/feeds/contacts/default/full/' + id, {}, {
-            data: body,
+            data   : body,
             headers: {
                 'content-type': 'application/atom+xml',
-                'if-match': '*'
+                'if-match'    : '*'
             }
         }).then((res) => {
-            if(res.status !== 200){
+            if ( res.status !== 200 ) {
                 return Promise.reject('The server responded with a non 200 status: ' + res.status + ' ' + res.statusText)
             }
             return Promise.resolve()
         });
     }
 
-    public deleteContact(id:string){
-        this.delete('/m8/feeds/contacts/default/full/' + id).then(res  => {
-            if(res.status  !== 200){
+    public deleteContact(id: string) {
+        this.delete('/m8/feeds/contacts/default/full/' + id).then(res => {
+            if ( res.status !== 200 ) {
                 return Promise.reject('The server responded with a non 200 status: ' + res.status + ' ' + res.statusText)
             }
             return Promise.resolve()
         })
     }
 
-    public createContact(name: string, number: string, type: string = 'mobile') : Promise<string> {
-        let {familyName,fullName,givenName} = this.splitContactName(name);
-        let body = `<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005">
+    public createContact(name: string, number: string, type: string = 'mobile'): Promise<string> {
+        let { familyName, fullName, givenName } = this.splitContactName(name);
+        let body                                = `<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005">
   <atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/>
   <gd:name>
       ${givenName}
@@ -181,27 +196,19 @@ ${numbers}
   <gd:phoneNumber rel="http://schemas.google.com/g/2005#${type}">  ${number}</gd:phoneNumber>
 </atom:entry>`;
         return this.post('/m8/feeds/contacts/default/full', {}, {
-            data: body,
+            data   : body,
             headers: {
                 'content-type': 'application/atom+xml'
             }
         }).then((res) => {
-            if(res.status !== 201){
+            if ( res.status !== 201 ) {
                 return Promise.reject('The server responded with a non 201 status: ' + res.status + ' ' + res.statusText)
             }
             let idSegments: string[] = res.data[ 'id' ][ '$t' ].split('/');
-            return Promise.resolve(idSegments[idSegments.length -1]);
+            return Promise.resolve(idSegments[ idSegments.length - 1 ]);
         })
     }
 
-}
-
-export interface AxiosResponse<T extends {} = {}> {
-    data: T;
-    status: number;
-    statusText: string;
-    headers: any;
-    config: AxiosRequestConfig;
 }
 export interface GoogleApiExchangeData {
     access_token: string
@@ -247,7 +254,7 @@ export class GoogleServiceAuth {
         return this.needsAuthorize() === false && Date.now() > this.creds.extra[ 'expires_at' ]
     }
 
-    revoke(): Promise<any> {
+    revokeAccessToken(): Promise<any> {
         return new Promise((resolve, reject) => {
 
             this.client
@@ -281,7 +288,7 @@ export class GoogleServiceAuth {
                 .catch((err) => {
                     reject(err);
                 })
-                .then((res: AxiosResponse<GoogleApiExchangeData>) => {
+                .then((res: AxiosResponse) => {
                     this.creds.extra = {
                         ...this.creds.extra,
                         ...res.data,
@@ -290,38 +297,6 @@ export class GoogleServiceAuth {
                     this.creds.$query().update(this.creds).execute().then(() => {
                         resolve(this.creds)
                     });
-                })
-        })
-    }
-
-    exchangeCode(code: string): Promise<Credential> {
-        return new Promise((resolve, reject) => {
-            this.client
-                .post('https://www.googleapis.com/oauth2/v4/token', {}, {
-                    params: {
-                        code,
-                        client_id    : this.creds.key,
-                        client_secret: this.creds.secret,
-                        redirect_uri : this.getRedirectUri(),
-                        grant_type   : 'authorization_code',
-                        // code_verifier: this.codeChallenge
-                    }
-                })
-                .catch((err) => {
-                    reject(err);
-                })
-                .then((res: AxiosResponse<GoogleApiExchangeData>) => {
-
-                    this.creds.extra = {
-                        ...this.creds.extra,
-                        ...res.data,
-                        code,
-                        expires_at: Date.now() + (res.data.expires_in * 1000)
-                    }
-                    this.creds.$query().update(this.creds).execute().then(() => {
-                        resolve(this.creds)
-                    });
-
                 })
         })
     }
@@ -331,7 +306,7 @@ export class GoogleServiceAuth {
         process.exit(1)
     }
 
-    authorize(): Promise<string> {
+    startAuthorization(): Promise<string> {
         return new Promise((resolve, reject) => {
             const server = createServer();
 
@@ -380,6 +355,38 @@ export class GoogleServiceAuth {
             // }).catch(err => {
             //     throw new Error(err);
             // });
+        })
+    }
+
+    finishAuthorization(code: string): Promise<Credential> {
+        return new Promise((resolve, reject) => {
+            this.client
+                .post('https://www.googleapis.com/oauth2/v4/token', {}, {
+                    params: {
+                        code,
+                        client_id    : this.creds.key,
+                        client_secret: this.creds.secret,
+                        redirect_uri : this.getRedirectUri(),
+                        grant_type   : 'authorization_code',
+                        // code_verifier: this.codeChallenge
+                    }
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+                .then((res: AxiosResponse) => {
+
+                    this.creds.extra = {
+                        ...this.creds.extra,
+                        ...res.data,
+                        code,
+                        expires_at: Date.now() + (res.data.expires_in * 1000)
+                    }
+                    this.creds.$query().update(this.creds).execute().then(() => {
+                        resolve(this.creds)
+                    });
+
+                })
         })
     }
 

@@ -1,14 +1,20 @@
-import { command, CommandConfig, Container, Dispatcher, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { container, command, CommandConfig, Container, Dispatcher, lazyInject, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../";
 import { Client } from "raven";
 
 @command('sentry', <CommandConfig> {
-    enabled: (container: Container) => container.isBound('sentry')
+    enabled: (container: Container): boolean => {
+        return container.isBound('sentry')
+    }
 })
 export class SentryCmd {
 
-    @lazyInject('sentry')
-    protected sentry: Client
+    protected get sentry(): Client {
+        if(!container.isBound('sentry')){
+            return;
+        }
+        return container.get<Client>('sentry')
+    }
 
     @lazyInject('cli.events')
     protected events: Dispatcher;
@@ -31,7 +37,7 @@ export class SentryCmd {
     handle(...args: any[]) {
         this.out.dump({
             message: this.message,
-            level: this.level,
+            level  : this.level,
             args
         })
         if ( this.message ) {

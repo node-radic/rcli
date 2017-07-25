@@ -1,15 +1,10 @@
 import { JsonSchema, Model } from "objection";
 import { container } from "@radic/console";
-import { GitHubServer, GitServer } from "../../services/apis/git";
-import { Jira } from "../../services/apis/jira";
+import { ServiceConfig } from "../../interfaces";
+import { Services } from "../../services/Services";
 
 export interface CredentialsExtraField {
     [key: string]: any
-    host?: string
-    port?: number
-    protocol?: string | 'https' | 'http',
-    version?: string
-    strict?: boolean
 }
 
 export class Credential<T extends CredentialsExtraField=CredentialsExtraField>extends Model {
@@ -22,19 +17,24 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
              extra: T
              default_for_service: boolean
 
-    static getDefaultFor(service: string): Promise<Credential> {
-        return Credential.query().where('service', service).andWhere('default_for_service', 1).first().execute()
+    protected static _services: Services;
+
+    public static get services(): Services {
+        if ( ! Credential._services ) {
+            Credential._services = container.get<Services>('r.services')
+        }
+        return Credential._services;
     }
 
-    /**
-     * @deprecated
-     * @returns {GitHubServer}
-     */
-    getApiService(): GitServer {
-        if ( this.service === 'github' ) {
-            return container.get<GitHubServer>('r.api.github').setCredentials(this)
-        }
-    }
+    // /**
+    //  * @deprecated
+    //  * @returns {GitHubServer}
+    //  */
+    // getApiService(): GitServer {
+    //     if ( this.service === 'github' ) {
+    //         return container.get<GitHubServer>('r.api.github').setCredentials(this)
+    //     }
+    // }
 
 
     // // This object defines the relations to other models.
@@ -49,15 +49,19 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
     //     }
     // }
 
+    //
+    // /**
+    //  * @deprecated
+    //  * @returns {GitHubServer}
+    //  */
+    // getJiraService(): any {
+    //     if ( this.service === 'jira' ) {
+    //         return container.get<Jira>('r.api.jira').getApi(this);
+    //     }
+    // }
 
-    /**
-     * @deprecated
-     * @returns {GitHubServer}
-     */
-    getJiraService(): any {
-        if ( this.service === 'jira' ) {
-            return container.get<Jira>('r.api.jira').getApi(this);
-        }
+    public static getDefaultFor(service: string): Promise<Credential> {
+        return Credential.query().where('service', service).andWhere('default_for_service', 1).first().execute()
     }
 
     static tableName = 'Credentials';

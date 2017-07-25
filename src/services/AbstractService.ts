@@ -1,16 +1,17 @@
-import Axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig } from "axios";
+import Axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse } from "axios";
 import { container, injectable, lazyInject, Log } from "@radic/console";
 import { Credential } from "../database/Models/Credential";
 import { IService, ServiceConfig, ServiceExtraFields } from "../interfaces";
 import { MD5 } from "crypto-js";
 import { Cache } from "../core/cache";
+import { MINUTE } from "../core/static";
 @injectable()
-export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraFields> implements IService {
+export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraFields> implements IService<T> {
 
     @lazyInject('r.log')
     protected log: Log
 
-    private _credentials: Credential
+    private _credentials: Credential<T>
     private _client: AxiosInstance
 
     @lazyInject('r.cache')
@@ -21,7 +22,7 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
     public service: ServiceConfig<T>
 
 
-    public get credentials(): Credential { return this._credentials; }
+    public get credentials(): Credential<T> { return this._credentials; }
 
     public get client(): AxiosInstance { return this._client; }
 
@@ -29,14 +30,13 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
 
     abstract configure(options?: AxiosRequestConfig): AxiosRequestConfig
 
-    setCredentials(creds: Credential): this {
+    async setCredentials(creds: Credential<T>): Promise<this> {
+        this._cache.expires = MINUTE * 10;
         this._credentials = creds;
-        this._client      = Axios.create({ timeout: 5000, ...this.configure()});
-        // this.cache = flatCache.load('git-server-' + creds.id)
-        // this.cache.save(true);
-        // this._client.interceptors.
-
-        return this;
+        this._client      = Axios.create(this.configure({
+            timeout: 5000
+        }));
+        return Promise.resolve(this);
     }
 
     enableCache(): this {
@@ -44,8 +44,12 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
             return this;
         }
         this.cacheResponseInterceptorId = this._client.interceptors.response.use((res) => {
-            if(res.config.method.toLowerCase() === 'get'){
-                this._cache.set(this.getCacheKey(res.config.url, res.config.params), res.data);
+            if ( res.config.method.toLowerCase() === 'get' ) {
+                this._cache.set(this.getCacheKey(res.config.url, res.config.params), {
+                    status: res.status,
+                    statusText: res.statusText,
+                    data: res.data,
+                });
             }
             return res;
         }, this.handleInterceptorError)
@@ -66,7 +70,7 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
         return this.cacheResponseInterceptorId !== null
     }
 
-    protected getCacheKey(url:string, params?:any):string{
+    protected getCacheKey(url: string, params?: any): string {
         let key = `service.${this.service.name}.${url.replace(/\./g, '__')}`
         if ( params ) {
             key += '?' + this.getParamsHash(params);
@@ -90,11 +94,11 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
     protected handleCatchedError(error: any) {
         let log: Log = container.get<Log>('cli.log')
 
-        if (error.response) {
+        if ( error.response ) {
             // The request was made and the server responded with a status code
             // that falls out of the range of 2xx
-            log.error('Server responded with a status code outside of range 2xx', {status: error.response.status, headers: error.response.headers, data: error.response.data });
-        } else if (error.request) {
+            log.error('Server responded with a status code outside of range 2xx', { status: error.response.status, headers: error.response.headers, data: error.response.data });
+        } else if ( error.request ) {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
             // http.ClientRequest in node.js
@@ -114,16 +118,16 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
     }
 
     request(config: AxiosRequestConfig): AxiosPromise {
-        if(this.isCacheEnabled() && config.method.toLowerCase() === 'get') {
-            let key = this.getCacheKey(config.url, config.params);
+        if ( this.isCacheEnabled() && config.method.toLowerCase() === 'get' ) {
+            let key = this.getCacheKey((config.baseURL || this.client.defaults.baseURL) + config.url, config.params);
             if ( this._cache.has(key) ) {
-                return Promise.resolve(this._cache.get(key, {}))
+                return Promise.resolve(this._cache.get<AxiosResponse>(key, {}))
             }
         }
-        return this._client.request(config).catch(this.handleCatchedError);
+        return this._client.request(config).then((res: AxiosResponse) => Promise.resolve(res)).catch(this.handleCatchedError);
     }
 
-    protected options(url:string, config?:AxiosRequestConfig): AxiosPromise { return this.request({ method: 'OPTIONS', url, ...config }) }
+    protected options(url: string, config?: AxiosRequestConfig): AxiosPromise { return this.request({ method: 'OPTIONS', url, ...config }) }
 
     protected get(url: string, config?: AxiosRequestConfig): AxiosPromise { return this.request({ method: 'GET', url, ...config }) }
 

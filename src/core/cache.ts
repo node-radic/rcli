@@ -1,7 +1,7 @@
 import { PersistentFileConfig } from "./config";
 import { paths } from "./paths";
 import { container, lazyInject } from "@radic/console";
-import { IConfig } from "@radic/util";
+import { IConfig, kindOf } from "@radic/util";
 import { DAY } from "./static";
 // const cache = new PersistentFileConfig({}, paths.userCache, true, true, false);
 //
@@ -12,10 +12,10 @@ export interface ICache extends IConfig {
 }
 
 export class Cache extends PersistentFileConfig implements ICache {
-    expires: number                = DAY
+    expires: number = DAY
 
     @lazyInject('r.config')
-    config:IConfig;
+    config: IConfig;
 
     constructor() {
         super({}, paths.userCache, true, true, false);
@@ -27,7 +27,7 @@ export class Cache extends PersistentFileConfig implements ICache {
     }
 
     set(prop: string, value: any, expires?: number): ICache {
-        expires       = expires || this.expires;
+        expires = expires || this.expires;
         let meta: any = { expires: 0 }
         if ( expires !== 0 ) {
             meta = { expires, expires_at: Date.now() + expires }
@@ -38,19 +38,36 @@ export class Cache extends PersistentFileConfig implements ICache {
     }
 
 
-    get<T extends any>(prop?: any, defaultReturnValue?: any): T {
-        if ( ! prop || prop.toString().length === 0) {
+    get<T extends any>(prop?: any, defaultReturnValue?: ((res: any, rej: any) => Promise<T> | T) | any, expires?: number): T {
+        if ( ! prop || prop.toString().length === 0 ) {
             return super.get<T>();
         }
-        if ( ! this.has(prop) ) {
-            return defaultReturnValue;
+        if ( ! this.has(prop) && kindOf(defaultReturnValue) === 'function' ) {
+            let value   = defaultReturnValue.apply(this);
+            if(kindOf(value['then']) === 'function'){
+                value = (async() => await value)();
+            }
+            // console.log('value',  value )
+            //
+            // let value = (async () => await (new Promise((res, rej) => {
+            //     let resolve = (val: any) => {
+            //         console.log('resolve', { val });
+            //         res(val);
+            //     }
+            //     let value   = defaultReturnValue.apply(this, [ resolve, rej ]);
+            //     if ( value !== undefined ) {
+            //         console.log('value not underinfed', { value })
+            //         res(value);
+            //     }
+            // })))()
+            this.set(prop, value, expires || this.expires);
         }
         return super.get<T>(prop + '.data', defaultReturnValue);
     }
 
 
     has(prop?: any): boolean {
-        if(prop.toString().endsWith('.meta') || prop.toString().endsWith('.data')){
+        if ( prop.toString().endsWith('.meta') || prop.toString().endsWith('.data') ) {
             return super.has(prop);
         }
         if ( ! super.has(prop + '.meta') ) {

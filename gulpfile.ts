@@ -70,7 +70,7 @@ const
     download     = require('download')
 ;
 
-// gulp.task('clean', [ 'clean:src', 'clean:build' ]);
+gulp.task('clean', [ 'clean:src', 'clean:build' ]);
 
 gulp.task('clean:build', () => gulp.src([ 'dist', 'dts', 'es', 'lib', 'umd', 'coverage', '.publish', 'docs' ]).pipe(clean()));
 
@@ -157,7 +157,8 @@ gulp.task('compiler:compile', (cb) => {
     execSync('npm install @radic/console', { stdio: 'inherit' })
     process.stdout.write(require.resolve('@radic/console'))
     execSync(resolve('nodec') + ' ' + c.binFile, { stdio: 'inherit' })
-    exec('npm link @radic/console', { stdio: 'inherit' }, cb)
+    execSync('npm link @radic/console', { stdio: ['inherit'] })
+    cb();
 })
 
 gulp.task("test", () => {

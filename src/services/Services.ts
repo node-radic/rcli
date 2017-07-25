@@ -6,11 +6,11 @@ import { Credential } from "../database/Models/Credential";
 
 
 container.bind('r.services.factory').toFactory((ctx: interfaces.Context) => {
-    return (name: string, credentials: Credential) => {
+    return async (name: string, credentials: Credential) => {
         const service             = ctx.container.get<IService>('r.services.' + name)
         let config: ServiceConfig = Reflect.getMetadata('service', service.constructor)
         service[ 'service' ]      = config;
-        service.setCredentials(credentials);
+        await service.setCredentials(credentials);
         return service;
     }
 })

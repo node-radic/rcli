@@ -1,4 +1,4 @@
-import { Credential } from "./database/Models/Credential";
+import { Credential, CredentialsExtraField } from "./database/Models/Credential";
 import { AxiosInstance } from "axios";
 import { AuthMethod } from "./services/AuthMethod";
 export type SSHConnectionMethod = 'key' | 'password'
@@ -80,22 +80,23 @@ export interface ServiceConfig<T extends ServiceExtraFields=ServiceExtraFields> 
     provides?: string
     methods: AuthMethod[]
     extra?: T
+    cls?: Function|IServiceConstructor
 }
-export type ServiceExtraFieldType = 'string' | 'number' | 'boolean'
 export interface ServiceExtraFieldConfig {
     type: ServiceExtraFieldType
     default?: any
     description?: string
 }
-export interface ServiceExtraFields {
-    [name: string]: ServiceExtraFieldType | ServiceExtraFieldConfig
+export type ServiceExtraFieldType = string | number | boolean | ServiceExtraFieldConfig
+export interface ServiceExtraFields extends CredentialsExtraField {
+    [name: string]: ServiceExtraFieldType
 }
 
 export interface IService <T extends ServiceExtraFields=ServiceExtraFields> {
     client?: AxiosInstance
     credentials?: Credential
     service?: ServiceConfig<T>
-    setCredentials(cred: Credential): this
+    setCredentials(cred: Credential): Promise<this>
 }
 
 export interface IServiceConstructor extends Function {

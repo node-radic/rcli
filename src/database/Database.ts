@@ -4,7 +4,7 @@ import { Model } from "objection";
 import { join } from "path";
 import * as Promise from "bluebird";
 import * as _ from "lodash";
-import { paths } from "../index";
+import { paths } from "../core/paths";
 
 
 export class Database {

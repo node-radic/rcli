@@ -1,5 +1,5 @@
 import { command, CommandArguments, CommandConfig, Config, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
-import { dotize } from "@radic/util";
+import { dotize, IConfig } from "@radic/util";
 import { PersistentFileConfig } from "../../";
 
 @command(`config 
@@ -25,7 +25,7 @@ export class ConfigCmd {
     @inject('cli.config')
     configCli: Config
 
-    config: PersistentFileConfig | Config
+    config: IConfig
 
     @inject('cli.helpers.help')
     help: OutputHelper;
@@ -87,9 +87,6 @@ export class ConfigCmd {
                 this.unset(args.path);
                 this.log.verbose(`config value at [${args.path}] has been removed`)
                 break;
-            case this.useCli:
-                list = this.listPath(args.path, true);
-                break;
             case this.list:
                 list = this.listPath(args.path);
                 break;
@@ -124,8 +121,8 @@ export class ConfigCmd {
         })
     }
 
-    protected listPath(path, rootConfig = false) {
-        let dotted = dotize(this[ rootConfig ? 'configCore' : 'configCli' ].get(path || ''), '')
+    protected listPath(path) {
+        let dotted = dotize(this.config.get(path || ''), '')
         Object.keys(dotted).forEach(key => {
             this.out.line(`{darkorange}${key}{/darkorange} : {green}${dotted[ key ]}{/green}`)
         })
@@ -134,8 +131,9 @@ export class ConfigCmd {
 
     protected set(path, value): this {
         if ( false !== this.config.has(path) || this.force ) {
+            value = JSON.parse(value)
             ! this.useCli && this.configRcli.unlock()
-            this.useCli ? this.configCli.set(path, JSON.parse(value)) : this.configRcli.set(path, JSON.parse(value))
+            this.config.set(path, value)
             ! this.useCli && this.configRcli.lock()
         }
         return this

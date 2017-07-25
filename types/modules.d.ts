@@ -1,4 +1,4 @@
-///<reference path="winston.d.ts" />
+ 8///<reference path="winston.d.ts" />
 ///<reference path="underscore.string.d.ts"/>
 ///<reference path="lowdb.d.ts"/>
 ///<reference path="validatorjs.d.ts"/>

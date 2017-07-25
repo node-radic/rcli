@@ -13,9 +13,6 @@
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
-        "types":[
-            "jasmine"
-        ],
         "typeRoots": [
             "./node_modules/@types",
             "./types"

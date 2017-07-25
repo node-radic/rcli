@@ -104,7 +104,7 @@ export class SshBashHelper {
         return this.config.get('connect.' + name)
     }
 
-    has(name): SshConnectHelperDataSet {
+    has(name): boolean {
         SSHConnection.query().where({name}).first().execute();
         return this.config.has('connect.' + name)
     }

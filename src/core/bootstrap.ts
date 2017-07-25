@@ -3,11 +3,10 @@ import { Cli, CliConfig, container, log, Event } from "@radic/console";
 import * as winston from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";
-import { Database } from "../database/Database";
-import { RConfig } from "./config";
-import { paths } from "./paths";
+import { RConfig, paths } from "./";
 import { PKG } from "./static";
 import { Inquirer } from "inquirer";
+import { Database } from "../database/Database";
 
 export function bootstrapRaven() {
 
