@@ -43,21 +43,21 @@ export class RTreeCmd {
                 // if(arg.type && types[arg.type] ){
                 //     output.push(`({${types[arg.type]}}${arg.type}{/${types[arg.type]}})`);
                 // }
-                if ( this.desc && arg.desc ) {
-                    output.push(`:{darkslategray}${arg.desc}{/darkslategray}`)
+                if ( this.desc && this.desc ) {
+                    output.push(`:{darkslategray}${this.desc}{/darkslategray}`)
                 }
                 output.push(arg.required ? '>' : ']')
                 return output.join('')
 
             }).join(' ');
             let name = `{steelblue}${config.name}{/steelblue}`
-            if ( config.subCommands && config.subCommands.length > 0 ) {
-                name = `{darkcyan.bold}${config.name}{/darkcyan./bold}`
-                args = '';
-                if ( this.desc && config.description ) {
-                    args = `: {darkslategray}${config.description}{/darkslategray}`;
-                }
-            }
+            // if ( config.subCommands && config.subCommands.length > 0 ) {
+            //     name = `{darkcyan.bold}${config.name}{/darkcyan./bold}`
+            //     args = '';
+            //     if ( this.desc && config.description ) {
+            //         args = `: {darkslategray}${config.description}{/darkslategray}`;
+            //     }
+            // }
 
             let opts = '';
             if ( this.opts && optionConfigs && optionConfigs.length > 0 ) {

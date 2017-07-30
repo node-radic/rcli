@@ -18,3 +18,5 @@ src/**/*.js.map
 /*.out
 /nodec
 /test.*
+/dts
+/lib-es6

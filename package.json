@@ -2,8 +2,8 @@
   "name": "rcli",
   "version": "0.0.1",
   "description": "Console ",
-  "main": "bin/r.js",
-  "typings": "lib/index.d.ts",
+  "main": "lib/index.js",
+  "typings": "dts/index.d.ts",
   "jsnext:main": "src/index.js",
   "author": "Robin Radic",
   "target": "es5",
@@ -40,7 +40,7 @@
     "test": "npm run build && gulp test"
   },
   "dependencies": {
-    "@radic/console": "^0.0.12",
+    "@radic/console": "^0.0.18",
     "@radic/console-colors": "^0.9.5",
     "@radic/util": "^1.7.5",
     "@types/crypto-js": "^3.1.33",

@@ -1,11 +1,10 @@
 import { Cli, command, CommandArguments, CommandConfig, Config, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
-import { execSync } from "child_process";
 import { BaseCommand } from "../../core/commands";
 import { SemVer, valid } from "semver";
 import { bin } from "../../core/static";
-
+const git = bin('git');
 
 @command(`tag
 [version/bump-type:string@which version]
@@ -75,7 +74,6 @@ export class GitTagCmd extends BaseCommand {
     bumpTypes: string[] = [ 'major', 'premajor', 'minor', 'preminor', 'patch', 'prepatch', 'prerelease' ];
 
     async handle(args: CommandArguments, ...argv: any[]) {
-        this.out.dump({ args })
 
         if ( ! args.version ) {
             return this.returnError('No version or bump-type specified.')
@@ -94,11 +92,10 @@ export class GitTagCmd extends BaseCommand {
 
 
         if ( true == this.bumpTypes.includes(args.version) && false === this.noBump ) {
-
-            let tags    = execSync('git tag').toString();
-            let lastTag = tags.split('\n').reverse().filter((val) => val !== '')[ 0 ];
-            let version = new SemVer(lastTag)
-            args.version     = version.inc(args[ 'bump-type' ]).version;
+            let tags     = git('describe', { tags: true, abbrev: 0 });
+            let lastTag  = tags.split('\n').reverse().filter((val) => val !== '')[ 0 ];
+            let version  = new SemVer(lastTag)
+            args.version = version.inc(args[ 'bump-type' ]).version;
 
         }
 
@@ -108,8 +105,8 @@ export class GitTagCmd extends BaseCommand {
 
 
     protected async tag(version: string, message: string) {
-        const git = bin('git');
-        if(await this.ask.confirm(`You are going to tag version ${version} ${this.noPush ? '' : 'and push it to remote. Are you sure'}`)) {
+
+        if ( await this.ask.confirm(`You are going to tag version ${version} ${this.noPush ? '' : 'and push it to remote. Are you sure'}`) ) {
             if ( ! this.dryRun ) {
                 this.log.verbose(git('tag', { a: version, m: message }))
                 if ( this.noPush === false ) {

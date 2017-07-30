@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, LoggerInstance, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
 
 @command(`remove
@@ -15,7 +15,7 @@ export class AuthRemoveCmd {
     ask: InputHelper;
 
     @inject('r.log')
-    log: Log;
+    log: LoggerInstance;
 
     @inject('r.config')
     config: RConfig

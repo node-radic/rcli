@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { Cli, CliConfig, container, log, Event } from "@radic/console";
-import * as winston from "winston";
+import { Cli, CliConfig, container, log, Event, Log } from "@radic/console";
+import { LoggerInstance, transports as wtransports } from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";
 import { RConfig, paths } from "./";
@@ -35,7 +35,7 @@ export function bootstrapRcli(): Promise<Cli> {
     const rconfig = container.get<RConfig>('r.config')
     const cli     = container.get<Cli>('cli');
     log.transports.push(<any>
-        new (winston.transports.File)({
+        new (wtransports.File)({
             filename   : paths.logFile,
             level      : 'error',
             colorize   : false,
@@ -56,8 +56,8 @@ export function bootstrapRcli(): Promise<Cli> {
     )
 
     if ( rconfig.has('raven.dsn') ) {
-        winston.transports[ 'Sentry' ] = require('winston-sentry');
-        log.transports.push(new (winston.transports[ 'Sentry' ])({
+        wtransports[ 'Sentry' ] = require('winston-sentry');
+        log.transports.push(new (wtransports[ 'Sentry' ])({
             dsn        : rconfig('raven.dsn'),
             level      : 'info',
             patchGlobal: true
@@ -72,8 +72,8 @@ export function bootstrapRcli(): Promise<Cli> {
         handleExceptions: true
     })
     container.unbind('cli.log')
-    container.bind('cli.log').toConstantValue(cli.log)
-    container.bind('r.log').toConstantValue(cli.log)
+    container.bind<LoggerInstance>('cli.log').toConstantValue(cli.log)
+    container.bind<Log>('r.log').toConstantValue(cli.log)
 
     // const eventHandler = (event:string) => event && cli.log.info(event['event'] || event);
     // if(process.argv.includes('-vvvv')) {

@@ -67,7 +67,7 @@ export class ConfigCrypto {
 
     protected generateSecretKey(): string {
         const secretKey = getRandomId(30);
-        writeFileSync(paths.userSecretKeyFile, secretKey, 'utf-8');
+        writeFileSync(paths.userSecretKeyFile, secretKey, {encoding: 'utf-8'});
         return secretKey;
     }
 
@@ -80,7 +80,7 @@ export class ConfigCrypto {
             return this.secretKey;
         }
         if ( this.hasGeneratedSecretKey() && this.secretKey === undefined ) {
-            this.secretKey = readFileSync(paths.userSecretKeyFile, 'utf-8');
+            this.secretKey = readFileSync(paths.userSecretKeyFile, {encoding: 'utf-8'});
         } else if ( this.secretKey === undefined ) {
             this.secretKey = this.generateSecretKey();
         }
@@ -116,7 +116,7 @@ export class ConfigBackupStore {
         if ( encrypt ) {
             data = this.crypto.encrypt(data)
         }
-        writeFileSync(filePath, data, 'utf-8')
+        writeFileSync(filePath, data, {encoding: 'utf-8'})
         return basename(filePath, '.js');
     }
 
@@ -200,14 +200,14 @@ export class PersistentFileConfig extends Config {
     save(): this {
         if ( this.saveEnabled === false ) return this;
         if ( ! this.useCrypto ) {
-            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), 'utf-8')
+            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), {encoding: 'utf-8'})
             return this;
         }
         let json      = JSON.stringify(this.data);
         let encrypted = this.crypto.encrypt(json);
-        writeFileSync(this.filePath, encrypted, 'utf-8');
+        writeFileSync(this.filePath, encrypted, {encoding: 'utf-8'});
         if ( this.isDebug() ) {
-            writeFileSync(this.filePath + '.debug.json', JSON.stringify(this.data, null, 4), 'utf-8')
+            writeFileSync(this.filePath + '.debug.json', JSON.stringify(this.data, null, 4), {encoding: 'utf-8'})
         }
         return this;
     }
@@ -221,7 +221,7 @@ export class PersistentFileConfig extends Config {
         if ( ! existsSync(this.filePath) ) {
             return this.save()
         }
-        let config = readFileSync(this.filePath, 'utf8');
+        let config = readFileSync(this.filePath, {encoding: 'utf-8'});
         if ( this.useCrypto ) {
             config = this.crypto.decrypt(config)
         }
@@ -252,10 +252,10 @@ export class PersistentFileConfig extends Config {
         let json = JSON.stringify({})
         if ( this.useCrypto ) {
             const encrypted = this.crypto.encrypt(json);
-            writeFileSync(this.filePath, encrypted, 'utf-8');
+            writeFileSync(this.filePath, encrypted, {encoding: 'utf-8'});
             return this;
         }
-        writeFileSync(this.filePath, json, 'utf-8');
+        writeFileSync(this.filePath, json, {encoding: 'utf-8'});
         return this;
     }
 

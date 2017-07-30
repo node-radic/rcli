@@ -1,4 +1,4 @@
-import { command, CommandArguments, InputHelper, lazyInject, Log, option, OptionConfig, OutputHelper } from "@radic/console";
+import { command, CommandArguments, InputHelper, lazyInject, LoggerInstance, option, OptionConfig, OutputHelper } from "@radic/console";
 import { Services } from "../../../services/Services";
 import { GoogleService } from "../../../services/service.google";
 import { ConnectHelper } from "../../../helpers/helper.connect";
@@ -20,7 +20,7 @@ export class GoogleContactsDeleteCmd {
     connect: ConnectHelper
 
     @lazyInject('r.log')
-    log: Log
+    log: LoggerInstance
 
     @option(<OptionConfig> {
         key        : 't',

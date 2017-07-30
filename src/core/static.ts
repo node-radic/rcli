@@ -29,7 +29,7 @@ export function createExecString(cmd: string, args: any[]) {
                 if ( typeof opt === 'boolean' ) {
                     cmd += ' ' + dashes + optk;
                 } else {
-                    cmd += ' ' + dashes + optk + ' ' + JSON.stringify(opt);
+                    cmd += ' ' + dashes + optk + (dashes.length === 2 ? '=' : ' ') + JSON.stringify(opt);
                 }
             });
         }

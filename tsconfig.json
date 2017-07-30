@@ -21,7 +21,7 @@
     "include": [
         "./src",
         "./spec/**/*.ts",
-        "./bin",
+        "./bin/r.ts",
         "./types/**/*.ts"
     ]
 }

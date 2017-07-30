@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, LoggerInstance, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
 import { IGitService } from "../../services/service.git";
@@ -22,7 +22,7 @@ export class GitRepoCmd {
     connect: ConnectHelper
 
     @inject('r.log')
-    log: Log;
+    log: LoggerInstance;
 
     @inject('r.config')
     config: RConfig

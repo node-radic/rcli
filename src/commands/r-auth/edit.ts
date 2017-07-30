@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, LoggerInstance, OutputHelper } from "@radic/console";
 import { BaseCommand, Credential, RConfig } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
 
@@ -21,7 +21,7 @@ export class AuthEditCmd extends BaseCommand {
     connect: ConnectHelper;
 
     @inject('r.log')
-    log: Log;
+    log: LoggerInstance;
 
     @inject('r.config')
     config: RConfig

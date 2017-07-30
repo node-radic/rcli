@@ -124,7 +124,7 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
                 return Promise.resolve(this._cache.get<AxiosResponse>(key, {}))
             }
         }
-        return this._client.request(config).then((res: AxiosResponse) => Promise.resolve(res)).catch(this.handleCatchedError);
+        return <any> this._client.request(config).then((res: AxiosResponse) => Promise.resolve(res)).catch(this.handleCatchedError);
     }
 
     protected options(url: string, config?: AxiosRequestConfig): AxiosPromise { return this.request({ method: 'OPTIONS', url, ...config }) }
