@@ -5,8 +5,7 @@ npm-debug.log
 /node_modules
 /*.js
 /.idea
-src/**/*.js
-src/**/*.js.map
+src/**/*.js*
 /lib
 .publish
 /docs
@@ -20,3 +19,4 @@ src/**/*.js.map
 /test.*
 /dts
 /lib-es6
+/bin/r-*.js*
