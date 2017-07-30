@@ -22,34 +22,38 @@ export class BaseCommand {
     protected ask: InputHelper;
 
     protected returnError(msg: string, ...meta: any[]): boolean {
-        this.log.error(msg, meta)
+        this.log.log.apply(this.log, ['error', msg].concat(meta))
         return false;
     }
 
     protected returnInfo(msg: string, ...meta: any[]): boolean {
-        this.log.info(msg, meta);
+        this.log.log.apply(this.log, ['info', msg].concat(meta))
         return true;
     }
 
     protected returnLog(level: string, msg: string, ...meta: any[]): boolean {
-        this.log.log(level, msg, meta);
+        this.log.log.apply(this.log, [level, msg].concat(meta))
         return true;
     }
 
     protected returnErrorLog(level: string, msg: string, ...meta: any[]): boolean {
-        this.log.log(level, msg, meta);
+        this.log.log.apply(this.log, [level, msg].concat(meta));
         return false;
     }
 
     protected returnOk(msg?: string, level: string = 'info', ...meta: any[]) {
         if ( msg ) {
-            this.log.log(level, msg, meta)
+            this.log.log.apply(this.log, [level, msg].concat(meta))
         }
         return true;
     }
 
     protected promiseOk(msg?: string, level: string = 'info', ...meta: any[]): Promise<boolean> {
-        return Promise.resolve(this.returnOk(msg, level, meta));
+        return Promise.resolve(this.returnOk.apply(this, [msg,level].concat(meta)))
+    }
+
+    protected promiseLog(msg?:string, level:string = 'info', ...meta:any[]):Promise<boolean> {
+        return Promise.resolve(this.returnLog.apply(this, [level,msg].concat(meta)))
     }
 
     protected promiseError(msg?: string, ...meta: any[]) {

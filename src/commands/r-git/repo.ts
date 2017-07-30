@@ -30,11 +30,11 @@ export class GitRepoCmd {
     @inject('cli.events')
     events: Dispatcher;
 
-    @option('n', 'do not confirm action')
-    noConfirm: boolean
+    @option('r', 'exec local git remote add/rm')
+    gitRemote: boolean
 
-    @option('s', 'the service connection to use')
-    service: string
+    @option('R', 'on exec git remote use this name for remote', {default: 'origin'})
+    gitName: string = 'origin'
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
@@ -52,7 +52,8 @@ export class GitRepoCmd {
         if ( action === 'create' ) {
             let fullName: string = args.name || await this.ask.ask('Full name of repository?')
             if ( fullName.length < 1 || ! fullName.includes('/') ) return this.log.error('Incorrect full name', args)
-            return api.createRepository(fullName.split('/')[ 1 ], fullName.split('/')[ 0 ])
+            await api.createRepository(fullName.split('/')[ 1 ], fullName.split('/')[ 0 ])
+
         }
 
         //

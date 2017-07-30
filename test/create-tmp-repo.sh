@@ -1,7 +1,9 @@
 #!/bin/bash
 
 rm -rf /tmp/temp-repo-for-rcli 2&>1 /dev/null
-mkcd /tmp/temp-repo-for-rcli
+mkdir /tmp/temp-repo-for-rcli
+cd /tmp/temp-repo-for-rcli
+
 echo "asdf" > file.txt
 git init
 git checkout -b master

@@ -80,7 +80,12 @@ export function bootstrapRcli(): Promise<Cli> {
     //     cli.events.on('**', (event: string) => event && cli.log.info(process.uptime() + ': ' + (event[ 'event' ] || event)))
     // }
 
-    cli.config(<CliConfig> {
+    cli.config.merge(<CliConfig> {
+        parser: {
+            yargs: {
+                'boolean-negation': false
+            }
+        },
         commands: {
             onMissingArgument: 'help'
         }

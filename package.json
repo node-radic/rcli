@@ -44,6 +44,7 @@
     "@radic/console-colors": "^0.9.5",
     "@radic/util": "^1.7.5",
     "@types/crypto-js": "^3.1.33",
+    "@types/semver": "^5.3.33",
     "Validator": "^1.0.4",
     "cryptico": "^1.0.2",
     "crypto-js": "^3.1.9-1",
@@ -66,6 +67,7 @@
     "pump": "^1.0.2",
     "raven": "^2.0.2",
     "raven-winston": "0.0.3",
+    "semver": "^5.4.1",
     "sqlite": "^2.8.0",
     "svg2png": "^4.1.1",
     "winston-sentry": "^0.2.1"

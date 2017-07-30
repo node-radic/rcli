@@ -1,21 +1,23 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
+import { Cli, command, CommandArguments, CommandConfig, Config, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
 import { RConfig } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
-import { IGitService } from "../../services/service.git";
 import { execSync } from "child_process";
 import { BaseCommand } from "../../core/commands";
+import { SemVer, valid } from "semver";
+import { bin } from "../../core/static";
+
 
 @command(`tag
-{version/bump-type:string@which version}
+[version/bump-type:string@which version]
 [message:string[]@message]`, 'Git tag with bumping', <CommandConfig> {
     onMissingArgument: 'help',
-    example: `{bold}tag by passing the name{/bold}
+    example          : `{bold}tag by passing the name{/bold}
 r git tag 1.2.3
 r git tag v1.44.0-alpha.5
 r git tag foobar
 
 {bold}tag using version bump. valid bump-types: major, minor, patch, build{/bold}
-r git tag <bump-type>
+r git tag 
 r git tag minor
 
 {bold}tag using a bump-type as name{/bold}
@@ -41,59 +43,83 @@ export class GitTagCmd extends BaseCommand {
     @inject('r.config')
     config: RConfig
 
+    @inject('cli')
+    cli: Cli
+
+
+    @inject('cli.config')
+    cliconfig: Config
+
     @inject('cli.events')
     events: Dispatcher;
 
-    @option('n', 'Use this if you want to tag `bump type` names like "major", "minor", etc')
+
+    @option('b', 'Use this if you want to tag `bump type` names like "major", "minor", etc')
     noBump: boolean
 
-    @option('p', 'Disables pushing')
+    @option('p', 'Disable pushing to remote')
     noPush: boolean
 
-    bumpTypes :string[]= ['major','minor', 'patch', 'build']
+    @option('C', 'Disables confirmation question')
+    noConfirm: boolean
+
+    @option('c', 'Validate if given tag is valid semver')
+    check: boolean
+
+    @option('t', 'Shows all "bump-types" like "major", "minor", etc')
+    listTypes: boolean
+
+    @option('d', 'Prevents actual git changes, just shows the results')
+    dryRun: boolean
+
+    bumpTypes: string[] = [ 'major', 'premajor', 'minor', 'preminor', 'patch', 'prepatch', 'prerelease' ];
 
     async handle(args: CommandArguments, ...argv: any[]) {
-        this.out.dump({args})
+        this.out.dump({ args })
 
-        if(!args.version){
+        if ( ! args.version ) {
             return this.returnError('No version or bump-type specified.')
         }
 
-        if(false == this.bumpTypes.includes(args.version) || this.noBump){
-            let msg = args.message && args.message.length > 0 ? args.message.join(' ') : 'tagged ' + args.version;
-            msg = `-m "${msg}"`
-            this.log.verbose(execSync(`git tag -a ${args.version} ${msg}`).toString('utf8'))
-            if(this.noPush === false) {
-                this.log.verbose(execSync(`git push -u origin ${args.version}`).toString())
+        if ( this.check ) {
+            if ( valid(args.version) ) {
+                return this.promiseOk('Validate version success. This is valid a semver string')
             }
-            return this.returnOk(`Tagged ${args.version} and pushed it`)
+            return this.promiseError('Invalid semver version.')
         }
 
-        let tags = execSync('git tag').toString();
-        let lastTag = process.argv[2] || tags.split('\n').reverse().filter((val) => val !== '')[0];
-        let seg = this.config('commands.git.tag.regexp').exec(lastTag);
-        if(seg === null) throw new Error('Could not parse last tag')
-        let prefixed = seg[2] === undefined // prefixed with "v"
-        let suffixed = seg[4] === undefined // suffixed with "-<suffix>.<number>"
-        let parts:any = {
-            major: prefixed ? seg[1].substr(1) : seg[2],
-            minor: prefixed ? seg[3] : seg[3],
-            patch: suffixed ? seg[5] : seg[4],
-            suffix: seg[6] || null,
-            build: seg[7] || null
+        if ( this.listTypes ) {
+            return this.promiseOk('Valid types ::\n - ' + this.bumpTypes.join('\n - '))
         }
-        let partsNumKeys = Object.keys(parts).filter(key => key !== 'suffix');
-        partsNumKeys.forEach(key => parts[key] = parseInt(parts[key]));
-        console.dir(parts);
-        console.dir({prefixed, suffixed,seg});
-        parts[args['bump-type']]++;
-        partsNumKeys.slice(partsNumKeys.indexOf(args['bump-type'])+1).forEach(key => parts[key] = 0)
-        parts = Object.values(parts);
-        let version = [(prefixed ? seg[1][0] : '') + parts[0], parts[1], parts[2]].join('.').concat(suffixed ? '-' + [parts[3], parts[4]].join('.') : '')
-        console.log({parts, version});
+
+
+        if ( true == this.bumpTypes.includes(args.version) && false === this.noBump ) {
+
+            let tags    = execSync('git tag').toString();
+            let lastTag = tags.split('\n').reverse().filter((val) => val !== '')[ 0 ];
+            let version = new SemVer(lastTag)
+            args.version     = version.inc(args[ 'bump-type' ]).version;
+
+        }
+
+        return this.tag(args.version, args.message && args.message.length > 0 ? args.message.join(' ') : 'tagged ' + args.version);
 
     }
 
+
+    protected async tag(version: string, message: string) {
+        const git = bin('git');
+        if(await this.ask.confirm(`You are going to tag version ${version} ${this.noPush ? '' : 'and push it to remote. Are you sure'}`)) {
+            if ( ! this.dryRun ) {
+                this.log.verbose(git('tag', { a: version, m: message }))
+                if ( this.noPush === false ) {
+                    this.log.verbose(git('push', { u: `origin` }, version))
+                }
+            }
+            return this.returnOk(`Tagged ${version} ` + this.noPush ? '' : 'and pushed it')
+        }
+        return this.returnLog('notice', 'You stopped the operation. No changes have been made.')
+    }
 
 }
 export default GitTagCmd
