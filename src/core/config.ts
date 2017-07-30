@@ -10,6 +10,43 @@ import * as globule from "globule";
 import { AES, enc } from "crypto-js";
 import { cloneDeep } from "lodash";
 
+let defaultConfig: any = {
+    debug   : false,
+    env     : {},
+    cli     : {
+        showCopyright: true
+    },
+    dgram   : {
+        server: {
+            host: '127.0.0.1',
+            port: 41333
+        },
+        client: {
+            host: '127.0.0.1',
+            port: Math.round(Math.random() * 10000) + 1000
+        }
+    },
+
+    commands: {
+        ssh     : {
+            bins: {
+                ssh    : 'ssh',
+                sshfs  : 'sshfs',
+                sshpass: 'sshpass',
+                umount : 'umount'
+            }
+        },
+        git  : {
+            tag: {
+                regexp: /^(?:(\w*?)(\d*?)|(\d*?))\.(\d*?)\.(?:(\d*?)|(\d*?)-(\w*?))(?:\.(\d*?)|)$/m
+            }
+        },
+        pmove: {
+            extensions: [ 'mp4', 'wma', 'flv', 'mkv', 'avi', 'wmv', 'mpg' ]
+        }
+    }
+};
+
 export interface RConfig extends IConfigProperty {
     save(): this
 
@@ -105,34 +142,6 @@ export class ConfigBackupStore {
 
 }
 
-let defaultConfig: any = {
-    debug: false,
-    env  : {},
-    cli  : {
-        showCopyright: true
-    },
-    dgram: {
-        server: {
-            host: '127.0.0.1',
-            port: 41333
-        },
-        client: {
-            host: '127.0.0.1',
-            port: Math.round(Math.random() * 10000) + 1000
-        }
-    },
-    pmove: {
-        extensions: [ 'mp4', 'wma', 'flv', 'mkv', 'avi', 'wmv', 'mpg' ]
-    },
-    ssh  : {
-        bins: {
-            ssh    : 'ssh',
-            sshfs  : 'sshfs',
-            sshpass: 'sshpass',
-            umount : 'umount'
-        }
-    }
-};
 
 // load .env stuff
 function parseEnvVal(val: any) {

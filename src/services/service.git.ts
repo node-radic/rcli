@@ -24,6 +24,7 @@ export interface GitServiceUser {
     groups?: string[]
     raw?: any
 }
+
 export abstract class AbstractGitService extends AbstractService<GitServiceExtraFields> {
     user: GitServiceUser
     protected userDataConversion: Dictionary<string> = {}

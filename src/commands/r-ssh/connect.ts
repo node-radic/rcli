@@ -32,13 +32,6 @@ export abstract class RcliSshConnect {
     dirs: boolean
 
 
-    bins = {
-        ssh    : 'ssh',
-        sshfs  : 'sshfs',
-        sshpass: 'sshpass',
-        umount : 'umount'
-    }
-
     async handle(args: CommandArguments) {
 
         let io         = SSHConnection.interact(),
@@ -58,7 +51,7 @@ export abstract class RcliSshConnect {
 
 
     mount(target: SSHConnection) {
-        let cmd: string = `${this.config('ssh.bins.sshfs')} ${target.user}@${target.host}:${target.hostPath} ${target.localPath} -p ${target.port}`;
+        let cmd: string = `${this.config('commands.ssh.bins.sshfs')} ${target.user}@${target.host}:${target.hostPath} ${target.localPath} -p ${target.port}`;
         let opts:string = ' -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o reconnect -o workaround=rename';
         if ( target.method === 'password' ) {
             cmd = `echo ${target.password} | ${cmd} ${opts} -o password_stdin`
@@ -75,7 +68,7 @@ export abstract class RcliSshConnect {
     }
 
     umount(target: SSHConnection) {
-        let cmd: string = `sudo ${this.config('ssh.bins.umount')} ${target.localPath} -f`;
+        let cmd: string = `sudo ${this.config('commands.ssh.bins.umount')} ${target.localPath} -f`;
         execSync(cmd);
         rmdirSync(target.localPath);
         this.log.info(`Unmounted ${target.localPath} success`);
@@ -84,12 +77,12 @@ export abstract class RcliSshConnect {
     ssh(target: SSHConnection) {
         let cmd = '';
         if ( target.method === 'password' ) {
-            cmd = `${this.config('ssh.bins.sshpass')} -p ${target.password} `
+            cmd = `${this.config('commands.ssh.bins.sshpass')} -p ${target.password} `
 
         }
 
         // this.log.info(`attempting SSH connection using -o StrictHostKeyChecking=no ${target.user}@${target.host} -p ${target.port}`)
-        cmd += `${this.bins.ssh} -o StrictHostKeyChecking=no ${target.user}@${target.host} -p ${target.port}`;
+        cmd += `${this.config('commands.ssh.bins.ssh')} -o StrictHostKeyChecking=no ${target.user}@${target.host} -p ${target.port}`;
 
         execSync(cmd, {
             stdio: 'inherit'
