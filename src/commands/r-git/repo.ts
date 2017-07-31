@@ -34,7 +34,10 @@ export class GitRepoCmd {
     gitRemote: boolean
 
     @option('R', 'on exec git remote use this name for remote', {default: 'origin'})
-    gitName: string = 'origin'
+    gitRemoteName: string = 'origin'
+
+    @option('H', 'Use HTTP url instead of SSH for git remote')
+    gitRemoteHttp:boolean
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
@@ -52,7 +55,12 @@ export class GitRepoCmd {
         if ( action === 'create' ) {
             let fullName: string = args.name || await this.ask.ask('Full name of repository?')
             if ( fullName.length < 1 || ! fullName.includes('/') ) return this.log.error('Incorrect full name', args)
-            await api.createRepository(fullName.split('/')[ 1 ], fullName.split('/')[ 0 ])
+            return api.createRepository(fullName.split('/')[ 1 ], fullName.split('/')[ 0 ]).then(() => {
+                if(this.gitRemote){
+                    api.bin('remote','add',this.gitRemoteName,this.gitRemoteHttp ? api.url(fullName) : api.ssh(fullName))
+                }
+                return Promise.resolve()
+            })
 
         }
 

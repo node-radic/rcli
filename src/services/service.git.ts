@@ -5,12 +5,18 @@ import { service } from "../decorators";
 import { AuthMethod } from "./AuthMethod";
 import { get } from "lodash";
 import { IService, ServiceExtraFields } from "../interfaces";
+import { bin } from "../core/static";
 
 export interface GitServiceExtraFields extends ServiceExtraFields {
 
 }
 export interface IGitService extends IService<GitServiceExtraFields> {
+    domain: string
     user: GitServiceUser
+    bin: (...args: any[]) => string
+    url(uri): string
+    ssh(uri): string
+
     createRepository(name: string, owner?: string, priv?: boolean): Promise<boolean>
     listRepositories(owner?: string): Promise<string[]>
     getUserGroups(owner?: string): Promise<string[]>
@@ -27,7 +33,14 @@ export interface GitServiceUser {
 
 export abstract class AbstractGitService extends AbstractService<GitServiceExtraFields> {
     user: GitServiceUser
+    domain: string
     protected userDataConversion: Dictionary<string> = {}
+
+    public get bin(): (...args: any[]) => string { return bin('git') }
+
+    url(uri): string {return `https://${this.domain}/${uri}` }
+
+    ssh(uri): string {return `git@${this.domain}:${uri}.git`}
 
     protected convertUserData(userData: any): GitServiceUser {
         let user: GitServiceUser = {}
@@ -53,6 +66,8 @@ export abstract class AbstractGitService extends AbstractService<GitServiceExtra
 })
 export class GithubService extends AbstractGitService implements IGitService {
     userDataConversion = { username: 'login', avatar: 'avatar_url', name: 'name', email: 'email' }
+
+    protected domain = 'github.com';
 
     async getCurrentUser() {
         if ( this.user ) {
@@ -162,6 +177,8 @@ export class GithubService extends AbstractGitService implements IGitService {
 export class BitbucketService extends AbstractGitService implements IGitService {
     userDataConversion = { username: 'username', avatar: 'links.avatar.href', name: 'display_name', email: 'email' }
 
+    domain = 'bitbucket.org'
+
     async getCurrentUser() {
         if ( this.user ) {
             return Promise.resolve(this.user);
@@ -201,7 +218,7 @@ export class BitbucketService extends AbstractGitService implements IGitService 
 
     async getUserGroups(user?: string): Promise<string[]> {
         if ( user === undefined || user === this.user.username ) user = ''
-        let groups = await this.get(`/teams/${user}`, { params: { role: 'member' }})
+        let groups = await this.get(`/teams/${user}`, { params: { role: 'member' } })
         return Promise.resolve(groups.data.values.map(group => group.username))
     }
 
@@ -210,17 +227,17 @@ export class BitbucketService extends AbstractGitService implements IGitService 
     }
 
     async listRepositories(owner?: string): Promise<string[]> {
-        let getRepos = async (owner:string): Promise<string[]> => {
+        let getRepos = async (owner: string): Promise<string[]> => {
             let res = await this.get(`/repositories/${owner}`, {
                 params: { pagelen: 100, role: 'member' }
             });
             return Promise.resolve(res.data.values.map(val => val.full_name))
         }
-        if(!owner){
-            let promises: Promise<string[]> [] = [getRepos(this.user.username)];
+        if ( ! owner ) {
+            let promises: Promise<string[]> [] = [ getRepos(this.user.username) ];
             this.user.groups.forEach(group => promises.push(getRepos(group)))
-            let groups = await Promise.all(promises);
-            let repos:string[] = []
+            let groups          = await Promise.all(promises);
+            let repos: string[] = []
             groups.forEach(group => repos = repos.concat(group));
             return Promise.resolve(repos);
         }
