@@ -3,10 +3,15 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: ubuntu:16.04
+image: node:6.9.4
 
 pipelines:
     default:
         - step:
             script:
+                - apt-get update
+                - apt-get install -y --no-install-recommends git
+                - git remote add github git@github.com:node-radic/rcli
+                - git push github --all
+                - git push github --tags
                 - echo "Everything is awesome!"
