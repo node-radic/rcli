@@ -1,6 +1,6 @@
 {
   "name": "@radic/cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "cli utility for various purposes. uses @radic/console to provide a hierarchical command structure.",
   "main": "lib/index.js",
   "typings": "dts/index.d.ts",
