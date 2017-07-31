@@ -67,7 +67,7 @@ export abstract class AbstractGitService extends AbstractService<GitServiceExtra
 export class GithubService extends AbstractGitService implements IGitService {
     userDataConversion = { username: 'login', avatar: 'avatar_url', name: 'name', email: 'email' }
 
-    protected domain = 'github.com';
+    domain = 'github.com';
 
     async getCurrentUser() {
         if ( this.user ) {
