@@ -1,6 +1,6 @@
 {
   "name": "rcli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Console ",
   "main": "lib/index.js",
   "typings": "dts/index.d.ts",
