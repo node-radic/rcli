@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test list.js" type="NodeJSConfigurationType" factoryName="Node.js" singleton="false" path-to-node="project" path-to-js-file="test/commands/r-connect/list.spec.js" working-dir="$PROJECT_DIR$">
+    <method>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="build:tetst" run_configuration_type="js.build_tools.gulp" />
+    </method>
+  </configuration>
+</component>

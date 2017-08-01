@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r git tag" type="NodeJSConfigurationType" factoryName="Node.js" folderName="git" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="git tag minor --disable-push" working-dir="$PROJECT_DIR$">
+    <method>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="create tmp repo" run_configuration_type="BashConfigurationType" />
+    </method>
+  </configuration>
+</component>

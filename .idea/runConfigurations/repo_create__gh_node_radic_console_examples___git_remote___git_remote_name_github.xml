@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="repo create  gh node-radic/console-examples --git-remote --git-remote-name github" type="NodeJSConfigurationType" factoryName="Node.js" folderName="git" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="git repo create gh node-radic/console-examples --git-remote --git-remote-name github" working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

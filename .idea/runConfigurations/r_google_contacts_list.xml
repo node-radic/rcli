@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r google contacts list" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="google contacts list" working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

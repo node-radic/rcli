@@ -1,21 +1,21 @@
 import * as gulp from "gulp";
+import { WatchOptions } from "gulp";
 import * as fs from "fs-extra";
 import * as tsc from "gulp-typescript";
 import * as ts from "typescript";
 
 import { join, resolve } from "path";
-import { exec, execSync } from "child_process";
+import { execSync } from "child_process";
 import { rm } from "shelljs";
 import { tmpdir } from "os";
 
 // import * as npm from 'npm'
 // npm.
 const c = {
-    binFile      : 'bin/r.js',
-    src          : [ "src/**/*.ts", "!src/**/*.spec.ts" ],
-    fileName     : 'rcli',
-    moduleName   : '@radic/rcli',
-    umdModuleName: 'radic.rcli'
+    binFile  : 'bin/r.js',
+    src      : [ "src/**/*.ts", "!src/**/*.spec.ts" ],
+    fileName : 'rcli',
+    watchOpts: <WatchOptions>{ debounceDelay: 3000, interval: 3000 }
 };
 
 // const binFile = `#!/usr/bin/env node
@@ -77,6 +77,7 @@ const tsProject = {
 
 gulp.task('clean', [ 'clean:src:js', 'clean:build' ]);
 gulp.task('clean:build', (cb) => pump([ gulp.src([ 'lib', 'lib-es6', 'dts', 'coverage', '.publish', 'docs' ]), clean() ]));
+gulp.task('clean:watch', (cb) => pump([ gulp.src([ 'lib', 'dts' ]), clean() ]));
 
 gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
 gulp.task('clean:test:js', (cb) => pump([ gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
@@ -122,6 +123,15 @@ gulp.task("build", (cb) => runSequence(
     "build:test", cb
 ));
 
+gulp.task("build:watch", (cb) => runSequence(
+    "clean:watch",
+    [ 'build:lib', 'build:dts' ],
+    cb
+));
+
+gulp.task('watch:dev', () => { gulp.watch(c.src, c.watchOpts, [ 'build:watch' ]) })
+gulp.task('watch:console', () => { gulp.watch('node_modules/@radic/console/lib/**/*.js', c.watchOpts, [ 'build:watch' ]) })
+gulp.task('watch', (cb) => runSequence([ 'watch:dev', 'watch:console' ], cb))
 
 //https://github.com/pmq20/node-compiler
 gulp.task('compiler:init', (cb) => {
@@ -139,7 +149,7 @@ gulp.task('compiler:compile', (cb) => {
     execSync('npm install @radic/console', { stdio: 'inherit' })
     process.stdout.write(require.resolve('@radic/console'))
     execSync(resolve('nodec') + ' ' + c.binFile, { stdio: 'inherit' })
-    execSync('npm link @radic/console', { stdio: ['inherit'] })
+    execSync('npm link @radic/console', { stdio: [ 'inherit' ] })
     cb();
 })
 

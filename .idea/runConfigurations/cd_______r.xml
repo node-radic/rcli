@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="cd ~/ &amp;&amp; r" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="$PROJECT_DIR$/bin/r.js" working-dir="$USER_HOME$">
+    <method />
+  </configuration>
+</component>

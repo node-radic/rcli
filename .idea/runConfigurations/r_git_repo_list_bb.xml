@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r git repo list bb" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="git repo list bb" working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

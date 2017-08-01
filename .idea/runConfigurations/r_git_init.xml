@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r git init" type="NodeJSConfigurationType" factoryName="Node.js" folderName="git" singleton="true" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="git init" working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

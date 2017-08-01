@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test" type="js.build_tools.gulp" factoryName="Gulp.js">
+    <node-interpreter>project</node-interpreter>
+    <node-options />
+    <gulpfile>$PROJECT_DIR$/gulpfile.js</gulpfile>
+    <tasks>
+      <task>test</task>
+    </tasks>
+    <arguments />
+    <envs />
+    <method>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="build:tetst" run_configuration_type="js.build_tools.gulp" />
+    </method>
+  </configuration>
+</component>

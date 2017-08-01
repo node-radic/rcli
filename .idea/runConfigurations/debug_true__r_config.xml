@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="debug=true, r config" type="NodeJSConfigurationType" factoryName="Node.js" singleton="true" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="config" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="debug" value="true" />
+    </envs>
+    <method />
+  </configuration>
+</component>
