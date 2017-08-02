@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, LoggerInstance, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, inject, LoggerInstance, OutputHelper } from "radical-console";
 import { RConfig } from "../../";
 
 @command(`remove

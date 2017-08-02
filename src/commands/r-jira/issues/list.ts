@@ -1,4 +1,4 @@
-import { command, CommandArguments, option, prepareArguments } from "@radic/console";
+import { command, CommandArguments, option } from "radical-console";
 import { BaseServiceCommand } from "../../../core/commands";
 import { JiraService } from "../../../services/service.jira";
 

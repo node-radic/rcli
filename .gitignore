@@ -12,7 +12,6 @@ src/**/*.js*
 /lib
 .publish
 /docs
-/console.iml
 /gulpfile.js
 /tmp
 /*.log

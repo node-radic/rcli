@@ -1,5 +1,5 @@
 import { AbstractInteractiveModel } from "./Models/AbstractInteractiveModel";
-import { container, InputHelper, Log } from "@radic/console";
+import { container, InputHelper, Log } from "radical-console";
 import * as inquirer from "inquirer";
 import { Answers, ChoiceType } from "inquirer";
 import * as _ from "lodash";

@@ -1,4 +1,4 @@
-import { command, CommandArguments, inject, InputHelper, LoggerInstance, OutputHelper } from "@radic/console";
+import { command, CommandArguments, inject, InputHelper, LoggerInstance, OutputHelper } from "radical-console";
 import { SSHConnection, SshBashHelper ,RConfig } from "../../";
 
 

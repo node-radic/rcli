@@ -1,4 +1,4 @@
-import { cli, CliConfig, HelperOptionsConfig } from "@radic/console";
+import { cli, CliConfig, HelperOptionsConfig } from "radical-console";
 
 
 export interface TestingBoostrapOptions {

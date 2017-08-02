@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Config, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Config, inject, InputHelper, Log, option, OutputHelper } from "radical-console";
 import { dotize, IConfig } from "@radic/util";
 import { PersistentFileConfig } from "../../";
 

@@ -1,4 +1,4 @@
-import { helper, HelperOptionsConfig, InputHelper, lazyInject } from "@radic/console";
+import { helper, HelperOptionsConfig, InputHelper, lazyInject } from "radical-console";
 import { kindOf } from "@radic/util";
 import { Services } from "../services/Services";
 import { Credential } from "../database/Models/Credential";

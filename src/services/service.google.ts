@@ -8,7 +8,7 @@ import { createServer, IncomingMessage, ServerResponse } from "http";
 import { getRandomId } from "@radic/util";
 import { parse, stringify } from "querystring";
 import * as open from "open";
-import { lazyInject, Log } from "@radic/console";
+import { lazyInject, Log } from "radical-console";
 import { ServiceExtraFields } from "../interfaces";
 
 

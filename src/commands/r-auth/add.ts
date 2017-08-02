@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "radical-console";
 import { Credential, RConfig } from "../../";
 import { AuthMethod } from "../../services/AuthMethod";
 import { Services } from "../../services/Services";
@@ -35,7 +35,7 @@ export class AuthAddCmd {
     async handle(args: CommandArguments, ...argv: any[]) {
 
         let name    = args.name || await this.ask.ask('Name?')
-        let service = args.service || await this.ask.list('Service?', this.services.getNames())
+        let service = args.service || await this.ask.autocomplete('Service?', this.services.getNames())
         let method  = args.method || await this.ask.list('Method?', this.services.getMethodsFor(service).map(method => method.toString()))
 
         let m: AuthMethod = AuthMethod[ method ]

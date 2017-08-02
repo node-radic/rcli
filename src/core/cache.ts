@@ -1,6 +1,6 @@
 import { PersistentFileConfig } from "./config";
 import { paths } from "./paths";
-import { container, lazyInject } from "@radic/console";
+import { container, lazyInject } from "radical-console";
 import { IConfig, kindOf } from "@radic/util";
 import { DAY } from "./static";
 // const cache = new PersistentFileConfig({}, paths.userCache, true, true, false);

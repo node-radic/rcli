@@ -1,8 +1,8 @@
-import { command, CommandConfig, Container, Dispatcher, lazyInject, Log, OutputHelper, prepareArguments } from "@radic/console";
+import { command, CommandConfig, Container, Dispatcher, lazyInject, Log, OutputHelper } from "radical-console";
 import { RConfig } from "../";
 import { Services } from "../services/Services";
 import { ConnectHelper } from "../helpers/helper.connect";
-import { CommandArguments } from "@radic/console/lib";
+import { CommandArguments } from "radical-console/lib";
 import { JiraService } from "../services/service.jira";
 import { writeFileSync } from "fs";
 import { tmpNameSync } from "tmp";
@@ -38,8 +38,6 @@ export class TestCmd {
         const svg2png = require('svg2png')
         const imageToAscii = require("image-to-ascii");
 
-
-        prepareArguments({})
 
         let git      = await this.connect.getService<JiraService>('jira', args.connection)
         let projects = await git.listProjects()

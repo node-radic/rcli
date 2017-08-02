@@ -1,4 +1,4 @@
-import { CliExecuteCommandParsedEvent, container, helper } from "@radic/console";
+import { CliExecuteCommandParsedEvent, container, helper } from "radical-console";
 import * as omelette from "omelette";
 @helper('completion', {
     listeners: {

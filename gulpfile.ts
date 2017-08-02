@@ -58,10 +58,7 @@ const
     rollup       = require('gulp-rollup'),
     rename       = require("gulp-rename"),
     runSequence  = require("run-sequence"),
-    istanbul     = require("gulp-istanbul"),
-    jasmine      = require("gulp-jasmine"),
     clean        = require('gulp-clean'),
-    SpecReporter = require('jasmine-spec-reporter'),
     ghPages      = require("gulp-gh-pages"),
     download     = require('download')
 ;
@@ -130,7 +127,7 @@ gulp.task("build:watch", (cb) => runSequence(
 ));
 
 gulp.task('watch:dev', () => { gulp.watch(c.src, c.watchOpts, [ 'build:watch' ]) })
-gulp.task('watch:console', () => { gulp.watch('node_modules/@radic/console/lib/**/*.js', c.watchOpts, [ 'build:watch' ]) })
+gulp.task('watch:console', () => { gulp.watch('node_modules/radical-console/lib/**/*.js', c.watchOpts, [ 'build:watch' ]) })
 gulp.task('watch', (cb) => runSequence([ 'watch:dev', 'watch:console' ], cb))
 
 //https://github.com/pmq20/node-compiler
@@ -144,34 +141,16 @@ gulp.task('compiler:init', (cb) => {
 
 
 gulp.task('compiler:compile', (cb) => {
-    execSync('npm uninstall @radic/console', { stdio: 'inherit' })
-    rm('-r', 'node_modules/@radic/console')
-    execSync('npm install @radic/console', { stdio: 'inherit' })
-    process.stdout.write(require.resolve('@radic/console'))
+    if(true == true) return cb(); // need to compile in another folder. this is a CI job really..
+
+    execSync('npm uninstall radical-console', { stdio: 'inherit' })
+    rm('-r', 'node_modules/radical-console')
+    execSync('npm install radical-console', { stdio: 'inherit' })
+    process.stdout.write(require.resolve('radical-console'))
     execSync(resolve('nodec') + ' ' + c.binFile, { stdio: 'inherit' })
-    execSync('npm link @radic/console', { stdio: [ 'inherit' ] })
+    execSync('npm link radical-console', { stdio: [ 'inherit' ] })
     cb();
 })
-
-gulp.task("test", () => {
-
-    // runSequence("jasmine", cb);
-    execSync('npm uninstall @radic/console#latest')
-    rm('-r', 'node_modules/@radic/console')
-    execSync('npm install @radic/console#latest')
-    process.stdout.write(require.resolve('@radic/console'))
-
-    let jasmineJson = join(__dirname, 'jasmine.json');
-    let done        = gulp.src(jasmineJson[ 'spec_files' ])
-        .pipe(jasmine({
-            reporter: new SpecReporter({
-                displayStacktrace  : true,
-                displaySpecDuration: true
-            }),
-            config  : jasmineJson
-        }))
-    execSync('npm link @radic/console')
-});
 
 gulp.task("default", (cb) => {
     runSequence(

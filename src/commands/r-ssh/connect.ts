@@ -1,4 +1,4 @@
-import { CommandArguments, CommandConfig, CommandDescriptionHelper, inject, injectable, InputHelper, Log, option, OutputHelper } from "@radic/console";
+import { CommandArguments, CommandConfig, HelpHelper, inject, injectable, InputHelper, Log, option, OutputHelper } from "radical-console";
 import { RConfig } from "../../";
 import { ensureDirSync } from "fs-extra";
 import { execSync } from "child_process";
@@ -15,7 +15,7 @@ export abstract class RcliSshConnect {
     out: OutputHelper;
 
     @inject('cli.helpers.help')
-    help: CommandDescriptionHelper;
+    help: HelpHelper;
 
     @inject('cli.helpers.input')
     ask: InputHelper;

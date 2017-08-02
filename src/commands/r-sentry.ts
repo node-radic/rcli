@@ -1,4 +1,4 @@
-import { container, command, CommandConfig, Container, Dispatcher, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { container, command, CommandConfig, Container, Dispatcher, lazyInject, Log, option, OutputHelper } from "radical-console";
 import { RConfig } from "../";
 import { Client } from "raven";
 

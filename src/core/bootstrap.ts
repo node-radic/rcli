@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Cli, CliConfig, container, log, Event, Log } from "@radic/console";
+import { Cli, CliConfig, container, log, Event, Log } from "radical-console";
 import { LoggerInstance, transports as wtransports } from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";

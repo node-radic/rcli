@@ -1,4 +1,4 @@
-import { command, CommandArguments, container } from "@radic/console";
+import { command, CommandArguments, container } from "radical-console";
 
 @command('contacts {command:string?The command you want to run}', 'Google Contacts', {
     isGroup: true,

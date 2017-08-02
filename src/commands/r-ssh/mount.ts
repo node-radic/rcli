@@ -1,4 +1,4 @@
-import { command, CommandArguments } from "@radic/console";
+import { command, CommandArguments } from "radical-console";
 import { RcliSshConnect } from "./connect";
 @command(`mount
 [name:string@Name of the connection]`,

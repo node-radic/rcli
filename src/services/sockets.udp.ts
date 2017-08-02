@@ -1,6 +1,6 @@
 import { createSocket, RemoteInfo, Socket } from "dgram";
 import { getRandomId } from "@radic/util";
-import { inject, Log, singleton } from "@radic/console";
+import { inject, Log, singleton } from "radical-console";
 import { RConfig } from "../core/config";
 
 export interface SocketFactorySocket{

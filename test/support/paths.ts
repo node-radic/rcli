@@ -1,6 +1,6 @@
 import { Paths, setPaths } from '../../src'
 import { resolve } from "path";
-import { container } from "@radic/console";
+import { container } from "radical-console";
 
 export let paths:Paths;
 

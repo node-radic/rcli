@@ -1,7 +1,5 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "radical-console";
 import { RConfig } from "../../core/config";
-import * as editor from "open-in-editor";
-import { paths } from "../../core/paths";
 import { SSHConnection } from "../../database/Models/SSHConnection";
 
 export interface ConnectAddArguments extends CommandArguments {

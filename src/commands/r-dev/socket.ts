@@ -1,5 +1,5 @@
 import { Socket } from "dgram";
-import { command, CommandArguments, Config, Dispatcher, inject, InputHelper, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, Config, Dispatcher, inject, InputHelper, option, OutputHelper } from "radical-console";
 import { UDPSocketFactory } from "../../services/sockets.udp";
 
 @command(`socket

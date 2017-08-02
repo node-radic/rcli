@@ -4,10 +4,11 @@ import { existsSync, readFileSync, writeFileSync } from "fs-extra";
 import * as dotenv from "dotenv";
 import { paths, setPaths } from "./paths";
 import { unlinkSync } from "fs";
-import { container, lazyInject, singleton } from "@radic/console";
+import { container, lazyInject, singleton } from "radical-console";
 import { basename, join } from "path";
 import * as globule from "globule";
-import { AES, enc } from "crypto-js";
+import { AES, enc, algo  } from "crypto-js";
+import * as cr from "crypto-js";
 import { cloneDeep } from "lodash";
 
 let defaultConfig: any = {
@@ -89,6 +90,7 @@ export class ConfigCrypto {
 
     encrypt(message: string): string {
 
+        algo.AES.createEncryptor('saf').process('sdf')
         const key       = this.getSecretKey()
         const encrypted = AES.encrypt(message, key, {}).toString();
         return encrypted;

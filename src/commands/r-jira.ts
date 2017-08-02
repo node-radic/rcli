@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { command, CommandArguments, inject, InputHelper, Log, OutputHelper } from "@radic/console";
+import { command, CommandArguments, inject, InputHelper, Log, OutputHelper } from "radical-console";
 import { Credential } from "../database/Models/Credential";
 import { fileSync } from "tmp";
 import { readFile, readFileSync, writeFileSync } from "fs";

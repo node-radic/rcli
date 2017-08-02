@@ -1,4 +1,4 @@
-import { command, CommandArguments, Container } from "@radic/console";
+import { command, CommandArguments, Container } from "radical-console";
 import { RConfig } from "../core/config";
 
 @command('dev {command}', 'Dev stuff', { // , [ 'cache', 'config', 'db', 'paths', 'serve', 'socket' ]

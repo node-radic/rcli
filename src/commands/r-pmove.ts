@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, lazyInject, Log } from "@radic/console";
+import { command, CommandArguments, CommandConfig, Dispatcher, lazyInject, Log } from "radical-console";
 import { BaseCommand, RConfig } from "../";
 import { basename, join, resolve } from "path";
 import * as globule from "globule";

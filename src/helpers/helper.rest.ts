@@ -1,6 +1,6 @@
 import Axios, { AxiosInstance } from 'axios';
 import * as _ from 'lodash';
-import { helper } from "@radic/console";
+import { helper } from "radical-console";
 
 
 

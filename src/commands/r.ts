@@ -1,10 +1,9 @@
-import { Dispatcher, Cli, CliExecuteCommandParsedEvent, command, CommandConfig, CommandDescriptionHelper, inject, lazyInject, Log, option, OutputHelper, Event } from "@radic/console";
+import { alwaysRun, command, CommandConfig, Dispatcher, lazyInject, Log } from "radical-console";
 import { RConfig } from "../";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
     // subCommands: [  'dev', 'connect', 'ssh', 'git',  'google','info', 'tree'], //'completion', 'jira',
-    isGroup: true,
-    alwaysRun  : true,
+    isGroup  : true,
     // helpers: {
     //     help: {
     //         display: {
@@ -24,11 +23,12 @@ export class RcliCmd {
     @lazyInject('r.config')
     protected config: RConfig;
 
-    always(){
+    @alwaysRun()
+    always() {
         if ( this.config.get('debug', false) === true ) {
             this.log.level = 'debug';
         }
-        if(this.log.level === 'silly') {
+        if ( this.log.level === 'silly' ) {
             this.events.on('**', (event: string) => event && this.log.info(process.uptime() + ': ' + (event[ 'event' ] || event)))
         }
 

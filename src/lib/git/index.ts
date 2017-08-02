@@ -1,7 +1,7 @@
 import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import * as _ from "lodash";
 import { AuthMethod } from "../../services";
-import { provide } from "@radic/console";
+import { provide } from "radical-console";
 
 export abstract class AbstractGitRestClient {
     protected client: AxiosInstance;

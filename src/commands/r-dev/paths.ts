@@ -1,4 +1,4 @@
-import { command, CommandArguments, lazyInject, Log, option, OutputHelper } from "@radic/console";
+import { command, CommandArguments, lazyInject, Log, option, OutputHelper } from "radical-console";
 import { Paths } from "../../core/paths";
 import { RCFile, RCFileKey } from "../../core/config";
 

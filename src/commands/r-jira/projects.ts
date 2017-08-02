@@ -1,4 +1,4 @@
-import { command, CommandArguments, lazyInject, option } from "@radic/console";
+import { command, CommandArguments, lazyInject, option } from "radical-console";
 import { BaseCommand } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
 import { JiraService } from "../../services/service.jira";

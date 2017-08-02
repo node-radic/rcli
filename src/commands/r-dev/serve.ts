@@ -1,4 +1,4 @@
-import { Cli, command, CommandArguments, inject, InputHelper, Log, OutputHelper } from "@radic/console";
+import { Cli, command, CommandArguments, inject, InputHelper, Log, OutputHelper } from "radical-console";
 import { ChildProcess, fork } from "child_process";
 import { paths } from "../../core/paths";
 

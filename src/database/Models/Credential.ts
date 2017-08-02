@@ -1,5 +1,5 @@
 import { JsonSchema, Model } from "objection";
-import { container } from "@radic/console";
+import { container } from "radical-console";
 import { ServiceConfig } from "../../interfaces";
 import { Services } from "../../services/Services";
 

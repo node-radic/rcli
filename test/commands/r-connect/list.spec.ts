@@ -1,7 +1,7 @@
 
 import { expect } from "chai";
 // application container is shared by all unit tests
-import { Cli, container }from "@radic/console";
+import { Cli, container }from "radical-console";
 
 describe("Ninja", () => {
 

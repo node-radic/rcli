@@ -1,4 +1,4 @@
-import { Dispatcher, injectable, InputHelper, lazyInject, Log, OutputHelper } from "@radic/console";
+import { Dispatcher, injectable, InputHelper, lazyInject, Log, OutputHelper } from "radical-console";
 import { RConfig } from "./config";
 import { Services } from "../services/Services";
 import { ConnectHelper } from "../helpers/helper.connect";

@@ -1,11 +1,10 @@
-import { interfaces } from "inversify";
-import { container, lazyInject, singleton } from "@radic/console";
+import { container, lazyInject, singleton } from "radical-console";
 import { AuthMethod } from "./AuthMethod";
 import { Dictionary, IService, ServiceConfig } from "../interfaces";
 import { Credential } from "../database/Models/Credential";
 
 
-container.bind('r.services.factory').toFactory((ctx: interfaces.Context) => {
+container.bind('r.services.factory').toFactory((ctx) => {
     return async (name: string, credentials: Credential) => {
         const service             = ctx.container.get<IService>('r.services.' + name)
         let config: ServiceConfig = Reflect.getMetadata('service', service.constructor)

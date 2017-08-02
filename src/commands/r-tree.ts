@@ -1,11 +1,11 @@
-import { command, CommandConfig, CommandDescriptionHelper, inject, lazyInject, Log, option, OptionConfig, OutputHelper } from "@radic/console";
+import { command, CommandConfig, HelpHelper, inject, lazyInject, Log, option, OptionConfig, OutputHelper } from "radical-console";
 import { RConfig } from "../";
 
 @command('tree', 'Show commands as tree structure', <CommandConfig> {})
 export class RTreeCmd {
 
     @inject('cli.helpers.help')
-    protected help: CommandDescriptionHelper;
+    protected help: HelpHelper;
 
 
     @inject('cli.helpers.output')

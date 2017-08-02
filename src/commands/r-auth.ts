@@ -1,4 +1,4 @@
-import { command, CommandArguments, container, Container } from "@radic/console";
+import { command, CommandArguments, container, Container } from "radical-console";
 
 @command('auth {command}', 'Manage service authentications', { // , ['add', 'list', 'edit', 'remove' ]
     isGroup: true,

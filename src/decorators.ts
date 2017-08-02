@@ -1,5 +1,5 @@
 import { interfaces } from "inversify";
-import { container } from "@radic/console";
+import { container } from "radical-console";
 import { IService, IServiceConstructor, ServiceConfig, ServiceExtraFields } from "./interfaces";
 import { Services } from "./services/Services";
 import { Credential } from "./database/Models/Credential";

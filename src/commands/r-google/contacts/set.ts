@@ -1,4 +1,4 @@
-import { command, CommandArguments, InputHelper, lazyInject, Log, option, OptionConfig, OutputHelper } from "@radic/console";
+import { command, CommandArguments, InputHelper, lazyInject, Log, option, OptionConfig, OutputHelper } from "radical-console";
 import { Services } from "../../../services/Services";
 import { GoogleService } from "../../../services/service.google";
 import { ConnectHelper } from "../../../helpers/helper.connect";

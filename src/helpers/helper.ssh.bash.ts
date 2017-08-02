@@ -1,4 +1,4 @@
-import { helper, HelperOptions, HelperOptionsConfig, InputHelper, OutputHelper, lazyInject, Log } from "@radic/console";
+import { helper, HelperOptions, HelperOptionsConfig, InputHelper, OutputHelper, lazyInject, Log } from "radical-console";
 import { RConfig } from "../core/config";
 import * as _ from "lodash";
 import { existsSync } from "fs";
