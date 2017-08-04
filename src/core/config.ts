@@ -154,6 +154,7 @@ function parseEnvVal(val: any) {
     return val
 }
 
+container.ensureInjectable(Config);
 
 export class PersistentFileConfig extends Config {
 
@@ -174,6 +175,7 @@ export class PersistentFileConfig extends Config {
                 autoload: boolean          = true,
                 autoloadEnv: boolean       = true) {
         super({});
+        console.log(process.uptime(), 'init', filePath)
         this.defaultConfig = obj;
         this.filePath      = filePath || paths.userDataConfig;
         if ( autoload ) {
@@ -182,6 +184,7 @@ export class PersistentFileConfig extends Config {
         if ( autoloadEnv ) {
             this.loadEnv();
         }
+        console.log(process.uptime(), 'inited', filePath)
     }
 
     set(prop: string, value: any): IConfig {
@@ -321,7 +324,9 @@ export class RCFile {
     protected config: PersistentFileConfig
 
     constructor() {
+        console.log(process.uptime(), 'rc init', paths.rcFile)
         this.config = new PersistentFileConfig({}, paths.rcFile, false, true, false);
+        console.log(process.uptime(), 'rc inited', paths.rcFile)
     }
 
     reset(): this {
@@ -350,7 +355,7 @@ export class RCFile {
 }
 
 
-let _config = new PersistentFileConfig(defaultConfig);
+let _config = new PersistentFileConfig(defaultConfig, paths.userDataConfig);
 // _config.load(); = autoloaded
 // export the wrapped config
 export const config: RConfig = PersistentFileConfig.makeProperty(_config);

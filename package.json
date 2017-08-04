@@ -23,14 +23,14 @@
     "license": "MIT",
     "repository": "https://bitbucket.org/robin-radic/rcli",
     "scripts": {
-        "postinstall": "npm link radical-console && npm link @radic/console-colors && npm link @radic/util",
+        "link": "npm link radical-console && npm link @radic/console-colors && npm link @radic/util",
         "reinstall": "rm -rf node_modules yarn.lock package-lock.json && yarn install",
-        "start": "npm run reinstall && npm run build && npm run watch",
-        "watch": "gulp watch",
-        "build": "gulp build",
-        "clean": "gulp clean",
-        "compiler:init": "gulp compiler:init",
-        "compiler:compile": "gulp compiler:compile",
+        "start": "npm run reinstall && && npm run link && npm run build && npm run watch",
+        "watch": "gulp --gulpfile gulpfile.ts watch",
+        "build": "gulp --gulpfile gulpfile.ts build",
+        "clean": "gulp --gulpfile gulpfile.ts clean",
+        "compiler:init": "gulp --gulpfile gulpfile.ts compiler:init",
+        "compiler:compile": "gulp --gulpfile gulpfile.ts compiler:compile",
         "dev:init": "npm run dev:install; gulp build; npm run dev:docs",
         "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",
         "dev:docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
@@ -38,7 +38,7 @@
         "deploy:patch": "npm run test && mversion patch -m && npm run deploy:docs",
         "deploy:minor": "npm run test && mversion minor -m && npm run deploy:docs",
         "deploy:major": "npm run test && mversion major -m && npm run deploy:docs",
-        "test": "npm run build && gulp test"
+        "test": "npm run build && gulp --gulpfile gulpfile.ts test"
     },
     "dependencies": {
         "radical-console": "file:../../radical-console",

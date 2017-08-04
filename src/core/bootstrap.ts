@@ -31,6 +31,8 @@ export function bootstrapRaven() {
 }
 
 export function bootstrapRcli(): Promise<Cli> {
+    console.log(process.uptime())
+
     bootstrapRaven();
     const rconfig = container.get<RConfig>('r.config')
     const cli     = container.get<Cli>('cli');

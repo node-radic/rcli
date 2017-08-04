@@ -6,8 +6,9 @@ import * as ts from "typescript";
 
 import { join, resolve } from "path";
 import { execSync } from "child_process";
-import { rm } from "shelljs";
+import { cp, mkdir, rm } from "shelljs";
 import { tmpdir } from "os";
+import { dir } from "tmp";
 
 // import * as npm from 'npm'
 // npm.
@@ -50,17 +51,17 @@ function getCompilerData(): { from: string, archiveFileName: string, to: string,
 }
 
 const
-    pump         = require('pump'),
-    source       = require("vinyl-source-stream"),
-    buffer       = require("vinyl-buffer"),
-    sourcemaps   = require("gulp-sourcemaps"),
-    uglify       = require("gulp-uglify"),
-    rollup       = require('gulp-rollup'),
-    rename       = require("gulp-rename"),
-    runSequence  = require("run-sequence"),
-    clean        = require('gulp-clean'),
-    ghPages      = require("gulp-gh-pages"),
-    download     = require('download')
+    pump        = require('pump'),
+    source      = require("vinyl-source-stream"),
+    buffer      = require("vinyl-buffer"),
+    sourcemaps  = require("gulp-sourcemaps"),
+    uglify      = require("gulp-uglify"),
+    rollup      = require('gulp-rollup'),
+    rename      = require("gulp-rename"),
+    runSequence = require("run-sequence"),
+    clean       = require('gulp-clean'),
+    ghPages     = require("gulp-gh-pages"),
+    download    = require('download')
 ;
 
 const tsProject = {
@@ -141,15 +142,34 @@ gulp.task('compiler:init', (cb) => {
 
 
 gulp.task('compiler:compile', (cb) => {
-    if(true == true) return cb(); // need to compile in another folder. this is a CI job really..
+    // if(true == true) return cb(); // need to compile in another folder. this is a CI job really..
 
-    execSync('npm uninstall radical-console', { stdio: 'inherit' })
-    rm('-r', 'node_modules/radical-console')
-    execSync('npm install radical-console', { stdio: 'inherit' })
-    process.stdout.write(require.resolve('radical-console'))
-    execSync(resolve('nodec') + ' ' + c.binFile, { stdio: 'inherit' })
-    execSync('npm link radical-console', { stdio: [ 'inherit' ] })
-    cb();
+    const sh = (cmd) => {
+        console.log(cmd);
+        execSync(cmd, { stdio: 'inherit' })
+    }
+
+    dir((err: any, path: string, cleanupCallback: () => void) => {
+        let projectPath = process.cwd()
+        process.chdir(path);
+        sh('git clone ' + projectPath + ' console')
+        process.chdir(path + '/console');
+        let clonePath = process.cwd()
+        sh('yarn add radical-console@file:/home/radic/node/radical-console')
+        sh('yarn install --production --ignore-scripts')
+        cp('-r', join(projectPath, 'lib'), clonePath)
+        rm('-rf', 'bin')
+        mkdir('bin')
+        cp(join(projectPath, 'bin', 'r-dist.js'), join(clonePath, 'bin', 'r.js'))
+        sh('nodec bin/r.js')
+        cb();
+    })
+// execSync('npm uninstall radical-console', { stdio: 'inherit' })
+// rm('-r', 'node_modules/radical-console')
+// execSync('npm install radical-console', { stdio: 'inherit' })
+// process.stdout.write(require.resolve('radical-console'))
+// execSync(resolve('nodec') + ' ' + c.binFile, { stdio: 'inherit' })
+// execSync('npm link radical-console', { stdio: [ 'inherit' ] })
 })
 
 gulp.task("default", (cb) => {

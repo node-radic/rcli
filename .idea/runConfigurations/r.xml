@@ -1,5 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="r" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="bin/r.js" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="r" type="NodeJSConfigurationType" factoryName="Node.js" activateToolWindowBeforeRun="false" path-to-node="project" path-to-js-file="bin/r.js" working-dir="$PROJECT_DIR$">
+    <profiling allow-runtime-heap-snapshot="true" do-profile="true" v8-profiler-path="/usr/local/share/nodejs/6.10.0/lib/node_modules/v8-profiler" />
+    <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
+      <profiling allow-runtime-heap-snapshot="true" do-profile="true" v8-profiler-path="/usr/local/share/nodejs/6.10.0/lib/node_modules/v8-profiler" />
+    </EXTENSION>
     <method />
   </configuration>
 </component>

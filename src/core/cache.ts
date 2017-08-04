@@ -1,6 +1,6 @@
 import { PersistentFileConfig } from "./config";
 import { paths } from "./paths";
-import { container, lazyInject } from "radical-console";
+import { container, inject, lazyInject } from "radical-console";
 import { IConfig, kindOf } from "@radic/util";
 import { DAY } from "./static";
 // const cache = new PersistentFileConfig({}, paths.userCache, true, true, false);
@@ -11,11 +11,23 @@ export interface ICache extends IConfig {
     set(prop: string, value: any, expires?: number)
 }
 
+container.constant('_null', null)
+
 export class Cache extends PersistentFileConfig implements ICache {
     expires: number = DAY
 
     @lazyInject('r.config')
     config: IConfig;
+    //
+    // constructor(@inject('_null') obj: Object,
+    //             @inject('_null') protected filePath: string,
+    //             @inject('_null') public useCrypto: boolean,
+    //             @inject('_null') autoload: boolean,
+    //             @inject('_null') autoloadEnv: boolean) {
+    //     super({}, paths.userCache, false, true, false);
+    //     this.saveEnabled = true;
+    // }
+
 
     constructor() {
         super({}, paths.userCache, true, true, false);
@@ -27,7 +39,7 @@ export class Cache extends PersistentFileConfig implements ICache {
     }
 
     set(prop: string, value: any, expires?: number): ICache {
-        expires = expires || this.expires;
+        expires       = expires || this.expires;
         let meta: any = { expires: 0 }
         if ( expires !== 0 ) {
             meta = { expires, expires_at: Date.now() + expires }
@@ -43,9 +55,9 @@ export class Cache extends PersistentFileConfig implements ICache {
             return super.get<T>();
         }
         if ( ! this.has(prop) && kindOf(defaultReturnValue) === 'function' ) {
-            let value   = defaultReturnValue.apply(this);
-            if(kindOf(value['then']) === 'function'){
-                value = (async() => await value)();
+            let value = defaultReturnValue.apply(this);
+            if ( kindOf(value[ 'then' ]) === 'function' ) {
+                value = (async () => await value)();
             }
             // console.log('value',  value )
             //
@@ -94,5 +106,6 @@ export class Cache extends PersistentFileConfig implements ICache {
     }
 }
 
+// container.bind('r.cache').to(Cache).inSingletonScope()
 const cache = new Cache();
 container.constant('r.cache', cache);
