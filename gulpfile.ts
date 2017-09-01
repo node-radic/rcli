@@ -77,7 +77,7 @@ gulp.task('clean', [ 'clean:src:js', 'clean:build' ]);
 gulp.task('clean:build', (cb) => pump([ gulp.src([ 'lib', 'lib-es6', 'dts', 'coverage', '.publish', 'docs' ]), clean() ]));
 gulp.task('clean:watch', (cb) => pump([ gulp.src([ 'lib', 'dts' ]), clean() ]));
 
-gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
+gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,spec}/**/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
 gulp.task('clean:test:js', (cb) => pump([ gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
 
 gulp.task('clean:dts:js', (cb) => pump([ gulp.src([ 'dts/**/*.js' ]), clean() ]))

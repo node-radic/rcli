@@ -9,6 +9,7 @@ npm-debug.log
 /.idea/dataSource*
 /.idea/sonar*
 src/**/*.js*
+!src/database/migrations/*.js
 /lib
 .publish
 /docs

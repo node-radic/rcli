@@ -7,3 +7,4 @@ require('../src').bootstrapRcli().then((cli: Cli) => {
     .catch((reason) => {
         throw new Error(reason);
     })
+
