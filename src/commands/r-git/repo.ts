@@ -33,16 +33,18 @@ export class GitRepoCmd {
     @option('r', 'exec local git remote add/rm')
     gitRemote: boolean
 
-    @option('R', 'on exec git remote use this name for remote', {default: 'origin'})
+    @option('R', 'on exec git remote use this name for remote', { default: 'origin' })
     gitRemoteName: string = 'origin'
 
     @option('H', 'Use HTTP url instead of SSH for git remote')
-    gitRemoteHttp:boolean
+    gitRemoteHttp: boolean
+
+    @option('o', 'options', { type: 'object', default: {} })
+    options: any
 
     async handle(args: CommandArguments, ...argv: any[]) {
 
-        this.out.dump({args})
-
+        // this.out.dump({ args, me: this })
 
 
         // const cred = await this.connect.getCredentialForService(this.service || ['github', 'bitbucket'], args.connection);
@@ -55,9 +57,9 @@ export class GitRepoCmd {
         if ( action === 'create' ) {
             let fullName: string = args.name || await this.ask.ask('Full name of repository?')
             if ( fullName.length < 1 || ! fullName.includes('/') ) return this.log.error('Incorrect full name', args)
-            return api.createRepository(fullName.split('/')[ 1 ], fullName.split('/')[ 0 ]).then(() => {
-                if(this.gitRemote){
-                    api.bin('remote','add',this.gitRemoteName,this.gitRemoteHttp ? api.url(fullName) : api.ssh(fullName))
+            return api.createRepository(fullName.split('/')[ 1 ], fullName.split('/')[ 0 ], this.options.private === true).then(() => {
+                if ( this.gitRemote ) {
+                    api.bin('remote', 'add', this.gitRemoteName, this.gitRemoteHttp ? api.url(fullName) : api.ssh(fullName))
                 }
                 return Promise.resolve()
             })
@@ -92,4 +94,5 @@ export class GitRepoCmd {
 
 
 }
+
 export default GitRepoCmd

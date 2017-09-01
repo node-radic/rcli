@@ -1,8 +1,7 @@
-import { command, CommandConfig, Container, Dispatcher, lazyInject, Log, OutputHelper } from "radical-console";
+import { command, CommandConfig, CommandArguments, Container, Dispatcher, lazyInject, Log, OutputHelper } from "radical-console";
 import { RConfig } from "../";
 import { Services } from "../services/Services";
 import { ConnectHelper } from "../helpers/helper.connect";
-import { CommandArguments } from "radical-console/lib";
 import { JiraService } from "../services/service.jira";
 import { writeFileSync } from "fs";
 import { tmpNameSync } from "tmp";

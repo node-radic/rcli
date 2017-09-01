@@ -23,7 +23,7 @@ export function createExecString(cmd: string, args: any[]) {
         } else if ( typeof arg === 'object' ) {
             _.forEach(arg, function (opt, optk) {
                 var dashes = '--'; // --orphan
-                if ( optk.length === 1 ) {  // -m
+                if ( optk['length'] === 1 ) {  // -m
                     dashes = '-';
                 }
                 if ( typeof opt === 'boolean' ) {
@@ -40,9 +40,39 @@ export function createExecString(cmd: string, args: any[]) {
 export function bin(cmd, options?: ExecSyncOptionsWithStringEncoding): (...args: any[]) => string {
     return (...args: any[]): any => {
         options = options || { encoding: 'utf8' }
-        let cm = createExecString(cmd, args);
+        let cm  = createExecString(cmd, args);
         return execSync(cm, <ExecSyncOptionsWithStringEncoding> _.merge({
             encoding: 'utf8'
         }, options));
     }
+}
+
+/**
+ *
+ * @link https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+ formatBytes(1000);       // 1 KB
+ formatBytes('1000');     // 1 KB
+ formatBytes(1234);       // 1.23 KB
+ formatBytes(1234, 3);    // 1.234 KB
+
+ * @param {number} bytes
+ * @param decimals
+ * @returns {any}
+ */
+export function formatBytes(bytes: number, decimals?: number) {
+    if ( bytes == 0 ) return '0 Bytes';
+    var k     = 1000,
+        dm    = decimals || 2,
+        sizes = [ 'Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' ],
+        i     = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[ i ];
+}
+
+export async function folderSize(path:string):Promise<number> {
+    return <any> new Promise((res, rej) => {
+        require('get-folder-size')(path, (err:string, size:number) => {
+            if(err) return rej(err);
+            res(size);
+        })
+    })
 }

@@ -7,17 +7,17 @@ import { unlinkSync } from "fs";
 import { container, lazyInject, singleton } from "radical-console";
 import { basename, join } from "path";
 import * as globule from "globule";
-import { AES, enc, algo  } from "crypto-js";
+import { AES, enc, algo } from "crypto-js";
 import * as cr from "crypto-js";
 import { cloneDeep } from "lodash";
 
 let defaultConfig: any = {
-    debug   : false,
-    env     : {},
-    cli     : {
+    debug: false,
+    env  : {},
+    cli  : {
         showCopyright: true
     },
-    dgram   : {
+    dgram: {
         server: {
             host: '127.0.0.1',
             port: 41333
@@ -29,7 +29,7 @@ let defaultConfig: any = {
     },
 
     commands: {
-        ssh     : {
+        ssh  : {
             bins: {
                 ssh    : 'ssh',
                 sshfs  : 'sshfs',
@@ -68,7 +68,7 @@ export class ConfigCrypto {
 
     protected generateSecretKey(): string {
         const secretKey = getRandomId(30);
-        writeFileSync(paths.userSecretKeyFile, secretKey, {encoding: 'utf-8'});
+        writeFileSync(paths.userSecretKeyFile, secretKey, { encoding: 'utf-8' });
         return secretKey;
     }
 
@@ -81,7 +81,7 @@ export class ConfigCrypto {
             return this.secretKey;
         }
         if ( this.hasGeneratedSecretKey() && this.secretKey === undefined ) {
-            this.secretKey = readFileSync(paths.userSecretKeyFile, {encoding: 'utf-8'});
+            this.secretKey = readFileSync(paths.userSecretKeyFile, { encoding: 'utf-8' });
         } else if ( this.secretKey === undefined ) {
             this.secretKey = this.generateSecretKey();
         }
@@ -97,9 +97,10 @@ export class ConfigCrypto {
     }
 
     decrypt(ciphertext: string): string {
-        const key       = this.getSecretKey()
-        const bytes     = AES.decrypt(ciphertext, key);
-        const decrypted = bytes.toString(enc.Utf8);
+        const key   = this.getSecretKey()
+        const bytes = AES.decrypt(ciphertext, key)
+        // console.log({ bytes, none: bytes.toString(), b64: bytes.toString(enc.Base64), utf8:})
+        const decrypted =  bytes.toString(enc.Utf8)
         return decrypted
     }
 }
@@ -118,7 +119,7 @@ export class ConfigBackupStore {
         if ( encrypt ) {
             data = this.crypto.encrypt(data)
         }
-        writeFileSync(filePath, data, {encoding: 'utf-8'})
+        writeFileSync(filePath, data, { encoding: 'utf-8' })
         return basename(filePath, '.js');
     }
 
@@ -175,7 +176,7 @@ export class PersistentFileConfig extends Config {
                 autoload: boolean          = true,
                 autoloadEnv: boolean       = true) {
         super({});
-        console.log(process.uptime(), 'init', filePath)
+        // console.log(process.uptime(), 'init', filePath)
         this.defaultConfig = obj;
         this.filePath      = filePath || paths.userDataConfig;
         if ( autoload ) {
@@ -184,7 +185,7 @@ export class PersistentFileConfig extends Config {
         if ( autoloadEnv ) {
             this.loadEnv();
         }
-        console.log(process.uptime(), 'inited', filePath)
+        // console.log(process.uptime(), 'inited', filePath)
     }
 
     set(prop: string, value: any): IConfig {
@@ -205,14 +206,14 @@ export class PersistentFileConfig extends Config {
     save(): this {
         if ( this.saveEnabled === false ) return this;
         if ( ! this.useCrypto ) {
-            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), {encoding: 'utf-8'})
+            writeFileSync(this.filePath, JSON.stringify(this.data, null, 4), { encoding: 'utf-8' })
             return this;
         }
         let json      = JSON.stringify(this.data);
         let encrypted = this.crypto.encrypt(json);
-        writeFileSync(this.filePath, encrypted, {encoding: 'utf-8'});
+        writeFileSync(this.filePath, encrypted, { encoding: 'utf-8' });
         if ( this.isDebug() ) {
-            writeFileSync(this.filePath + '.debug.json', JSON.stringify(this.data, null, 4), {encoding: 'utf-8'})
+            writeFileSync(this.filePath + '.debug.json', JSON.stringify(this.data, null, 4), { encoding: 'utf-8' })
         }
         return this;
     }
@@ -226,11 +227,11 @@ export class PersistentFileConfig extends Config {
         if ( ! existsSync(this.filePath) ) {
             return this.save()
         }
-        let config = readFileSync(this.filePath, {encoding: 'utf-8'});
+        let config = readFileSync(this.filePath, { encoding: 'utf-8' });
         if ( this.useCrypto ) {
             config = this.crypto.decrypt(config)
         }
-        let data  = JSON.parse(config);
+        let data = JSON.parse(config);
         this.data = {
             ...this.data,
             ...data
@@ -257,10 +258,10 @@ export class PersistentFileConfig extends Config {
         let json = JSON.stringify({})
         if ( this.useCrypto ) {
             const encrypted = this.crypto.encrypt(json);
-            writeFileSync(this.filePath, encrypted, {encoding: 'utf-8'});
+            writeFileSync(this.filePath, encrypted, { encoding: 'utf-8' });
             return this;
         }
-        writeFileSync(this.filePath, json, {encoding: 'utf-8'});
+        writeFileSync(this.filePath, json, { encoding: 'utf-8' });
         return this;
     }
 
@@ -316,17 +317,19 @@ export class PersistentFileConfig extends Config {
 }
 
 export type RCFileKey = 'directory' | 'prefix'
+
 export interface RCFileConfig {
     directory?: string
     prefix?: string
 }
+
 export class RCFile {
     protected config: PersistentFileConfig
 
     constructor() {
-        console.log(process.uptime(), 'rc init', paths.rcFile)
+        // console.log(process.uptime(), 'rc init', paths.rcFile)
         this.config = new PersistentFileConfig({}, paths.rcFile, false, true, false);
-        console.log(process.uptime(), 'rc inited', paths.rcFile)
+        // console.log(process.uptime(), 'rc inited', paths.rcFile)
     }
 
     reset(): this {

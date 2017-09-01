@@ -3,7 +3,6 @@ import * as _ from "lodash";
 import { existsSync, statSync } from "fs";
 import { container } from "radical-console";
 import { chmod, mkdir } from "shelljs";
-import { PersistentFileConfig } from "./config";
 let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()

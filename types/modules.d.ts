@@ -109,7 +109,7 @@ declare module "graceful-readlink"
 // others
 declare module "globule" {
     interface Globule {
-        find(str: string): string[]
+        find(str: string|string[]): string[]
     }
     var globule: Globule;
     export = globule;

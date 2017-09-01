@@ -3,9 +3,7 @@ import { RConfig } from "../core/config";
 
 @command('dev {command}', 'Dev stuff', { // , [ 'cache', 'config', 'db', 'paths', 'serve', 'socket' ]
     isGroup: true,
-    enabled          : (container: Container) => {
-        return container.get<RConfig>('r.config').get('debug', false) === true
-    },
+    // enabled          : (container: Container) => container.get<RConfig>('r.config').get('debug', false) === true
 })
 export class ConnectCmd {
 

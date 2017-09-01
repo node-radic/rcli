@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r git repo create bb robinradic/robin.radic.nl" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="bin/r.js" application-parameters="git repo create bb robinradic/robin.radic.nl" working-dir="$PROJECT_DIR$">
+    <profiling v8-profiler-path="/usr/local/share/nodejs/6.10.0/lib/node_modules/v8-profiler" />
+    <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
+      <profiling v8-profiler-path="/usr/local/share/nodejs/6.10.0/lib/node_modules/v8-profiler" />
+    </EXTENSION>
+    <method />
+  </configuration>
+</component>

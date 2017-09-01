@@ -150,19 +150,28 @@ gulp.task('compiler:compile', (cb) => {
     }
 
     dir((err: any, path: string, cleanupCallback: () => void) => {
-        let projectPath = process.cwd()
-        process.chdir(path);
-        sh('git clone ' + projectPath + ' console')
-        process.chdir(path + '/console');
-        let clonePath = process.cwd()
-        sh('yarn add radical-console@file:/home/radic/node/radical-console')
-        sh('yarn install --production --ignore-scripts')
-        cp('-r', join(projectPath, 'lib'), clonePath)
-        rm('-rf', 'bin')
-        mkdir('bin')
-        cp(join(projectPath, 'bin', 'r-dist.js'), join(clonePath, 'bin', 'r.js'))
-        sh('nodec bin/r.js')
-        cb();
+        try {
+            let projectPath = process.cwd()
+            process.chdir(path);
+            sh('git clone ' + projectPath + ' console')
+            process.chdir(path + '/console');
+            let clonePath = process.cwd()
+            sh('yarn add radical-console@file:/home/radic/node/radical-console')
+            sh('yarn install --production --ignore-scripts')
+            cp('-r', join(projectPath, 'lib'), clonePath)
+            rm('-rf', 'bin')
+            mkdir('bin')
+            cp(join(projectPath, 'bin', 'r-dist.js'), join(clonePath, 'bin', 'r.js'))
+            sh('nodec bin/r.js')
+            cp('a.out', join(projectPath, 'r'))
+            cleanupCallback();
+            cb();
+        } catch(e){
+            console.log('error!')
+            console.error(e);
+            cleanupCallback();
+        }
+
     })
 // execSync('npm uninstall radical-console', { stdio: 'inherit' })
 // rm('-r', 'node_modules/radical-console')

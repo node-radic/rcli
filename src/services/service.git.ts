@@ -10,18 +10,25 @@ import { bin } from "../core/static";
 export interface GitServiceExtraFields extends ServiceExtraFields {
 
 }
+
 export interface IGitService extends IService<GitServiceExtraFields> {
     domain: string
     user: GitServiceUser
     bin: (...args: any[]) => string
+
     url(uri): string
+
     ssh(uri): string
 
     createRepository(name: string, owner?: string, priv?: boolean): Promise<boolean>
+
     listRepositories(owner?: string): Promise<string[]>
+
     getUserGroups(owner?: string): Promise<string[]>
+
     deleteRepository(name: string, owner?: string): Promise<boolean>
 }
+
 export interface GitServiceUser {
     username?: string
     email?: string
@@ -222,8 +229,10 @@ export class BitbucketService extends AbstractGitService implements IGitService 
         return Promise.resolve(groups.data.values.map(group => group.username))
     }
 
-    public createRepository(name: string, owner?: string, priv?: boolean): Promise<boolean> {
-        return undefined;
+    public async createRepository(name: string, owner?: string, priv?: boolean): Promise<boolean> {
+        let user = await this.getCurrentUser();
+        let res = await this.post(`/repositories/${owner}/${name}`, { is_private: priv })
+        return res.status === 200
     }
 
     async listRepositories(owner?: string): Promise<string[]> {

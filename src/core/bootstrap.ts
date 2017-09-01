@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Cli, CliConfig, container, log, Event, Log } from "radical-console";
+import { Cli, CliConfig, container, log, Event, Log, OptionConfig, CommandConfig, SubCommandsGetFunction } from "radical-console";
 import { LoggerInstance, transports as wtransports } from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";
@@ -7,6 +7,7 @@ import { RConfig, paths } from "./";
 import { PKG } from "./static";
 import { Inquirer } from "inquirer";
 import { Database } from "../database/Database";
+import { resolve } from "path";
 
 export function bootstrapRaven() {
 
@@ -30,8 +31,8 @@ export function bootstrapRaven() {
     }
 }
 
+
 export function bootstrapRcli(): Promise<Cli> {
-    console.log(process.uptime())
 
     bootstrapRaven();
     const rconfig = container.get<RConfig>('r.config')
@@ -83,7 +84,7 @@ export function bootstrapRcli(): Promise<Cli> {
     // }
 
     cli.config.merge(<CliConfig> {
-        parser: {
+        parser  : {
             yargs: {
                 'boolean-negation': false
             }
