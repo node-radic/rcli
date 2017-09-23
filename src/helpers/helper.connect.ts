@@ -3,6 +3,7 @@ import { kindOf } from '@radic/util';
 import { Services } from '../services/Services';
 import { Credential } from '../database/Models/Credential';
 import { IService } from '../interfaces';
+import { Database } from '../database/Database';
 
 @helper('connect', {
     depends  : [ 'input' ],
@@ -17,6 +18,9 @@ export class ConnectHelper {
     @lazyInject('cli.helpers.input')
     ask: InputHelper
 
+    @lazyInject('r.db')
+    db:Database
+
     getCredentialForService(service: string | string[], connectionArg?: string): Promise<Credential> {
         let services: string[] = [];
         if ( kindOf(service) === 'string' ) {
@@ -24,7 +28,6 @@ export class ConnectHelper {
         } else {
             services = <string[]> service
         }
-
         return new Promise(async (resolve, reject) => {
             let connectionName = connectionArg;
             let c = await import('../database/Models/Credential')
@@ -62,10 +65,12 @@ export class ConnectHelper {
             if ( ! cred ) return reject(`Connection [${connectionName}] not found`)
             resolve(cred);
         })
+
     }
 
     getService<T extends IService>(service: string | string[], connectionArg?: string): Promise<T> {
         return new Promise(async (resolve) => {
+            await this.db.migrateLatest()
             const cred = await this.getCredentialForService(service, connectionArg);
             resolve(this.services.make<T>(cred.service, cred));
         })
