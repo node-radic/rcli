@@ -1,6 +1,18 @@
 import "./yargs-parser";
 import {Question as BaseQuestion} from "inquirer";
 
+
+declare module "radical-console" {
+
+    import { HelperOptionsConfig } from 'radical-console';
+
+    interface HelpersOptionsConfig {
+        'ssh.bash': HelperOptionsConfig
+        'connect': HelperOptionsConfig
+    }
+
+}
+
 namespace global {
     export interface CliTable extends Array<string[]> {
 

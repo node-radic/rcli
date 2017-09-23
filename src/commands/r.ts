@@ -26,7 +26,8 @@ export class RcliCmd {
     @alwaysRun()
     always() {
         if ( this.config.get('debug', false) === true ) {
-            this.log.level = 'debug';
+            // this.log.level = 'debug';
+            // this.log.info('r alwaysRun set log.level to "debug"')
         }
         if ( this.log.level === 'silly' ) {
             this.events.on('**', (event: string) => event && this.log.info(process.uptime() + ': ' + (event[ 'event' ] || event)))

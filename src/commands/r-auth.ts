@@ -1,6 +1,6 @@
 import { command, CommandArguments, container, Container } from "radical-console";
 
-@command('auth {command}', 'Manage service authentications', { // , ['add', 'list', 'edit', 'remove' ]
+@command('auth|1 {command}', 'Manage service authentications', { // , ['add', 'list', 'edit', 'remove' ]
     isGroup: true,
     explanation: `Authentication for the given service API.
 The app supports them all and will ask for it when adding credentials.

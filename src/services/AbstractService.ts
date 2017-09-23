@@ -45,8 +45,6 @@ export abstract class AbstractService<T extends ServiceExtraFields=ServiceExtraF
         }
         this.cacheResponseInterceptorId = this._client.interceptors.response.use((res) => {
             if ( res.config.method.toLowerCase() === 'get' ) {
-                console.log('setting cache')
-                console.log('cache key',this.getCacheKey(res.config.url, res.config.params))
                 this._cache.set(this.getCacheKey(res.config.url, res.config.params), {
                     status: res.status,
                     statusText: res.statusText,

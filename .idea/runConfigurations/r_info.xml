@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="r" type="NodeJSConfigurationType" factoryName="Node.js" activateToolWindowBeforeRun="false" path-to-node="project" path-to-js-file="bin/r.js" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="r info" type="NodeJSConfigurationType" factoryName="Node.js" activateToolWindowBeforeRun="false" path-to-node="$USER_HOME$/.nvm/versions/node/v8.4.0/bin/node" path-to-js-file="bin/r.js" application-parameters="info" working-dir="$PROJECT_DIR$">
     <profiling v8-profiler-path="/usr/local/share/nodejs/6.10.0/lib/node_modules/v8-profiler" />
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
       <profiling v8-profiler-path="/usr/local/share/nodejs/6.10.0/lib/node_modules/v8-profiler" />

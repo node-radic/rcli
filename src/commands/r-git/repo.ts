@@ -1,13 +1,13 @@
-import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, LoggerInstance, option, OutputHelper } from "radical-console";
+import { PrepareArgumentsFunction, command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, LoggerInstance, option, OutputHelper } from "radical-console";
 import { RConfig } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
 import { IGitService } from "../../services/service.git";
 
-@command(`repo
+@command(`repo|r
 [action:string@which action to perform(list, create, delete)]
 [connection:string@The connection (github,bitbucket)]
 [name:string@repository or owner name]`, 'Git repository actions', <CommandConfig> {
-    onMissingArgument: 'help'
+    onMissingArgument: 'help',
 })
 export class GitRepoCmd {
     showHelp: () => void

@@ -2,7 +2,7 @@ import { helper, HelperOptionsConfig, InputHelper, lazyInject } from "radical-co
 import { kindOf } from "@radic/util";
 import { Services } from "../services/Services";
 import { Credential } from "../database/Models/Credential";
-import { IService } from "../interfaces";
+import { IService,HelpersOptionsConfig } from "../interfaces";
 
 @helper('connect', {
     depends  : [ 'input' ],

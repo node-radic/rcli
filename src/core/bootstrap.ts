@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Cli, CliConfig, container, log, Event, Log, OptionConfig, CommandConfig, SubCommandsGetFunction } from "radical-console";
+import { Cli, CliConfig, container, logTransports, logLevel, Event, Log, OptionConfig, CommandConfig, SubCommandsGetFunction } from "radical-console";
 import { LoggerInstance, transports as wtransports } from "winston";
 import * as Raven from "raven";
 import { Client } from "raven";
@@ -37,7 +37,7 @@ export function bootstrapRcli(): Promise<Cli> {
     bootstrapRaven();
     const rconfig = container.get<RConfig>('r.config')
     const cli     = container.get<Cli>('cli');
-    log.transports.push(<any>
+    logTransports.push(<any>
         new (wtransports.File)({
             filename   : paths.logFile,
             level      : 'error',
@@ -60,7 +60,7 @@ export function bootstrapRcli(): Promise<Cli> {
 
     if ( rconfig.has('raven.dsn') ) {
         wtransports[ 'Sentry' ] = require('winston-sentry');
-        log.transports.push(new (wtransports[ 'Sentry' ])({
+        logTransports.push(new (wtransports[ 'Sentry' ])({
             dsn        : rconfig('raven.dsn'),
             level      : 'info',
             patchGlobal: true
@@ -68,10 +68,10 @@ export function bootstrapRcli(): Promise<Cli> {
     }
 
     cli.log.configure({
-        level           : cli.log.level,
+        level           : 'info',
         rewriters       : cli.log.rewriters,
-        levels          : log.levels,
-        transports      : log.transports,
+        levels          : logLevel,
+        transports      : logTransports,
         handleExceptions: true
     })
     container.unbind('cli.log')
