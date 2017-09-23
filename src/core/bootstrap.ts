@@ -136,10 +136,11 @@ export function bootstrapRcli(): Promise<Cli> {
             db = new Database();
 
             db.migrateLatest().then(() => {
-                resolve(cli)
             })
             return db;
         });
+
+        resolve(cli)
     })
 
 }
