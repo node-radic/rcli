@@ -121,6 +121,9 @@ export function bootstrapRcli(): Promise<Cli> {
         .helper('verbose', {
             option: { key: 'v', name: 'verbose' }
         })
+        .helper('completion', {
+            name: 'r'
+        })
 
         // rcli helpers
         // .helper('completion')
