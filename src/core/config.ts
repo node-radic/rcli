@@ -249,7 +249,7 @@ export class PersistentFileConfig extends Config {
     }
 
     load(): this {
-        console.log(process.uptime(), 'load', this.filePath)
+        // console.log(process.uptime(), 'load', this.filePath)
         this.data = cloneDeep(this.defaultConfig)
         if ( ! existsSync(this.filePath) ) {
             return this.unlock().save().lock();
@@ -263,7 +263,7 @@ export class PersistentFileConfig extends Config {
             ...this.data,
             ...data
         }
-        console.log(process.uptime(), 'loaded', this.filePath)
+        // console.log(process.uptime(), 'loaded', this.filePath)
 
         return this;
     }
@@ -317,7 +317,7 @@ export class PersistentFileConfig extends Config {
     }
 
     protected loadEnv(): this {
-        console.log(process.uptime(), 'loadEnv', this.filePath)
+        // console.log(process.uptime(), 'loadEnv', this.filePath)
         if ( existsSync(paths.env) ) {
             let denv = dotenv.parse(<any> readFileSync(paths.env));
             Object.keys(denv).forEach((key: string) => {
@@ -336,7 +336,7 @@ export class PersistentFileConfig extends Config {
                 this.set(key, parseEnvVal(process.env[ key ]));
         })
 
-        console.log(process.uptime(), 'loadedEnv', this.filePath)
+        // console.log(process.uptime(), 'loadedEnv', this.filePath)
         return this;
     }
 
@@ -358,9 +358,9 @@ export class RCFile {
     protected config: PersistentFileConfig
 
     constructor() {
-        // console.log(process.uptime(), 'rc init', paths.rcFile)
+        // // console.log(process.uptime(), 'rc init', paths.rcFile)
         this.config = new PersistentFileConfig({}, paths.rcFile, false, true, false);
-        // console.log(process.uptime(), 'rc inited', paths.rcFile)
+        // // console.log(process.uptime(), 'rc inited', paths.rcFile)
     }
 
     reset(): this {
@@ -401,4 +401,4 @@ const rcfile = new RCFile();
 rcfile.reload();
 container.constant<RCFile>('r.rcfile', rcfile)
 
-console.log(process.uptime(), 'core/config')
+// console.log(process.uptime(), 'core/config')

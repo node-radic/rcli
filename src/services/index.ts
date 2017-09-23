@@ -8,6 +8,6 @@ export * from './service.jira'
 export * from './sockets.udp'
 
 export function debugTimeLog(){
-    console.log(process.uptime());
+    // console.log(process.uptime());
 }
-console.log(process.uptime(), 'services')
+// console.log(process.uptime(), 'services')

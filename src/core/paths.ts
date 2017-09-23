@@ -3,11 +3,11 @@ import * as _ from "lodash";
 import { existsSync, statSync } from "fs";
 import { container } from "radical-console";
 import { chmod, mkdir } from "shelljs";
-console.log(process.uptime(), 'core/paths')
+// console.log(process.uptime(), 'core/paths')
 let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()
-console.log(process.uptime(), 'core/paths2')
+// console.log(process.uptime(), 'core/paths2')
 
 export interface Paths {
     root: string
@@ -47,7 +47,7 @@ export function setPermissions(paths) {
 
 export let paths: Paths;
 export function setPaths(overrides: any = {}, _root: string = null, _prefix: string = null, directory: string = '.rcli'): Paths {
-    console.log(process.uptime(), 'core/paths/setPaths')
+    // console.log(process.uptime(), 'core/paths/setPaths')
 
     let prefix = home;
     if ( _root ) root = _root
@@ -80,9 +80,9 @@ export function setPaths(overrides: any = {}, _root: string = null, _prefix: str
     container.bind('r.paths').toConstantValue(paths);
     setPermissions(paths)
 
-    console.log(process.uptime(), 'core/paths/setPaths2')
+    // console.log(process.uptime(), 'core/paths/setPaths2')
 
     return paths
 }
 setPaths();
-console.log(process.uptime(), 'core/paths3')
+// console.log(process.uptime(), 'core/paths3')
