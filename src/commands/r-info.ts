@@ -17,13 +17,13 @@ export class InfoCmd {
     deps: boolean
 
     async handle(args: CommandArguments) {
-        const deps    = Object.keys(PKG.dependencies)
-        const devDeps = Object.keys(PKG.devDependencies);
+        const deps    = Object.keys(PKG().dependencies)
+        const devDeps = Object.keys(PKG().devDependencies);
         this.out.line(`
 Created by Robin Radic. 
 Copyright 2017 MIT.
 
-Current version: ${PKG.version}
+Current version: ${PKG().version}
 Depends on ${deps.length} other packages to run
 And requires ${devDeps.length} packages to be build 
 

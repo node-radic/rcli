@@ -1,9 +1,8 @@
-import { helper, HelperOptions, HelperOptionsConfig, InputHelper, OutputHelper, lazyInject, Log } from "radical-console";
-import { RConfig } from "../core/config";
-import * as _ from "lodash";
-import { existsSync } from "fs";
-import { readJSONSync } from "fs-extra";
-import { SSHConnection } from "../database/Models/SSHConnection";
+import { helper, HelperOptions, HelperOptionsConfig, InputHelper, lazyInject, Log, OutputHelper } from 'radical-console';
+import { RConfig } from '../core/config';
+import * as _ from 'lodash';
+import { existsSync } from 'fs';
+import { readJSONSync } from 'fs-extra';
 
 /**SSH CONNNECT HELPER*/
 
@@ -86,7 +85,7 @@ export class SshBashHelper {
         let config      = this.config;
         editor[ 'set' ] = (...fields: string[]) => {
             return {
-                to<T extends string | number>(value: T){
+                to<T extends string | number>(value: T) {
                     fields.forEach(field => {
                         config.set(`connect.${connection}.${field}`, value);
                     })
@@ -105,20 +104,20 @@ export class SshBashHelper {
     }
 
     has(name): boolean {
-        SSHConnection.query().where({name}).first().execute();
+        // SSHConnection.query().where({name}).first().execute();
         return this.config.has('connect.' + name)
     }
 
 
-     validateImport(file) {
+    validateImport(file) {
 
         if ( ! existsSync(file) ) {
             this.log.error('not found ' + file)
             return
         } else {
-            const json               = readJSONSync(file);
-            let resultTotal          = 0
-            let resultFilled         = 0
+            const json          = readJSONSync(file);
+            let resultTotal     = 0
+            let resultFilled    = 0
             let resultKeys: any = 0
 
             Object.keys(json).forEach(name => {
@@ -139,6 +138,7 @@ resultFilled   : ${resultFilled}`)
             return true
         }
     }
+
     //
     // async runImport(file) {
     //     if ( ! this.validateImport(file) ) return;
@@ -220,13 +220,13 @@ resultFilled   : ${resultFilled}`)
         return await this.ask.ask('Rename of' + oldName)
     }
 
-    async    simpleBackup() {
+    async simpleBackup() {
         let confirm = await
             this.ask.confirm('Are you sure you want to backup?');
         this.config.set('connect-backup', this.config.get('connect'))
     }
 
-    async    simpleRestore() {
+    async simpleRestore() {
         let confirm = await
             this.ask.confirm('Are you sure you want to restore backup');
         this.config.set('connect', this.config.get('connect-backup'))
@@ -248,18 +248,18 @@ resultFilled   : ${resultFilled}`)
         return this.keys().map(key => this.config.get<SshConnectHelperDataSet>('connect.' + key))
     }
 
-    _faker:any;
+    _faker: any;
     /**
      * @type Faker.FakerStatic
      */
-    protected get faker():any {
-        if(! this._faker){
+    protected get faker(): any {
+        if ( ! this._faker ) {
             this._faker = require('faker');
         }
         return this._faker;
     }
 
-    async    runSeeder(total: number = 50) {
+    async runSeeder(total: number = 50) {
         let confirm = await
             this.ask.confirm('Are you sure you want to seed 50 random connections');
         for ( let i = 0; i < 50; i ++ ) {
@@ -276,7 +276,7 @@ resultFilled   : ${resultFilled}`)
         }
     }
 
-    async  pickNamesAndProperties() {
+    async pickNamesAndProperties() {
         let options = Object.keys(this.getDataSet()).map(key => {
             return {
                 name : key,
@@ -296,7 +296,7 @@ resultFilled   : ${resultFilled}`)
     }
 
 
-    async    runCleaner() {
+    async runCleaner() {
         let confirm = await this.ask.confirm('Are you sure you want to clean all records in connect?');
         if ( confirm ) {
             this.config.set('connect', {});

@@ -166,6 +166,8 @@ export class PersistentFileConfig extends Config {
     backups: ConfigBackupStore;
 
 
+    isLoaded:boolean=false
+
     defaultConfig: Object;
 
     protected saveEnabled: boolean = false;
@@ -173,32 +175,56 @@ export class PersistentFileConfig extends Config {
     constructor(obj: Object,
                 protected filePath: string = null,
                 public useCrypto: boolean  = true,
-                autoload: boolean          = true,
-                autoloadEnv: boolean       = true) {
+                protected autoload: boolean          = true,
+                protected autoloadEnv: boolean       = true) {
         super({});
-        // console.log(process.uptime(), 'init', filePath)
         this.defaultConfig = obj;
         this.filePath      = filePath || paths.userDataConfig;
-        if ( autoload ) {
-            this.load();
+    }
+
+    protected tryAutoload(){
+        if(this.isLoaded){
+            return;
         }
-        if ( autoloadEnv ) {
-            this.loadEnv();
+        this.isLoaded = true;
+        if(this.autoload){
+            this.load()
         }
-        // console.log(process.uptime(), 'inited', filePath)
+        if(this.autoloadEnv){
+            this.loadEnv()
+        }
+    }
+
+
+    has(prop?: any): boolean {
+        this.tryAutoload();
+        return super.has(prop);
+    }
+
+    raw(prop?: any): any {
+        this.tryAutoload();
+        return super.raw(prop);
+    }
+
+    get<T extends any>(prop?: any, defaultReturnValue?: any): T {
+        this.tryAutoload();
+        return super.get(prop, defaultReturnValue);
     }
 
     set(prop: string, value: any): IConfig {
+        this.tryAutoload();
         super.set(prop, value);
         return this.save();
     }
 
     unset(prop: any): any {
+        this.tryAutoload();
         super.unset(prop);
         return this.save();
     }
 
     merge(...args): this {
+        this.tryAutoload();
         super.merge.apply(this, args);
         return this.save();
     }
@@ -223,9 +249,10 @@ export class PersistentFileConfig extends Config {
     }
 
     load(): this {
+        console.log(process.uptime(), 'load', this.filePath)
         this.data = cloneDeep(this.defaultConfig)
         if ( ! existsSync(this.filePath) ) {
-            return this.save()
+            return this.unlock().save().lock();
         }
         let config = readFileSync(this.filePath, { encoding: 'utf-8' });
         if ( this.useCrypto ) {
@@ -236,6 +263,8 @@ export class PersistentFileConfig extends Config {
             ...this.data,
             ...data
         }
+        console.log(process.uptime(), 'loaded', this.filePath)
+
         return this;
     }
 
@@ -288,6 +317,7 @@ export class PersistentFileConfig extends Config {
     }
 
     protected loadEnv(): this {
+        console.log(process.uptime(), 'loadEnv', this.filePath)
         if ( existsSync(paths.env) ) {
             let denv = dotenv.parse(<any> readFileSync(paths.env));
             Object.keys(denv).forEach((key: string) => {
@@ -306,6 +336,7 @@ export class PersistentFileConfig extends Config {
                 this.set(key, parseEnvVal(process.env[ key ]));
         })
 
+        console.log(process.uptime(), 'loadedEnv', this.filePath)
         return this;
     }
 
@@ -369,3 +400,5 @@ container.bind<RConfig>('r.config').toConstantValue(config);
 const rcfile = new RCFile();
 rcfile.reload();
 container.constant<RCFile>('r.rcfile', rcfile)
+
+console.log(process.uptime(), 'core/config')

@@ -1,7 +1,7 @@
-import { JsonSchema } from "objection";
-import { AbstractInteractiveModel } from "./AbstractInteractiveModel";
-import { InteractionSchema } from "../model-interaction";
-import * as _ from "lodash";
+import { JsonSchema } from 'objection';
+import { AbstractInteractiveModel } from './AbstractInteractiveModel';
+import { InteractionSchema } from '../model-interaction';
+import { merge } from 'lodash';
 
 
 export class SSHConnection extends AbstractInteractiveModel {
@@ -42,7 +42,7 @@ export class SSHConnection extends AbstractInteractiveModel {
         let schema: InteractionSchema = { properties: {} }
         Object.keys(SSHConnection.jsonSchema.properties).forEach(propertyName => schema.properties[ propertyName ] = schema.properties[ propertyName ] || {});
 
-        return _.merge(schema, <InteractionSchema> {
+        return merge(schema, <InteractionSchema> {
             properties: {
                 port    : {
                     filter: (input): any => {
@@ -64,4 +64,5 @@ export class SSHConnection extends AbstractInteractiveModel {
 
 
 }
+
 export default SSHConnection

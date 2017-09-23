@@ -1,6 +1,5 @@
-import { command, CommandArguments, inject, InputHelper, Log, option, OutputHelper } from "radical-console";
-import { PKG } from "../../core/static";
-import { Database } from "../../database/Database";
+import { command, CommandArguments, inject, InputHelper, Log, option, OutputHelper } from 'radical-console';
+import { Database } from '../../database/Database';
 
 @command('db', 'General information')
 export class DBCmd {
@@ -18,8 +17,6 @@ export class DBCmd {
     db: Database
 
 
-
-
     @option('d', 'lists all dependencies and development dependencies')
     deps: boolean
 
@@ -32,4 +29,5 @@ export class DBCmd {
     }
 
 }
+
 export default DBCmd

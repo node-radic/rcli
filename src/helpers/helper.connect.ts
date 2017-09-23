@@ -1,8 +1,8 @@
-import { helper, HelperOptionsConfig, InputHelper, lazyInject } from "radical-console";
-import { kindOf } from "@radic/util";
-import { Services } from "../services/Services";
-import { Credential } from "../database/Models/Credential";
-import { IService,HelpersOptionsConfig } from "../interfaces";
+import { helper, HelperOptionsConfig, InputHelper, lazyInject } from 'radical-console';
+import { kindOf } from '@radic/util';
+import { Services } from '../services/Services';
+import { Credential } from '../database/Models/Credential';
+import { IService } from '../interfaces';
 
 @helper('connect', {
     depends  : [ 'input' ],
@@ -27,19 +27,21 @@ export class ConnectHelper {
 
         return new Promise(async (resolve, reject) => {
             let connectionName = connectionArg;
+            let c = await import('../database/Models/Credential')
 
             if ( ! connectionName ) {
                 // try getting the default_for_connection credential first
                 let query = () => {
-                    let query = Credential.query().column('name')
-                    if(services[0] !== '*'){
+
+                    let query = c.Credential.query().column('name')
+                    if ( services[ 0 ] !== '*' ) {
                         query.whereIn('service', services);
                     }
                     return query;
                 }
 
-                let choices: any ;
-                if(services.length === 1) {
+                let choices: any;
+                if ( services.length === 1 ) {
                     choices = await query().andWhere('default_for_connection', true);
                 }
 
@@ -55,7 +57,7 @@ export class ConnectHelper {
                     connectionName = await this.ask.list('The service connection', choices.map(choice => choice.name));
                 }
             }
-            const cred: Credential = await Credential.query().where('name', connectionName).first().execute()
+            const cred: Credential = await c.Credential.query().where('name', connectionName).first().execute()
 
             if ( ! cred ) return reject(`Connection [${connectionName}] not found`)
             resolve(cred);

@@ -1,3 +1,4 @@
+
 export * from './AuthMethod'
 export * from './Services'
 export * from './AbstractService'
@@ -9,3 +10,4 @@ export * from './sockets.udp'
 export function debugTimeLog(){
     console.log(process.uptime());
 }
+console.log(process.uptime(), 'services')

@@ -1,21 +1,19 @@
-#!/usr/bin/env node
-import { Cli, CliConfig, container, logTransports, logLevel, Event, Log, OptionConfig, CommandConfig, SubCommandsGetFunction } from "radical-console";
-import { LoggerInstance, transports as wtransports } from "winston";
-import * as Raven from "raven";
-import { Client } from "raven";
-import { RConfig, paths } from "./";
-import { PKG } from "./static";
-import { Inquirer } from "inquirer";
-import { Database } from "../database/Database";
-import { resolve } from "path";
+import { Cli, CliConfig, container, Log, logLevel, logTransports } from 'radical-console';
+import { LoggerInstance, transports as wtransports } from 'winston';
+import { Client } from 'raven';
+import { paths } from './paths';
+import { PKG } from './static';
+import { Inquirer } from 'inquirer';
+import { Database } from '../database/Database';
+import { RConfig } from './config';
 
 export function bootstrapRaven() {
 
     const rconfig = container.get<RConfig>('r.config')
     if ( rconfig.has('raven.dsn') && false === container.isBound('sentry') ) {
-        const sentry: Client = Raven.config(rconfig('raven.dsn')).install({
+        const sentry: Client = require('raven').config(rconfig('raven.dsn')).install({
             name   : 'rcli',
-            release: PKG.version,
+            release: PKG().version,
 
             environment               : process.env.NODE_ENV === 'production' ? 'production' : 'development',
             autoBreadcrumbs           : true,
@@ -107,7 +105,7 @@ export function bootstrapRcli(): Promise<Cli> {
         .helper('output', {
             options: {
                 quiet : { enabled: true },
-                colors: { enabled: true, }
+                colors: { enabled: true }
             }
         })
         .helper('help', {
@@ -116,7 +114,7 @@ export function bootstrapRcli(): Promise<Cli> {
             app                : {
                 title: 'Radic CLI'
             },
-            option             : { enabled: true, } //key: 'h', name: 'help' }
+            option             : { enabled: true } //key: 'h', name: 'help' }
         })
         .helper('verbose', {
             option: { key: 'v', name: 'verbose' }
@@ -132,11 +130,16 @@ export function bootstrapRcli(): Promise<Cli> {
 
     // cli.events.on('**', (event: Event) => event && event.event && console.log('event', event.event, process.uptime()))
     return new Promise((resolve, reject) => {
-        const db = new Database();
-        container.bind('r.db').toConstantValue(db);
-        db.migrateLatest().then(() => {
-            resolve(cli)
-        })
+        let  db;
+        container.bind('r.db').toDynamicValue(() => {
+            if(db) return db;
+            db = new Database();
+
+            db.migrateLatest().then(() => {
+                resolve(cli)
+            })
+            return db;
+        });
     })
 
 }

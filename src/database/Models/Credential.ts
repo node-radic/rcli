@@ -1,7 +1,6 @@
-import { JsonSchema, Model } from "objection";
-import { container } from "radical-console";
-import { ServiceConfig } from "../../interfaces";
-import { Services } from "../../services/Services";
+import { JsonSchema, Model } from 'objection';
+import { container } from 'radical-console';
+import { Services } from '../../services/Services';
 
 export interface CredentialsExtraField {
     [key: string]: any
@@ -84,4 +83,5 @@ export class Credential<T extends CredentialsExtraField=CredentialsExtraField>ex
         }
     }
 }
+
 export default Credential

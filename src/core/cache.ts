@@ -28,7 +28,6 @@ export class Cache extends PersistentFileConfig implements ICache {
     //     this.saveEnabled = true;
     // }
 
-
     constructor() {
         super({}, paths.userCache, true, true, false);
         this.saveEnabled = true;
@@ -39,6 +38,9 @@ export class Cache extends PersistentFileConfig implements ICache {
     }
 
     set(prop: string, value: any, expires?: number): ICache {
+        if(!this.isLoaded){
+            this.load()
+        }
         expires       = expires || this.expires;
         let meta: any = { expires: 0 }
         if ( expires !== 0 ) {
@@ -51,6 +53,9 @@ export class Cache extends PersistentFileConfig implements ICache {
 
 
     get<T extends any>(prop?: any, defaultReturnValue?: ((res: any, rej: any) => Promise<T> | T) | any, expires?: number): T {
+        if(!this.isLoaded){
+            this.load()
+        }
         if ( ! prop || prop.toString().length === 0 ) {
             return super.get<T>();
         }

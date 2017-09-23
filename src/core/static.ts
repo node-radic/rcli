@@ -2,7 +2,7 @@ import { paths } from "./paths";
 import * as _ from "lodash";
 import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 
-export const PKG = require(paths.packageFile);
+export const PKG = () => require(paths.packageFile);
 
 export const MILISECOND = 1
 export const SECOND     = MILISECOND * 1000
