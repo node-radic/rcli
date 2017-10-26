@@ -1,6 +1,8 @@
 import { command, CommandArguments, inject, Log, option, OutputHelper } from "radical-console";
-import { RConfig, SSHConnection } from "../../";
+import { RConfig } from "../../";
 import * as Chalk from "chalk";
+import SSHConnection from '../../database/Models/SSHConnection';
+import { Database } from '../../database/Database';
 
 
 @command('list', 'list all connections')
@@ -15,8 +17,13 @@ export class RcliConnectListCmd {
     @inject('r.config')
     config: RConfig;
 
+    @inject('r.db')
+    db:Database
+
     @option('e', 'exclude columns')
     exclude:string[] = []
+
+
 
     async handle(args: CommandArguments, ...argv: any[]) {
         let cons :SSHConnection[] = await SSHConnection.query().select('*').execute();

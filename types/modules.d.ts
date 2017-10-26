@@ -50,27 +50,10 @@ declare module "Validator" {
 
     export = Validator
 }
-declare module "yargs-parser" {
-    var yp: YargsParser;
-    export = yp;
-}
 
 declare module "events";
 // declare module "fs";
 
-
-interface CliTable extends Array<string[]> {
-
-}
-declare module "cli-table2" {
-    interface TableConstructor {
-        new (options?: any): CliTable
-    }
-
-    let t: TableConstructor;
-
-    export = t
-}
 
 
 declare module "color-convert";
@@ -178,7 +161,7 @@ declare module "get-caller-file" {
 
 interface DotEnv {
     parse(buf: string): any;
-    config(options?: { silent: boolean, path: string, encoding: string })
+    config(options?: { silent?: boolean, path?: string, encoding?: string })
 }
 declare module "dotenv" {
     var dotenvv: DotEnv

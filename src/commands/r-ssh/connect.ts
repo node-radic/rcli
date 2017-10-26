@@ -4,6 +4,7 @@ import { ensureDirSync } from "fs-extra";
 import { execSync } from "child_process";
 import { rmdirSync } from "fs";
 import { SSHConnection } from "../../database/Models/SSHConnection";
+import { Database } from '../../database/Database';
 //
 // @command(`connect
 // {name:string@name of the connection}
@@ -25,6 +26,9 @@ export abstract class RcliSshConnect {
 
     @inject('r.config')
     config: RConfig;
+
+    @inject('r.db')
+    db:Database
 
     _config: CommandConfig
 

@@ -3,11 +3,11 @@
         "removeComments": true,
         "noLib": false,
         "noImplicitAny": false,
+        "allowUnusedLabels": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "allowSyntheticDefaultImports": true,
         "sourceMap": true,
-        "inlineSourceMap": true,
         "module": "commonjs",
         "skipLibCheck": true,
         "moduleResolution": "node",
@@ -16,14 +16,24 @@
         "noResolve": false,
         "typeRoots": [
             "./node_modules/@types",
+            "./node_modules/radical-console/node_modules/@types",
+            "./node_modules/radical-console/types",
             "./types"
-        ]
+        ],
+        "baseUrl": "./",
+        "paths": {
+            "download": ["./types/download"]
+        }
     },
     "include": [
         "./src",
         "./spec/**/*.ts",
         "./bin/r.ts",
-        "./types/**/*.ts"
+        "./types/**/*.ts",
+        "./node_modules/radical-console/types/**/*.ts"
     ],
-    "compileOnSave": true
+    "compileOnSave": true,
+    "typeAcquisition": {
+        "enable": true
+    }
 }

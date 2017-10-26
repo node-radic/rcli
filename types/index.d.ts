@@ -44,3 +44,9 @@ interface Cancelable {
     cancel(): void;
     flush(): void;
 }
+
+
+declare module 'download' {
+    import { download } from './download/index';
+    export = download
+}

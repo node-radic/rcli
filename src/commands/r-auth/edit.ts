@@ -1,6 +1,7 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, LoggerInstance, OutputHelper } from "radical-console";
-import { BaseCommand, Credential, RConfig } from "../../";
+import { BaseCommand, RConfig } from "../../";
 import { ConnectHelper } from "../../helpers/helper.connect";
+import Credential from '../../database/Models/Credential';
 
 @command(`edit 
 [name:string@the service connection name]

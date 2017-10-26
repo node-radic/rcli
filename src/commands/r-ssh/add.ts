@@ -1,6 +1,7 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, inject, InputHelper, Log, option, OutputHelper } from "radical-console";
 import { RConfig } from "../../core/config";
 import { SSHConnection } from "../../database/Models/SSHConnection";
+import { Database } from '../../database/Database';
 
 export interface ConnectAddArguments extends CommandArguments {
     name: string,
@@ -50,6 +51,8 @@ export class RcliConnectAddCmd {
     @inject('cli.events')
     public events: Dispatcher;
 
+    @inject('r.db')
+    db:Database
 
     @option('P', 'login using a password (enter later)')
     pass: boolean = false
@@ -78,6 +81,7 @@ export class RcliConnectAddCmd {
     help: boolean = false;
 
     async handle(args: ConnectAddArguments, ...argv: any[]) {
+        await this.db.migrateLatest()
         let io = SSHConnection.interact()
         io.setDefaultsFor({
             name     : args.name,

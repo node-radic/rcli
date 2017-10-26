@@ -1,7 +1,8 @@
 import { command, CommandArguments, CommandConfig, Dispatcher, InputHelper, lazyInject, Log, OutputHelper } from "radical-console";
-import { Credential, RConfig } from "../../";
+import { RConfig } from "../../";
 import { AuthMethod } from "../../services/AuthMethod";
 import { Services } from "../../services/Services";
+import Credential from '../../database/Models/Credential';
 
 
 @command(`add 

@@ -1,5 +1,6 @@
 import { command, CommandArguments, inject, InputHelper, LoggerInstance, OutputHelper } from "radical-console";
-import { SSHConnection, SshBashHelper ,RConfig } from "../../";
+import { SshBashHelper ,RConfig } from "../../";
+import SSHConnection from '../../database/Models/SSHConnection';
 
 
 @command('remove [name:string@the connection to remote]', 'Remove one, multiple or all connections')

@@ -1,10 +1,12 @@
-import { command, CommandArguments, inject, InputHelper, lazyInject, Log, option, OutputHelper } from "radical-console";
-import { RConfig, SshBashHelper, SSHConnection } from "../../";
-import { Answers } from "inquirer";
+import { command, CommandArguments, inject, InputHelper, Log, option, OutputHelper } from 'radical-console';
+import { RConfig } from '../../';
+import SSHConnection from '../../database/Models/SSHConnection';
+import { Database } from '../../database/Database';
 
 export interface ConnectEditArguments extends CommandArguments {
     name?: string
 }
+
 @command(`edit 
 [name:string@the connection name]`, 'edit a connections')
 export class RcliConnectEditCmd {
@@ -20,6 +22,9 @@ export class RcliConnectEditCmd {
 
     @inject('r.config')
     config: RConfig;
+
+    @inject('r.db')
+    db:Database
 
     @option('H', 'server ip or hostname')
     host: string;
@@ -43,9 +48,9 @@ export class RcliConnectEditCmd {
     hostPath: string;
 
     async handle(args: ConnectEditArguments, ...argv: any[]) {
-        let io = SSHConnection.interact()
-        let name = args.name || (await io.pick<SSHConnection>()).name
-        let con:SSHConnection = await SSHConnection.query().where('name', name).first().execute()
+        let io                 = SSHConnection.interact()
+        let name               = args.name || (await io.pick<SSHConnection>()).name
+        let con: SSHConnection = await SSHConnection.query().where('name', name).first().execute()
         io.setDefaultsFor(con.toJSON());
         con = await io.update<SSHConnection>(con.id, [
             'name',
@@ -62,4 +67,5 @@ export class RcliConnectEditCmd {
         })
     }
 }
+
 export default RcliConnectEditCmd

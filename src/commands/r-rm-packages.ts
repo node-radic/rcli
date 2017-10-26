@@ -119,7 +119,7 @@ export class AuthoCmd {
             return paths.forEach(path => this.out.line('- ' + path))
         } else if ( args[ 'action' ] === 'details' ) {
             moment.locale('en-gb')
-            let tbl       = this.out.table([ 'path', 'size', 'created', 'modified' ])
+            let tbl    :any   = this.out.table([ 'path', 'size', 'created', 'modified' ])
             let spinner   = this.out.spinner(`Generating 0/${paths.length}`).start()
 
             let totalSize = await new Promise((res, rej) => {
